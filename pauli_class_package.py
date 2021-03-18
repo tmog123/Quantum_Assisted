@@ -7,10 +7,14 @@ Functions to combine pauli strings, represent pauli strings
 import numpy as np
 
 class paulistring(object):
-    def __init__(self,N,string,coefficient):
+    def __init__(self,N,string,coefficient):#String is represented as [0,2,2,1,3,...] where 0=I, 1=X, 2=Y, 3=Z
         self.N = N
         self.coefficient = coefficient
         self.string = string
+    def return_string(self):
+        return self.string
+    def return_coefficient(self):
+        return self.coefficient
 
         
 def pauli_combine(pauli1,pauli2):
@@ -51,19 +55,6 @@ def pauli_helper(pauli1,pauli2):
             return 1,-1j
         elif pauli2 ==3:
             return 0,1
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
