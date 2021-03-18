@@ -10,3 +10,8 @@ Functions: pauli_combine, pauli_helper
 
 Hamiltonian class:
 1) Contains all the information of the Hamiltonian
+
+REQUIRES PAULI CLASS
+
+Objects: Hamiltonian
+Functions: transverse_ising_model_1d
