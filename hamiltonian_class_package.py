@@ -4,7 +4,7 @@ import pauli_class_package as pcp
 class Hamiltonian(object):
     def __init__(self,N,paulistrings):
         self.N = N
-        self.paulistrings = paulistrings
+        self.paulistrings = paulistrings#Should be paulistring class objects
 
 def transverse_ising_model_1d(N,J,g): #Sum -JZ_iZ_i+1 + Sum gX_i
     paulistrings = []
