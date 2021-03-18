@@ -1,5 +1,10 @@
 # Quantum-Assisted
 
+Things done: Created the classes to represent the Ansatz and Hamiltonians, with associating functions to generate them
+
+Things to do: Create the code needed to generate the E and D matrices (will probably be backend dependent), create the code for the classical post processing
+
+
 ![image](https://user-images.githubusercontent.com/41319311/111591097-f44d8d00-8801-11eb-93a8-3804b6b6de88.png)
 
 pauli_class_package:
