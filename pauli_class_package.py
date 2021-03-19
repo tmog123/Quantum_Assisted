@@ -8,6 +8,8 @@ import numpy as np
 
 class paulistring(object):
     def __init__(self,N,string,coefficient):#String is represented as [0,2,2,1,3,...] where 0=I, 1=X, 2=Y, 3=Z
+        if len(string) != N:
+            raise(RuntimeError("N must match the length of string!"))
         self.N = N
         self.coefficient = coefficient
         self.string = string
@@ -15,8 +17,26 @@ class paulistring(object):
         return self.string
     def return_coefficient(self):
         return self.coefficient
+    def __eq__(self, other):
+        return self.coefficient == other.coefficient and self.string == other.string
+    def __hash__(self):
+        #first, we convert the internal list representation into a string so that it can be hashed
+        #Tbh we most probably will not hash the pauli string object, but this is just in case
+        stringified = "".join([str(i) for i in self.string])
+        vals = [self.N, self.coefficient, stringified]
+        keys = sorted(self.__dict__.items())
+        return hash(tuple(zip(keys,vals)))
+    def __str__(self):
+        return self.__repr__()
+    def get_complex_conjugate(self):
+        return paulistring(self.N, self.string, np.conj(self.coefficient))
+    def __repr__(self):
+        stringified = "".join([str(i) for i in self.string])
+        return str(self.coefficient) + "*"+stringified
 
         
+x = paulistring(4,[1,2,3,0],0.4j)
+
 def pauli_combine(pauli1,pauli2):
     resultN = pauli1.N
     resultcoeff = (pauli1.coefficient)*(pauli2.coefficient)
