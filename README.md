@@ -27,3 +27,6 @@ ansatz_class_package:
 
 Objects: Ansatz, moment, Initialstate
 Functions: initial_ansatz, gen_next_ansatz
+
+matrix_class_package:
+1) Contains the representations for the unevaluated E and D matrices (each element is a list of paulistring objects that will be passed to backend to evaluate)
