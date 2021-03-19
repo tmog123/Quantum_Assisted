@@ -12,6 +12,8 @@ class moment(object): #This moments are the building blocks of the Ansatz, basic
             self.alphas = []
         else:
             self.alphas = alphas
+    def get_paulistring(self):
+        return paulistring
     
     def __repr__(self):
         """
@@ -41,13 +43,15 @@ class Ansatz(object):#moments is a list
         return resultpaulistrings,resultalphas
     def __repr__(self):
         return str(self.moments)
+        
 
 class Initialstate(object):
     def __init__(self,N,method,numpyseed,numberoflayers):
         self.N = N
         self.method = method
         self.numpyseed = numpyseed
-        self.numberoflayers = numberoflayers    
+        self.numberoflayers = numberoflayers
+    
 
 def initial_ansatz(N):
     initialmoment = moment(N,paulistring(N,[0]*N,1))
@@ -57,10 +61,6 @@ def helper_get_strings(x):
     return x.return_string()
 
 def gen_next_ansatz(anz,H,N,method = "no_processing"):
-    """
-    kh: right now this is not cummulative, need to fix
-    Jon: Fixed
-    """
     if method == 'no_processing':
         newmomentstrings = []
         for mom in anz.moments:
@@ -75,3 +75,4 @@ def gen_next_ansatz(anz,H,N,method = "no_processing"):
         for i in newmomentstrings:
             newmoment.append(moment(N,paulistring(N,i,1)))#Appending the paulistring class objects
     return Ansatz(N,anz.K + 1,newmoment)
+
