@@ -6,6 +6,14 @@ Functions to combine pauli strings, represent pauli strings
 '''
 import numpy as np
 
+#Pauli matrices
+identity = np.array([(1,0),(0,1)],dtype=np.complex128)
+sigma_x = np.array([(0,1),(1,0)],dtype=np.complex128)
+sigma_y = np.array([(0,-1j),(1j,0)],dtype=np.complex128)
+sigma_z = np.array([(1,0),(0,-1)],dtype=np.complex128)
+sigmas = [identity, sigma_x, sigma_y, sigma_z]
+
+
 class paulistring(object):
     def __init__(self,N,string,coefficient):#String is represented as [0,2,2,1,3,...] where 0=I, 1=X, 2=Y, 3=Z
         if len(string) != N:
@@ -33,9 +41,15 @@ class paulistring(object):
     def __repr__(self):
         stringified = "".join([str(i) for i in self.string])
         return str(self.coefficient) + "*"+stringified
+    def get_matrixform(self):
+        index_string = self.string
+        coeff = self.coefficient
+        first_matrix = sigmas[int(index_string[0])]
+        matrix = first_matrix
+        for j in index_string[1:]:
+            matrix = np.kron(matrix, sigmas[int(j)])
+        return coeff * matrix
 
-        
-x = paulistring(4,[1,2,3,0],0.4j)
 
 def pauli_combine(pauli1,pauli2):
     resultN = pauli1.N
@@ -75,14 +89,6 @@ def pauli_helper(pauli1,pauli2):
             return 1,-1j
         elif pauli2 ==3:
             return 0,1
-
-
-
-
-
-
-
-
 
 
 
