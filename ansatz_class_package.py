@@ -41,7 +41,13 @@ class Ansatz(object):#moments is a list
         return resultpaulistrings,resultalphas
     def __repr__(self):
         return str(self.moments)
-        
+
+class Initialstate(object):
+    def __init__(self,N,method,numpyseed,numberoflayers):
+        self.N = N
+        self.method = method
+        self.numpyseed = numpyseed
+        self.numberoflayers = numberoflayers    
 
 def initial_ansatz(N):
     initialmoment = moment(N,paulistring(N,[0]*N,1))
