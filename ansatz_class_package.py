@@ -53,9 +53,13 @@ def helper_get_strings(x):
 def gen_next_ansatz(anz,H,N,method = "no_processing"):
     """
     kh: right now this is not cummulative, need to fix
+    Jon: Fixed
     """
     if method == 'no_processing':
         newmomentstrings = []
+        for mom in anz.moments:
+            newmomentstrings.append(mom.return_string())
+
         for mom in anz.moments:
             for ham in H.return_paulistrings():
                 newpauli = pcp.pauli_combine(mom.paulistring,ham)
