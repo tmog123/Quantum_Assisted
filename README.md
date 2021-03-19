@@ -23,6 +23,7 @@ Functions: transverse_ising_model_1d
 
 ansatz_class_package:
 1) Generates Ansatzes
+2) Contains initial state clas representation
 
 Objects: Ansatz, moment, Initialstate
 Functions: initial_ansatz, gen_next_ansatz
