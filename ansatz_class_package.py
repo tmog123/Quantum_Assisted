@@ -12,6 +12,13 @@ class moment(object): #This moments are the building blocks of the Ansatz, basic
             self.alphas = []
         else:
             self.alphas = alphas
+    
+    def __repr__(self):
+        """
+        kh:
+        I'm assuming that when we print a moment, we just print the string to help debug
+        """
+        return str(self.paulistring)
 
 class Ansatz(object):#moments is a list
     def __init__(self,N,K,moments):
@@ -32,6 +39,8 @@ class Ansatz(object):#moments is a list
             resultpaulistrings.append(mom.paulistring.return_string())
             resultalphas.append(mom.alphas)
         return resultpaulistrings,resultalphas
+    def __repr__(self):
+        return str(self.moments)
         
 
 def initial_ansatz(N):
@@ -41,17 +50,18 @@ def initial_ansatz(N):
 def helper_get_strings(x):
     return x.return_string()
 
-def gen_next_ansatz(anz,method,H,N):
+def gen_next_ansatz(anz,H,N,method = "no_processing"):
+    """
+    kh: right now this is not cummulative, need to fix
+    """
     if method == 'no_processing':
         newmomentstrings = []
         for mom in anz.moments:
             for ham in H.return_paulistrings():
-                newpauli = pcp.pauli_combine(mom.paulistring,ham.paulistring)
+                newpauli = pcp.pauli_combine(mom.paulistring,ham)
                 if newpauli.return_string() not in newmomentstrings:
                     newmomentstrings.append(newpauli.return_string())#This is the string that is [0,1,2,1,1,2,...] ect, NOT the paulistring class
         newmoment = []
         for i in newmomentstrings:
             newmoment.append(moment(N,paulistring(N,i,1)))#Appending the paulistring class objects
     return Ansatz(N,anz.K + 1,newmoment)
-
-
