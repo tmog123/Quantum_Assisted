@@ -24,5 +24,5 @@ Functions: transverse_ising_model_1d
 ansatz_class_package:
 1) Generates Ansatzes
 
-Objects: Ansatz, moment
+Objects: Ansatz, moment, Initialstate
 Functions: initial_ansatz, gen_next_ansatz
