@@ -17,8 +17,9 @@ class moment(object): #This moments are the building blocks of the Ansatz, basic
             self.alphas = []
         else:
             self.alphas = alphas
+
     def get_paulistring(self):
-        return paulistring
+        return self.paulistring
     
     def __repr__(self):
         """
@@ -46,12 +47,16 @@ class Ansatz(object):#moments is a list
             resultpaulistrings.append(mom.paulistring.return_string())
             resultalphas.append(mom.alphas)
         return resultpaulistrings,resultalphas
+
     def __repr__(self):
         return str(self.moments)
         
 
 class Initialstate(object):
     def __init__(self,N,method,numpyseed,numberoflayers):
+        """
+        method can be either efficient_SU2, or random_numbers, or...
+        """
         self.N = N
         self.method = method #Can be either random numbers or...
         self.numpyseed = numpyseed
@@ -80,10 +85,6 @@ class Initialstate(object):
             return state
 
 
-
-
-    
-
 def initial_ansatz(N):
     initialmoment = moment(N,paulistring(N,[0]*N,1))
     return Ansatz(N,0,[initialmoment])
@@ -95,13 +96,14 @@ def gen_next_ansatz(anz,H,N,method = "no_processing"):
     if method == 'no_processing':
         newmomentstrings = []
         for mom in anz.moments:
-            newmomentstrings.append(mom.return_string())
-
+            newmomentstrings.append(mom.paulistring.return_string())
         for mom in anz.moments:
             for ham in H.return_paulistrings():
                 newpauli = pcp.pauli_combine(mom.paulistring,ham)
                 if newpauli.return_string() not in newmomentstrings:
                     newmomentstrings.append(newpauli.return_string())#This is the string that is [0,1,2,1,1,2,...] ect, NOT the paulistring class
+        #print for debugging purposes
+        print("there are " + str(len(newmomentstrings)) + " states in CSk")
         newmoment = []
         for i in newmomentstrings:
             newmoment.append(moment(N,paulistring(N,i,1)))#Appending the paulistring class objects
