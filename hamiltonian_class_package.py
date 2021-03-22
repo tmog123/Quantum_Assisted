@@ -41,7 +41,7 @@ def transverse_ising_model_1d(N,J,g): #Sum -JZ_iZ_i+1 + Sum gX_i
 
 def heisenberg_xyz_model(N, jx = 1, jy = 2, jz = 3): #Sum jx X_i X_{i+1} + ...
     j_couplings = [jx,jy,jz]
-    base_string = ["0"] * N 
+    base_string = [0] * N 
     paulistrings = []
     if N == 1:
         for j in range(len(j_couplings)):
