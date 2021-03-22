@@ -28,7 +28,17 @@ class unevaluatedmatrix(object):
                     numpymatrix[i,j] = element
 
         self.numpymatrix = numpymatrix
-
-
-
-
+    
+    def evaluate_matrix_by_matrix_multiplicaton(self, initial_state_object):
+        initial_statevector = initial_state_object.get_statevector()
+        size = len(self.numpymatrix[0])
+        matrix = np.empty([size,size], dtype=np.complex128)
+        for i in range(size):
+            for j in range(size):
+                paulistrings = self.numpymatrix[(i,j)]
+                #by construction, paulistrings has at least 1 element
+                temp_matrix = paulistrings[0].get_matrixform()
+                for k in range(1, len(paulistrings)):
+                    temp_matrix += paulistrings[k].get_matrixform()
+                matrix[(i,j)] = initial_statevector.conj().T @ temp_matrix @ initial_statevector
+        return matrix
