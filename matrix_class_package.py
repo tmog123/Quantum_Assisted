@@ -16,7 +16,7 @@ class unevaluatedmatrix(object):
                     element = [pcp.pauli_combine(moments[i].get_paulistring().get_complex_conjugate(),moments[j].get_paulistring())]
                     numpymatrix[i,j] = element
         
-        if matrixtype == 'D':
+        if matrixtype == 'D' or 'O': #actually the O matrix has the same form as the D matrix, just that the observable O takes the place of the Hamiltonian H
             for i in range(size):
                 for j in range(size):
                     element = []
