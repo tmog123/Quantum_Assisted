@@ -4,6 +4,11 @@ import pauli_class_package as pcp
 from pauli_class_package import paulistring
 from hamiltonian_class_package import Hamiltonian
 
+#Qiskit functions. Since there is dependance on qiskit here, should make this explicit in README somehow
+from qiskit.circuit.library import EfficientSU2 
+from qiskit import execute, QuantumCircuit
+from qiskit.providers.aer import Aer
+
 class moment(object): #This moments are the building blocks of the Ansatz, basically its the moments that we used to build the chi states. This stores the alphas
     def __init__(self,N,paulistring,*alphas):# alphas is either nothing, or a list/numpy array
         self.N = N
@@ -48,9 +53,35 @@ class Ansatz(object):#moments is a list
 class Initialstate(object):
     def __init__(self,N,method,numpyseed,numberoflayers):
         self.N = N
-        self.method = method
+        self.method = method #Can be either random numbers or...
         self.numpyseed = numpyseed
         self.numberoflayers = numberoflayers
+        self.qiskit_circuit = None
+
+        if self.method == "efficient_SU2":
+            qc = EfficientSU2(self.N, reps = self.numberoflayers, entanglement="full", skip_final_rotation_layer=False)
+            num_params = qc.num_parameters 
+            np.random.seed(self.numpyseed)
+            initial_state_params = np.random.rand(num_params)
+            for index in range(num_params):
+                qc = qc.bind_parameters({qc.ordered_parameters[index]: initial_state_params[index]})
+            self.qiskit_circuit = qc
+
+    def get_statevector(self):
+        if self.method == "random_numbers":
+            dimension = 2**self.N 
+            np.random.seed(self.numpyseed)
+            state = np.random.rand(dimension) + 1j * np.random.rand(dimension)
+            state = state / np.sqrt(np.vdot(state, state))
+            return state 
+        elif self.method == "efficient_SU2":
+            statevector_backend = Aer.get_backend('statevector_simulator')
+            state = execute(self.qiskit_circuit, statevector_backend).result().get_statevector()
+            return state
+
+
+
+
     
 
 def initial_ansatz(N):
