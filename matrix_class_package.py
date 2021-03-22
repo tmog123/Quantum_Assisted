@@ -9,15 +9,16 @@ class unevaluatedmatrix(object):
         self.N = N
         size = len(ansatz.get_moments())
         moments = ansatz.get_moments()
-        # numpymatrix = np.zeros([size,size])
         dictionary_of_matrix_elements = dict()
         if matrixtype == 'E':
+            print("I'm here bij!")
             for i in range(size):
                 for j in range(size):
                     element = [pcp.pauli_combine(moments[i].get_paulistring().get_complex_conjugate(),moments[j].get_paulistring())]
+
                     dictionary_of_matrix_elements[(i,j)] = element
         
-        if matrixtype == 'D' or 'O': #actually the O matrix has the same form as the D matrix, just that the observable O takes the place of the Hamiltonian H
+        if matrixtype == 'D' or matrixtype == 'O': #actually the O matrix has the same form as the D matrix, just that the observable O takes the place of the Hamiltonian H
             for i in range(size):
                 for j in range(size):
                     element = []
@@ -33,7 +34,7 @@ class unevaluatedmatrix(object):
 
     def evaluate_matrix_by_matrix_multiplicaton(self, initial_state_object):
         initial_statevector = initial_state_object.get_statevector()
-        size = len(self.size)
+        size = self.size
         matrix = np.empty([size,size], dtype=np.complex128)
         for i in range(size):
             for j in range(size):
