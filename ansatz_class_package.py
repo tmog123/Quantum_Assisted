@@ -48,6 +48,17 @@ class Ansatz(object):#moments is a list
             resultalphas.append(mom.alphas)
         return resultpaulistrings,resultalphas
 
+    def get_current_alphas(self):
+        a,b = self.get_alphas()
+        result = []
+        for al in b:
+            result.append(al[len(al)-1])
+        return np.array(result)
+
+    def update_alphas(self,newalphas):#the new alphas must be a list of lists
+        for i in range(len(newalphas)):
+            self.moments[i].alphas = newalphas[i]
+
     def __repr__(self):
         return str(self.moments)
         
