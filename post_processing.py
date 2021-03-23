@@ -14,6 +14,7 @@ def diag_routine(D_matrix, E_matrix, inv_cond = 10**(-2)):
     #Here, I'll use eigh directly because now I'm always solving the Hermitian version. I.e, D_matrix must be hermitian
 
     e_vals,e_vecs=scipy.linalg.eigh(E_matrix)
+    #hi 
             
     #get e_matrix eigenvalues inverted, cutoff with inv_cond
     e_vals_inverted=np.array(e_vals)
