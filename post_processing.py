@@ -15,6 +15,7 @@ def diag_routine(D_matrix, E_matrix, inv_cond = 10**(-2)):
 
     e_vals,e_vecs=scipy.linalg.eigh(E_matrix)
     #hi 
+    #Hi jonathan :)
             
     #get e_matrix eigenvalues inverted, cutoff with inv_cond
     e_vals_inverted=np.array(e_vals)
