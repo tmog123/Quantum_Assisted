@@ -23,6 +23,25 @@ class Hamiltonian(object):
             first += self.paulistrings[j].get_matrixform()
         return first 
 
+def generate_arbitary_hamiltonian(N, couplings, pauli_strings):
+    """
+    Here, N is the number of qubits
+    Let the Hamiltonian be sum_{i=1}^r beta_i P_i
+    Then, couplings = [beta_1, beta_2, ..., beta_L]
+    pauli_strings = [P_1, P_2,..,P_L]
+    Here, P_i is any iterable, e.g a string "123", or a list [1,2,3]. Both these iterables represent the operator X_1 Y_2 Z_3
+    """
+    if len(couplings) != len(pauli_strings):
+        raise(RuntimeError("Length of couplings must match length of pauli_strings"))
+    paulistring_objects = [] 
+    for j in range(len(pauli_strings)):
+        beta_j = couplings[j]
+        P_j = pauli_strings[j]
+        P_j_formatted = [int(i) for i in P_j]
+        pauliobject = pcp.paulistring(N, P_j_formatted, beta_j)
+        paulistring_objects.append(pauliobject)
+    return Hamiltonian(N, paulistring_objects)
+
 def transverse_ising_model_1d(N,J,g): #Sum -JZ_iZ_i+1 + Sum gX_i
     """
     kh: what if N = 1?
