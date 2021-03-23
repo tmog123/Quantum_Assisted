@@ -80,20 +80,22 @@ def diag_routine(D_matrix, E_matrix, inv_cond = 10**(-2)):
 
     return (np.array(correct_eigvals) ,after_normalisation)
 
-def IQAE_test(num_qubits):
-    hamiltonian = hcp.heisenberg_xyz_model(num_qubits)
-    hamiltonian_matrixform = hamiltonian.to_matrixform()
-    theoretical_ground_state_energy = scipy.linalg.eigvalsh(hamiltonian_matrixform)[0]
-    print("The theoretical ground state energy is ", theoretical_ground_state_energy)
-    initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 1, 5)
-    ansatz = acp.initial_ansatz(num_qubits)
-    for k in range(1, 4):
-        print(k)
-        ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits)
-        E_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "E")
-        D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
-        E_mat_evaluated =  E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-        D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-        qae_energies, qae_eigvecs = diag_routine(D_mat_evaluated, E_mat_evaluated, inv_cond=10**(-12))
-        min_energy = qae_energies[0]
-        print("The IQAE min energy is",min_energy)
+if __name__ == "__main__":
+    def IQAE_test(num_qubits):
+        hamiltonian = hcp.heisenberg_xyz_model(num_qubits)
+        hamiltonian_matrixform = hamiltonian.to_matrixform()
+        theoretical_ground_state_energy = scipy.linalg.eigvalsh(hamiltonian_matrixform)[0]
+        print("The theoretical ground state energy is ", theoretical_ground_state_energy)
+        initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 1, 5)
+        ansatz = acp.initial_ansatz(num_qubits)
+        for k in range(1, 4):
+            print(k)
+            ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits)
+            E_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "E")
+            D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
+            E_mat_evaluated =  E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+            D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+            qae_energies, qae_eigvecs = diag_routine(D_mat_evaluated, E_mat_evaluated, inv_cond=10**(-12))
+            min_energy = qae_energies[0]
+            print("The IQAE min energy is",min_energy)
+    # IQAE_test(3)
