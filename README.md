@@ -1,8 +1,10 @@
 # Quantum-Assisted
 
-Things done: Created the classes to represent the Ansatz and Hamiltonians, with associating functions to generate them
+Things done: Created the stuff needed to do simple IQAE, TTQS
 
-Things to do: Create the code needed to generate the E and D matrices (will probably be backend dependent), create the code for the classical post processing
+Things to do: Create the code for normal QAS, create the code needed to generate the E and D matrices for IBM quantum computer backend, create the code for plotting and analyzing (right now the code only generates the alphas), create the code needed to do the exact calculations for QAS (probably using qutip) so that we can compare the results of TTQS/QAS with the expected results.
+
+To see how it might work, can see the TTQS_tutorial.
 
 Dependencies:
 
