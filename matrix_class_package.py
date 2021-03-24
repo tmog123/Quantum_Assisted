@@ -11,7 +11,7 @@ class unevaluatedmatrix(object):
         moments = ansatz.get_moments()
         dictionary_of_matrix_elements = dict()
         if matrixtype == 'E':
-            print("I'm here bij!")
+            # print("I'm here bij!")
             for i in range(size):
                 for j in range(size):
                     element = [pcp.pauli_combine(moments[i].get_paulistring().get_complex_conjugate(),moments[j].get_paulistring())]

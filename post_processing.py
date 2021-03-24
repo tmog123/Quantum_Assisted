@@ -38,7 +38,7 @@ class IQAE(object):
             pass 
     
     def set_eigh_invcond(self, eigh_invcond):
-        self.eigh_invcond == eigh_invcond
+        self.eigh_invcond = eigh_invcond
 
     def evaluate(self):
         if self.optimizer == None:
