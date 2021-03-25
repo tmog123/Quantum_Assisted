@@ -5,8 +5,6 @@ import hamiltonian_class_package as hcp
 import matrix_class_package as mcp 
 import post_processing as pp
 
-
-
 #Parameters
 uptowhatK = 3
 num_qubits = 2
@@ -14,8 +12,6 @@ endtime = 8
 num_steps = 1001
 optimizer = 'eigh'
 inv_cond = 10**(-6)
-
-
 
 #create initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 1, 5)
