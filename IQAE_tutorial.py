@@ -5,7 +5,7 @@ import hamiltonian_class_package as hcp
 import matrix_class_package as mcp 
 import post_processing as pp
 
-#Parameters
+#Parameters hi
 uptowhatK = 3
 num_qubits = 4
 optimizer = 'eigh'
