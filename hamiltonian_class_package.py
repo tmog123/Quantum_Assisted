@@ -23,6 +23,11 @@ class Hamiltonian(object):
             first += self.paulistrings[j].get_matrixform()
         return first 
 
+class Observable(Hamiltonian):
+    def __init__(self, N, paulistrings):
+        super().__init__(N, paulistrings)
+
+
 def generate_arbitary_hamiltonian(N, couplings, pauli_strings):
     """
     Here, N is the number of qubits

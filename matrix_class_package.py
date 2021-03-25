@@ -5,7 +5,10 @@ import pauli_class_package as pcp
 
 
 class unevaluatedmatrix(object):
-    def __init__(self,N,ansatz,H,matrixtype):
+    def __init__(self,N,ansatz,H_or_O,matrixtype):
+        """
+        Here, H_or_O is either a Hamiltonian class object or an Observable class object
+        """
         self.N = N
         size = len(ansatz.get_moments())
         moments = ansatz.get_moments()
@@ -22,7 +25,7 @@ class unevaluatedmatrix(object):
             for i in range(size):
                 for j in range(size):
                     element = []
-                    for ham in H.return_paulistrings():
+                    for ham in H_or_O.return_paulistrings():
                         a = pcp.pauli_combine(moments[i].get_paulistring().get_complex_conjugate(),ham)
                         a = pcp.pauli_combine(a,moments[j].get_paulistring())
                         element.append(a)
