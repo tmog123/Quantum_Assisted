@@ -5,6 +5,10 @@ import hamiltonian_class_package as hcp
 import matrix_class_package as mcp 
 import post_processing as pp
 
+"""
+KH: There's a bug in this file
+"""
+
 #Parameters
 uptowhatK = 3
 num_qubits = 2
