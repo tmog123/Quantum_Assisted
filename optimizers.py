@@ -80,7 +80,13 @@ def diag_routine(D_matrix, E_matrix, inv_cond = 10**(-2)):
 #OPTIMIZERS MUST RETURN THE UPDATED ALPHAS
 def eigh_method_for_TTQS(E_matrix,W_matrix,alphas,inv_cond):
     e_vals,e_vecs=scipy.linalg.eigh(E_matrix)
+    e_vals_adjusted=np.array(e_vals)
     e_vals_inverted=np.array(e_vals)
+    for k in range(len(e_vals_inverted)):
+        if(e_vals_inverted[k]<inv_cond):
+            e_vals_inverted[k]=0
+        else:
+            e_vals_inverted[k]=1/e_vals_inverted[k]
     e_vals_cond=np.array(e_vals)
     for k in range(len(e_vals_cond)):
         if(e_vals_cond[k]<inv_cond):

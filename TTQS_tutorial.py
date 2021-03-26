@@ -13,14 +13,14 @@ JON: Fixed
 
 #Parameters
 uptowhatK = 3
-num_qubits = 2
+num_qubits = 3
 endtime = 8
 num_steps = 1001
 optimizer = 'eigh'
-inv_cond = 10**(-6)
+inv_cond = 10**(-2)
 
 #create initial state
-initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 1, 5)
+initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 123, 5)
 
 #define Hamiltonian
 hamiltonian = hcp.heisenberg_xyz_model(num_qubits)
