@@ -53,6 +53,36 @@ class IQAE(object):
     def get_results(self):
         return (self.ground_state_energy, self.ground_state_alphas)
 
+class CQFF(object):
+    @staticmethod
+    def helper_getcurrentalphas(alphas):
+        result = []
+        for al in alphas:
+            result.append(al[len(al)-1])
+        return np.array(result)
+
+    def __init__(self, N, D_matrix, E_matrix, startingalphas,
+    eigh_invcond = 10**(-12)):
+        """
+        Here, the D_matrix and the E_matrix are evaluated matrices For
+        eigh_invcond, use 10**(-3) when there is shotnoise and other noise,
+        use 10**(-12) for matrix multiplication
+        """
+        self.N = N
+        self.D = D_matrix
+        self.E = E_matrix
+        self.startingalphas = startingalphas
+        self.has_it_been_evaluated = False
+        self.eigh_invcond = eigh_invcond
+
+    def numberstep(self,steps):
+        self.steps = steps
+    
+    def define_endtime(self,endtime):
+        self.endtime = endtime
+    
+    def set_eigh_invcond(self, eigh_invcond):
+        self.eigh_invcond = eigh_invcond
 
 class TTQS(object):
     def __init__(self,N,D_matrix,E_matrix,startingalphas):#These are the EVALUATED matrices
