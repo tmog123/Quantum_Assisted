@@ -33,6 +33,7 @@ class Ansatz(object):#moments is a list
         self.N = N
         self.moments = moments#These are the moment objects
         self.K = K
+        self.initialalphassetyet = False
 
     def get_moments(self):
         return self.moments
@@ -120,3 +121,16 @@ def gen_next_ansatz(anz,H,N,method = "no_processing"):
             newmoment.append(moment(N,paulistring(N,i,1)))#Appending the paulistring class objects
     return Ansatz(N,anz.K + 1,newmoment)
 
+def set_initial_alphas(N,anz,method='start_with_initial_state'):
+    if anz.initialalphassetyet == True:
+        print('Initial alphas have already been set')
+    else:
+        print('Setting initial alphas')
+        if method =='start_with_initial_state':
+            identity = pcp.create_identity(N)
+            for mom in anz.get_moments():
+                if mom.paulistring.return_string() == identity.return_string():
+                    mom.alphas.append(1)
+                else:
+                    mom.alphas.append(0)
+        anz.initialalphassetyet = True

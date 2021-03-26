@@ -50,6 +50,9 @@ class paulistring(object):
             matrix = np.kron(matrix, sigmas[int(j)])
         return coeff * matrix
 
+def create_identity(N):
+    return paulistring(N,N*[0],1)
+
 
 def pauli_combine(pauli1,pauli2):
     resultN = pauli1.N

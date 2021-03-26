@@ -4,7 +4,8 @@ import pauli_class_package as pcp
 import hamiltonian_class_package as hcp 
 import matrix_class_package as mcp 
 import post_processing as pp
-
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning) 
 """
 KH: There's a bug in this file
 """
@@ -36,6 +37,9 @@ for k in range(1,uptowhatK+1):
 
     #Generate Ansatz for this round
     ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits)
+
+    #Set initial alphas for Ansatz
+    acp.set_initial_alphas(num_qubits,ansatz,'start_with_initial_state')
 
     E_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "E")
     D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
