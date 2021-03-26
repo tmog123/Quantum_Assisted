@@ -8,6 +8,7 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 """
 KH: There's a bug in this file
+JON: Fixed
 """
 
 #Parameters
