@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 uptowhatK = 3
 num_qubits = 3
 endtime = 8
-num_steps = 1001
+num_steps = 60001
 optimizer = 'eigh'
 inv_cond = 10**(-2)
 
