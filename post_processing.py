@@ -6,12 +6,14 @@ import matrix_class_package as mcp
 import scipy
 import qutip as qt
 import optimizers as opt_package
+from abc import ABC, abstractmethod
+from scipy.integrate import ode 
 
-def helper_getcurrentalphas(alphas):
-    result = []
-    for al in alphas:
-        result.append(al[len(al)-1])
-    return np.array(result)
+# def helper_getcurrentalphas(alphas):
+#     result = []
+#     for al in alphas:
+#         result.append(al[len(al)-1])
+#     return np.array(result)
 
 class IQAE(object):
     def __init__(self, N, D_matrix, E_matrix):
@@ -53,7 +55,8 @@ class IQAE(object):
     def get_results(self):
         return (self.ground_state_energy, self.ground_state_alphas)
 
-class CQFF(object):
+#This is an abstract class
+class quantumSimulators(ABC):
     @staticmethod
     def helper_getcurrentalphas(alphas):
         result = []
@@ -61,50 +64,124 @@ class CQFF(object):
             result.append(al[len(al)-1])
         return np.array(result)
 
-    def __init__(self, N, D_matrix, E_matrix, startingalphas,
-    eigh_invcond = 10**(-12)):
+    def __init__(self, N, D_matrix, E_matrix, startingalphas):
         """
-        Here, the D_matrix and the E_matrix are evaluated matrices For
-        eigh_invcond, use 10**(-3) when there is shotnoise and other noise,
-        use 10**(-12) for matrix multiplication
+        D_matrix and E_matrix here are evaluated matrices
         """
         self.N = N
         self.D = D_matrix
         self.E = E_matrix
         self.startingalphas = startingalphas
+        self.steps = None 
+        self.endtime = None 
+        self.backend = None 
         self.has_it_been_evaluated = False
-        self.eigh_invcond = eigh_invcond
+        self.finishedalphas = None
 
-    def numberstep(self,steps):
-        self.steps = steps
-    
+    def numberstep(self, steps):
+        self.steps = steps 
+
     def define_endtime(self,endtime):
         self.endtime = endtime
     
-    def set_eigh_invcond(self, eigh_invcond):
-        self.eigh_invcond = eigh_invcond
-
-class TTQS(object):
-    def __init__(self,N,D_matrix,E_matrix,startingalphas):#These are the EVALUATED matrices
-        self.N = N
-        self.D = D_matrix
-        self.E = E_matrix
-        self.invcond = 10**(-6)
-        self.startingalphas = startingalphas
-        self.has_it_been_evaluated = False
-    
-    def numberstep(self,steps):
-        self.steps = steps
-    
-    def define_endtime(self,endtime):
-        self.endtime = endtime
-    
-    def define_optimizer(self,optimizer):
-        self.optimizer = optimizer
-
     def define_backend(self,backend):
         self.backend = backend
     
+    def get_results(self):
+        if self.has_it_been_evaluated == False:
+            print("This has not been evaluated yet")
+        else:
+            return self.finishedalphas
+
+    @abstractmethod
+    def define_optimizer(self,optimizer):
+        pass
+
+    @abstractmethod
+    def evaluate(self):
+        pass
+
+class CQFF(quantumSimulators):
+    def __init__(self, N, D_matrix, E_matrix, startingalphas):
+        super().__init__(N, D_matrix, E_matrix, startingalphas)
+        self.optimizer = None
+        self.eigh_invcond = None
+
+    def define_optimizer(self, optimizer):
+        self.optimizer = optimizer
+
+    def define_eigh_invcond(self, eigh_invcond):
+        self.eigh_invcond = eigh_invcond
+
+    def evaluate(self):
+
+        times=np.linspace(0,self.endtime,num=self.steps, endpoint=True)
+        alphas = self.startingalphas
+        initial_alpha = super().helper_getcurrentalphas(alphas)
+
+        if self.optimizer == "eigh":
+            eigvals, eigvecs = opt_package.diag_routine(self.D, self.E, inv_cond=self.eigh_invcond)
+
+            for t in times:
+                U_big_Delta_t_diagterms = np.exp(-1j*eigvals*t)
+                U_big_Delta_t = eigvecs @ np.diag(U_big_Delta_t_diagterms) @ eigvecs.conj().T @ self.E 
+                newalpha = U_big_Delta_t @ initial_alpha
+                for i in range(len(newalpha)):
+                    alphas[i].append(newalpha[i])
+
+            self.has_it_been_evaluated = True
+            self.finishedalphas = alphas
+
+
+class QAS(quantumSimulators):
+    def __init__(self, N, D_matrix, E_matrix, startingalphas):
+        super().__init__(N, D_matrix, E_matrix, startingalphas)
+        self.optimizer = None
+        self.p_invcond = None #threshold for pseudo-inverse
+
+    def adot_vector(self, t, avec):
+        return -1j*np.linalg.pinv(self.E, rcond = self.p_invcond)@self.D @ avec
+
+    def define_optimizer(self, optimizer):
+        self.optimizer = optimizer
+
+    def define_p_invcond(self, p_invcond):
+        self.p_invcond = p_invcond
+
+    def evaluate(self):
+        
+        times=np.linspace(0,self.endtime,num=self.steps, endpoint=True)
+        alphas = self.startingalphas
+        initial_alpha = super().helper_getcurrentalphas(alphas)
+        solver = ode(self.adot_vector).set_integrator("zvode")
+        solver.set_initial_value(initial_alpha, 0)
+
+        if self.optimizer == "zvode":
+            previous_time = None 
+            for t in times:
+                if t == 0:
+                    newalpha = initial_alpha
+                    previous_time = t
+                else:
+                    time_advance_interval = t - previous_time 
+                    previous_time = t 
+                    newalpha = solver.integrate(solver.t + time_advance_interval)
+
+                for i in range(len(newalpha)):
+                    alphas[i].append(newalpha[i])
+
+            self.has_it_been_evaluated = True
+            self.finishedalphas = alphas
+
+class TTQS(quantumSimulators):
+    def __init__(self, N, D_matrix, E_matrix, startingalphas):
+        super().__init__(N, D_matrix, E_matrix, startingalphas)
+        self.optimizer = None
+        self.invcond = 10**(-6)
+
+    def define_optimizer(self,optimizer):
+        self.optimizer = optimizer
+
     def define_invcond(self,ic):
         self.invcond = ic
 
@@ -118,7 +195,7 @@ class TTQS(object):
         
 
         for t_idx,t in enumerate(times[:-1]):
-            thisalpha = helper_getcurrentalphas(alphas)
+            thisalpha = super().helper_getcurrentalphas(alphas)
             Wtop = np.outer(thisalpha,np.transpose(np.conjugate(thisalpha)))
             Wtop = np.matmul(self.G,Wtop)
             Wtop = np.matmul(Wtop,np.transpose(np.conjugate(self.G)))
@@ -132,16 +209,58 @@ class TTQS(object):
                     alphas[i].append(newalpha[i])
         self.has_it_been_evaluated = True
         self.finishedalphas = alphas
-    def get_results(self):
-        if self.has_it_been_evaluated == False:
-            print("This has not been evaluated yet")
-        else:
-            return self.finishedalphas
 
+# class TTQS(object):
+#     def __init__(self,N,D_matrix,E_matrix,startingalphas):#These are the EVALUATED matrices
+#         self.N = N
+#         self.D = D_matrix
+#         self.E = E_matrix
+#         self.invcond = 10**(-6)
+#         self.startingalphas = startingalphas
+#         self.has_it_been_evaluated = False
+    
+#     def numberstep(self,steps):
+#         self.steps = steps
+    
+#     def define_endtime(self,endtime):
+#         self.endtime = endtime
+    
+#     def define_optimizer(self,optimizer):
+#         self.optimizer = optimizer
 
+#     def define_backend(self,backend):
+#         self.backend = backend
+    
+#     def define_invcond(self,ic):
+#         self.invcond = ic
 
+#     def evaluate(self):
+        
 
+#         deltat = self.endtime/(self.steps-1)
+#         times=np.linspace(0,self.endtime,num=self.steps)
+#         self.G = self.E -1j*deltat*self.D
+#         alphas = self.startingalphas
+        
 
+#         for t_idx,t in enumerate(times[:-1]):
+#             thisalpha = helper_getcurrentalphas(alphas)
+#             Wtop = np.outer(thisalpha,np.transpose(np.conjugate(thisalpha)))
+#             Wtop = np.matmul(self.G,Wtop)
+#             Wtop = np.matmul(Wtop,np.transpose(np.conjugate(self.G)))
+#             Wbot = np.matmul(np.transpose(np.conjugate(thisalpha)),self.E)
+#             Wbot = np.matmul(Wbot,thisalpha)
+#             W_matrix = Wtop/Wbot
 
+#             if self.optimizer == 'eigh':
+#                 newalpha = opt_package.eigh_method_for_TTQS(self.E,W_matrix,thisalpha,self.invcond)
+#                 for i in range(len(newalpha)):
+#                     alphas[i].append(newalpha[i])
+#         self.has_it_been_evaluated = True
+#         self.finishedalphas = alphas
 
-
+#     def get_results(self):
+#         if self.has_it_been_evaluated == False:
+#             print("This has not been evaluated yet")
+#         else:
+#             return self.finishedalphas

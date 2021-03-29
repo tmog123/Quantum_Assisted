@@ -5,7 +5,7 @@ import hamiltonian_class_package as hcp
 import matrix_class_package as mcp 
 import post_processing as pp
 import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning) 
+# warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 #Parameters
 uptowhatK = 3
@@ -13,7 +13,7 @@ num_qubits = 3
 endtime = 8
 num_steps = 1001
 optimizer = 'eigh'
-inv_cond = 10**(-2)
+eigh_inv_cond = 10**(-12)
 
 #create initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 123, 5)
@@ -28,7 +28,7 @@ ansatz = acp.initial_ansatz(num_qubits)
 finalresults = []
 finalresults.append(ansatz)
 
-#Run TTQS
+#Run CQFF
 for k in range(1,uptowhatK+1):
     print(k)
 
@@ -48,18 +48,18 @@ for k in range(1,uptowhatK+1):
     #Get starting alphas
     startingstrings,startingalphas = ansatz.get_alphas()
 
-    #Initialize TTQS instance
-    TTQS_instance = pp.TTQS(num_qubits,D_mat_evaluated,E_mat_evaluated,startingalphas)
-    TTQS_instance.numberstep(num_steps)
-    TTQS_instance.define_endtime(endtime)
-    TTQS_instance.define_optimizer(optimizer)
-    TTQS_instance.define_invcond(inv_cond)
+    #initialize CQFF instance
+    CQFF_instance = pp.CQFF(num_qubits, D_mat_evaluated, E_mat_evaluated, startingalphas)
+    CQFF_instance.numberstep(num_steps)
+    CQFF_instance.define_endtime(endtime)
+    CQFF_instance.define_optimizer(optimizer)
+    CQFF_instance.define_eigh_invcond(eigh_inv_cond)
 
-    #Run TTQS instance
-    TTQS_instance.evaluate()
+    #Run CQFF instance
+    CQFF_instance.evaluate()
 
     #Get results
-    result = TTQS_instance.get_results()
+    result = CQFF_instance.get_results()
 
     #Update ansatz with the new alphas
     ansatz.update_alphas(result)
