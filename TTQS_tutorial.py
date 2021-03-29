@@ -72,3 +72,23 @@ for k in range(1,uptowhatK+1):
 #Example, Final results might look like this [Ansatz_0,Ansatz_1,Ansatz_2,Ansatz_3]
 #Where Ansatz_1 is an Ansatz class, which was used for the K=1 run, and contains the final results for that run
 
+#plot the results for the final k-moment
+ansatz = finalresults[-1]
+times = TTQS_instance.get_times()
+observable = hcp.generate_arbitary_observable(num_qubits, [1], ["300"]) 
+O_matrix_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, observable, "O")
+O_mat_evaluated = O_matrix_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+result_pauli_string, result_alphas = ansatz.get_alphas() 
+result_alphas = list(zip(*result_alphas))
+observable_vals = []
+
+for time_idx in range(len(times)):
+    time = times[time_idx]
+    alpha = result_alphas[time_idx] 
+    alpha = np.array(alpha)
+    observable_value = alpha.conj().T @ O_mat_evaluated @ alpha
+    observable_value = observable_value.real 
+    observable_vals.append(observable_value)
+
+import matplotlib.pyplot as plt 
+plt.plot(times, observable_vals)

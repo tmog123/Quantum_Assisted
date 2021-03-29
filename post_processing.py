@@ -106,6 +106,7 @@ class CQFF(quantumSimulators):
         super().__init__(N, D_matrix, E_matrix, startingalphas)
         self.optimizer = None
         self.eigh_invcond = None
+        self.times = None 
 
     def define_optimizer(self, optimizer):
         self.optimizer = optimizer
@@ -113,9 +114,13 @@ class CQFF(quantumSimulators):
     def define_eigh_invcond(self, eigh_invcond):
         self.eigh_invcond = eigh_invcond
 
+    def get_times(self):
+        return self.times 
+
     def evaluate(self):
 
         times=np.linspace(0,self.endtime,num=self.steps, endpoint=True)
+        self.times = times
         alphas = self.startingalphas
         initial_alpha = super().helper_getcurrentalphas(alphas)
 
@@ -138,6 +143,7 @@ class QAS(quantumSimulators):
         super().__init__(N, D_matrix, E_matrix, startingalphas)
         self.optimizer = None
         self.p_invcond = None #threshold for pseudo-inverse
+        self.times = None
 
     def adot_vector(self, t, avec):
         return -1j*np.linalg.pinv(self.E, rcond = self.p_invcond)@self.D @ avec
@@ -148,9 +154,13 @@ class QAS(quantumSimulators):
     def define_p_invcond(self, p_invcond):
         self.p_invcond = p_invcond
 
+    def get_times(self):
+        return self.times 
+
     def evaluate(self):
         
         times=np.linspace(0,self.endtime,num=self.steps, endpoint=True)
+        self.times = times
         alphas = self.startingalphas
         initial_alpha = super().helper_getcurrentalphas(alphas)
         solver = ode(self.adot_vector).set_integrator("zvode")
@@ -178,6 +188,7 @@ class TTQS(quantumSimulators):
         super().__init__(N, D_matrix, E_matrix, startingalphas)
         self.optimizer = None
         self.invcond = 10**(-6)
+        self.times = None 
 
     def define_optimizer(self,optimizer):
         self.optimizer = optimizer
@@ -185,16 +196,20 @@ class TTQS(quantumSimulators):
     def define_invcond(self,ic):
         self.invcond = ic
 
+    def get_times(self):
+        return self.times 
+
     def evaluate(self):
         
 
         deltat = self.endtime/(self.steps-1)
         times=np.linspace(0,self.endtime,num=self.steps)
+        self.times = times[:-1] 
         self.G = self.E -1j*deltat*self.D
         alphas = self.startingalphas
         
 
-        for t_idx,t in enumerate(times[:-1]):
+        for t_idx,t in enumerate(times[:-1]): #why exclude the endpoint ah
             thisalpha = super().helper_getcurrentalphas(alphas)
             Wtop = np.outer(thisalpha,np.transpose(np.conjugate(thisalpha)))
             Wtop = np.matmul(self.G,Wtop)
