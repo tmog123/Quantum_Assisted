@@ -9,12 +9,11 @@ import optimizers as opt_package
 from abc import ABC, abstractmethod
 from scipy.integrate import ode 
 
-# def helper_getcurrentalphas(alphas):
-#     result = []
-#     for al in alphas:
-#         result.append(al[len(al)-1])
-#     return np.array(result)
-
+class classicalSimulator(object):
+    """
+    I.e, just does e^{-i H t}|\psi(\alpha(t = 0))>
+    """
+    pass
 class IQAE(object):
     def __init__(self, N, D_matrix, E_matrix):
         """
