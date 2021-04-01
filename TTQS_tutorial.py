@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 uptowhatK = 3
 num_qubits = 3
 endtime = 8
-num_steps = 60001
+num_steps = 11
 optimizer = 'eigh'
 inv_cond = 10**(-2)
 
@@ -36,6 +36,8 @@ for k in range(1,uptowhatK+1):
     ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits)
 
     #Set initial alphas for Ansatz
+    #Only 'start_with_initial_state' has been implemented thus far. 
+    #This basically sets the state we want to evolve as the random, initial state we are using to generate the E and D matrices, for convenience
     acp.set_initial_alphas(num_qubits,ansatz,'start_with_initial_state')
 
     E_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "E")
@@ -66,6 +68,17 @@ for k in range(1,uptowhatK+1):
 
     #Update final results with this
     finalresults.append(ansatz)
+
+
+#Run Classical Calculations
+
+#Initialize classicalSimulator
+cS_instance = pp.classicalSimulator(num_qubits,initial_state,hamiltonian)
+cS_instance.define_endtime(endtime)
+cS_instance.numberstep(num_steps)
+
+#Run classicalSimulator
+cS_instance.evaluate()
 
 
 #Now, finalresults is a list of Ansatzes, each Ansatz basically stores the results for that run

@@ -9,11 +9,25 @@ import optimizers as opt_package
 from abc import ABC, abstractmethod
 from scipy.integrate import ode 
 
+#This is stuff to get observables for classicalSimulator
+X = np.array([[0.0, 1.0], [1.0, 0.0]])
+Y = np.array([[0.0, -1j], [1j, 0.0]])
+Z = np.array([[1.0, 0.0], [0.0, -1.0]])
+P = np.array([[0.5, 0.5], [0.5, 0.5]])
+II = np.array([[1.0, 0.0], [0.0, 1.0]])
+
+# Function: Perform tensor product, output: I x I x I ....I x A x I
+# A: An operator (e.g. Pauli operators)
+# k: The position of particle
+# N : Total number of particles
+def Qtensor(A, k, N_total):
+    return np.kron(np.identity(2**(k-1)), np.kron(A, np.identity(2**(N_total-k))))
+
 class classicalSimulator(object):
     """
     I.e, just does e^{-i H t}|\psi(\alpha(t = 0))>
     """
-    def __init__(self,N,initialstate,hamiltonian):
+    def __init__(self,N,initialstate,hamiltonian,method='matrix_multiplication'):
         self.N = N
         self.initialstate = initialstate
         self.hamiltonian = hamiltonian
@@ -21,11 +35,27 @@ class classicalSimulator(object):
         self.steps = None 
         self.endtime = None 
         self.results = None
+        self.method = method
     def define_endtime(self,endtime):
         self.endtime = endtime
     def numberstep(self,steps):
         self.steps = steps
     
+    def evaluate(self):
+        if self.method == 'matrix_multiplication':
+            startingstate = self.initialstate.get_statevector()
+            self.times = np.linspace(0,self.endtime,num=self.steps)
+            H = self.hamiltonian.to_matrixform()
+            result = []
+            for t in self.times:
+                unitary = scipy.linalg.expm(-1j*t*H)
+                evolvedstate = unitary@startingstate
+                result.append(evolvedstate)
+            self.results = result
+    
+    def get_results(self):
+        return self.results
+
 
 
 
