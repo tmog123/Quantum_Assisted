@@ -13,6 +13,22 @@ class classicalSimulator(object):
     """
     I.e, just does e^{-i H t}|\psi(\alpha(t = 0))>
     """
+    def __init__(self,N,initialstate,hamiltonian):
+        self.N = N
+        self.initialstate = initialstate
+        self.hamiltonian = hamiltonian
+        self.times = None
+        self.steps = None 
+        self.endtime = None 
+        self.results = None
+    def define_endtime(self,endtime):
+        self.endtime = endtime
+    def numberstep(self,steps):
+        self.steps = steps
+    
+
+
+
     pass
 class IQAE(object):
     def __init__(self, N, D_matrix, E_matrix):
