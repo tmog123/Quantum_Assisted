@@ -53,7 +53,7 @@ class classicalSimulator(object):
                 result.append(evolvedstate)
             self.results = result
     
-    def get_results(self):
+    def get_results(self):#This returns a list of state vectors, the state vectors are the exact results for each timestep
         return self.results
 
 
