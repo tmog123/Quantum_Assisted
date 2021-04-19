@@ -65,7 +65,7 @@ def generate_arbitary_observable(N, couplings, pauli_strings):
         paulistring_objects.append(pauliobject)
     return Observable(N, paulistring_objects)
 
-def transverse_ising_model_1d(N,J,g): #Sum -JZ_iZ_i+1 + Sum gX_i
+def transverse_ising_model_1d(N,J=1,g=1): #Sum -JZ_iZ_i+1 + Sum gX_i
     """
     kh: what if N = 1?
     """

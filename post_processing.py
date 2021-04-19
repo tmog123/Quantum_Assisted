@@ -9,6 +9,7 @@ import optimizers as opt_package
 from abc import ABC, abstractmethod
 from scipy.integrate import ode 
 
+''' This is not necessary (But dont delete yet : Jonathan)
 #This is stuff to get observables for classicalSimulator
 X = np.array([[0.0, 1.0], [1.0, 0.0]])
 Y = np.array([[0.0, -1j], [1j, 0.0]])
@@ -21,7 +22,10 @@ II = np.array([[1.0, 0.0], [0.0, 1.0]])
 # k: The position of particle
 # N : Total number of particles
 def Qtensor(A, k, N_total):
-    return np.kron(np.identity(2**(k-1)), np.kron(A, np.identity(2**(N_total-k))))
+    return np.kron(np.identity(2**(k-1)), np.kron(A, np.identity(2**(N_total-k))))'''
+
+def expectation_val(Qtensormatrix,psi):
+    return psi.conj().dot(Qtensormatrix.dot(psi))
 
 class classicalSimulator(object):
     """
@@ -55,6 +59,13 @@ class classicalSimulator(object):
     
     def get_results(self):#This returns a list of state vectors, the state vectors are the exact results for each timestep
         return self.results
+
+    def get_expectations_observables(self,observablematrix):#This returns a list of the expecations values for each timestep
+        expectations = []
+        for vector in self.results:
+            expectations.append(expectation_val(observablematrix,vector))
+        return expectations
+
 
 
 class IQAE(object):
@@ -246,12 +257,12 @@ class TTQS(quantumSimulators):
 
         deltat = self.endtime/(self.steps-1)
         times=np.linspace(0,self.endtime,num=self.steps)
-        self.times = times[:-1] 
+        self.times = times[:] 
         self.G = self.E -1j*deltat*self.D
         alphas = self.startingalphas
         
 
-        for t_idx,t in enumerate(times[:-1]): #why exclude the endpoint ah
+        for t_idx,t in enumerate(times[:]): #why exclude the endpoint ah (Yeah, this was my mistake, should not be excluding endpoint: Jonathan)
             thisalpha = super().helper_getcurrentalphas(alphas)
             Wtop = np.outer(thisalpha,np.transpose(np.conjugate(thisalpha)))
             Wtop = np.matmul(self.G,Wtop)

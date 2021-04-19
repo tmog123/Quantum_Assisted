@@ -8,18 +8,18 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 #Parameters
-uptowhatK = 3
+uptowhatK = 5
 num_qubits = 3
 endtime = 8
-num_steps = 11
+num_steps = 5001
 optimizer = 'eigh'
-inv_cond = 10**(-2)
+inv_cond = 10**(-4)
 
 #create initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 123, 5)
 
 #define Hamiltonian
-hamiltonian = hcp.heisenberg_xyz_model(num_qubits)
+hamiltonian = hcp.transverse_ising_model_1d(num_qubits)
 
 #create Initial Ansatz for K = 0
 ansatz = acp.initial_ansatz(num_qubits)
@@ -95,6 +95,7 @@ result_pauli_string, result_alphas = ansatz.get_alphas()
 result_alphas = list(zip(*result_alphas))
 observable_vals = []
 
+
 for time_idx in range(len(times)):
     time = times[time_idx]
     alpha = result_alphas[time_idx] 
@@ -103,5 +104,15 @@ for time_idx in range(len(times)):
     observable_value = observable_value.real 
     observable_vals.append(observable_value)
 
+#print(times)
+
 import matplotlib.pyplot as plt 
-plt.plot(times, observable_vals)
+plt.plot(times, observable_vals,label='TTQS')
+
+#plot the result for the classical simulator
+observablematrix = observable.to_matrixform()
+classicalresult = cS_instance.get_expectations_observables(observablematrix)
+#print(classicalresult)
+plt.plot(times,classicalresult,label='Classical')
+plt.legend()
+plt.show()
