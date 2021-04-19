@@ -57,9 +57,6 @@ class classicalSimulator(object):
         return self.results
 
 
-
-
-    pass
 class IQAE(object):
     def __init__(self, N, D_matrix, E_matrix):
         """
