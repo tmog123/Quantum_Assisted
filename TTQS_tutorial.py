@@ -11,9 +11,9 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 uptowhatK = 5
 num_qubits = 3
 endtime = 8
-num_steps = 5001
+num_steps = 1001
 optimizer = 'eigh'
-inv_cond = 10**(-4)
+inv_cond = 10**(-6)
 
 #create initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 123, 5)
