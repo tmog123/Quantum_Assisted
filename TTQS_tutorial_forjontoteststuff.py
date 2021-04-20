@@ -4,6 +4,7 @@ import pauli_class_package as pcp
 import hamiltonian_class_package as hcp 
 import matrix_class_package as mcp 
 import post_processing as pp
+import plotting_package as plotp
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
@@ -30,7 +31,7 @@ finalresults.append(ansatz)
 
 #Run TTQS
 for k in range(1,uptowhatK+1):
-    print(k)
+    print('Currently at K = ' + str(k))
 
     #Generate Ansatz for this round
     ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits) #By default, there is no processing when generating next Ansatz
@@ -68,7 +69,7 @@ for k in range(1,uptowhatK+1):
 
     #Update final results with this
     finalresults.append(ansatz)
-
+#print('Length of Ansatz is ' + str(len(finalresults)))
 
 #Run Classical Calculations
 
@@ -85,35 +86,21 @@ cS_instance.evaluate()
 #Example, Final results might look like this [Ansatz_0,Ansatz_1,Ansatz_2,Ansatz_3]
 #Where Ansatz_1 is an Ansatz class, which was used for the K=1 run, and contains the final results for that run
 
-#plot the results for the final k-moment
-ansatz = finalresults[-1]
+#Observable we want to plot
 times = TTQS_instance.get_times()
 observable = hcp.generate_arbitary_observable(num_qubits, [1], ["300"]) 
-O_matrix_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, observable, "O")
-O_mat_evaluated = O_matrix_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-result_pauli_string, result_alphas = ansatz.get_alphas() 
-result_alphas = list(zip(*result_alphas))
-observable_vals = []
 
+#What Ks we want to plot
+whatK = [4,5]
 
-for time_idx in range(len(times)):
-    time = times[time_idx]
-    alpha = result_alphas[time_idx] 
-    alpha = np.array(alpha)
-    observable_value = alpha.conj().T @ O_mat_evaluated @ alpha
-    observable_value = observable_value.real 
-    observable_vals.append(observable_value)
+#Plotting results
+plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state)
 
-#print(times)
-
-import matplotlib.pyplot as plt 
-plt.plot(times, observable_vals,label='TTQS')
-
-#plot the result for the classical simulator
+#Plotting classical result
 observablematrix = observable.to_matrixform()
 classicalresult = cS_instance.get_expectations_observables(observablematrix)
-#print(classicalresult)
-plt.plot(times,classicalresult,label='Classical')
+plotp.CS_plotter_forobservable(times,classicalresult)
+
 
 #Run QAS
 p_invcond = 10**(-6)
@@ -163,26 +150,9 @@ for k in range(1,uptowhatK+1):
     #Update final results with this
     finalresults.append(ansatz)
 
-#plot the results for the final k-moment
-ansatz = finalresults[-1]
-times = QAS_instance.get_times()
-observable = hcp.generate_arbitary_observable(num_qubits, [1], ["300"]) 
-O_matrix_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, observable, "O")
-O_mat_evaluated = O_matrix_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-result_pauli_string, result_alphas = ansatz.get_alphas() 
-result_alphas = list(zip(*result_alphas))
-observable_vals = []
 
-for time_idx in range(len(times)):
-    time = times[time_idx]
-    alpha = result_alphas[time_idx] 
-    alpha = np.array(alpha)
-    observable_value = alpha.conj().T @ O_mat_evaluated @ alpha
-    observable_value = observable_value.real 
-    observable_vals.append(observable_value)
+#Plotting results
+plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'QAS',observable,initial_state)
 
-plt.plot(times, observable_vals,label='QAS')
-
-
-plt.legend()
-plt.show()
+#Show plot
+plotp.show_plot()
