@@ -1,16 +1,20 @@
 # Quantum-Assisted
 
-Things done: Created the stuff needed to do simple IQAE, TTQS
+Can look at the Jupyter notebook tutorial to see how the code is meant to work for the quantum simulators
 
-Things to do: Create the code for normal QAS, create the code needed to generate the E and D matrices for IBM quantum computer backend, create the code for plotting and analyzing (right now the code only generates the alphas), create the code needed to do the exact calculations for QAS (probably using qutip) so that we can compare the results of TTQS/QAS with the expected results.
+Things done: Created the stuff needed to do simple IQAE, TTQS, QAS
 
-To see how it might work, can see the TTQS_tutorial.
+Things to do: Create the code needed to generate the E and D matrices for IBM quantum computer backend, create the code for more advanced plotting and analyzing.
+
+QCQP: NOT IMPLEMENTED YET. So far only optimization routine that has been implemented is eigh method (diagonalization). For TTQS/IQAE, should look into implementing a QCQP method in optimizers.py
+
 
 Dependencies:
 
 1. Qiskit
 2. Numpy
 3. Scipy
+4. matplotlib
 
 ![image](https://user-images.githubusercontent.com/41319311/111591097-f44d8d00-8801-11eb-93a8-3804b6b6de88.png)
 
@@ -41,3 +45,9 @@ matrix_class_package:
 post_processing:
 
 1. The routine to solve the generalised eigenvalue problem
+
+optimizers:
+1) The optimizers
+
+plotting_package:
+1) Does the plots
