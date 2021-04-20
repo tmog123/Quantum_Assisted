@@ -34,6 +34,11 @@ def generate_arbitary_hamiltonian(N, couplings, pauli_strings):
     Then, couplings = [beta_1, beta_2, ..., beta_L]
     pauli_strings = [P_1, P_2,..,P_L]
     Here, P_i is any iterable, e.g a string "123", or a list [1,2,3]. Both these iterables represent the operator X_1 Y_2 Z_3
+    
+    EXAMPLE: If we have a 4 qubit system and I want to implement the hamiltonian H = 0.6*(XXII) + 0.4*(XZIY), the hamiltonian will be generated with this:
+    
+    generate_arbitrary_hamiltonian(4,[0.6,0.4],["1100","1302"])
+    
     """
     if len(couplings) != len(pauli_strings):
         raise(RuntimeError("Length of couplings must match length of pauli_strings"))
