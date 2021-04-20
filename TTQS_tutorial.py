@@ -33,7 +33,7 @@ for k in range(1,uptowhatK+1):
     print(k)
 
     #Generate Ansatz for this round
-    ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits)
+    ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits) #By default, there is no processing when generating next Ansatz
 
     #Set initial alphas for Ansatz
     #Only 'start_with_initial_state' has been implemented thus far. 
