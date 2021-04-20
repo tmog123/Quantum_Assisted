@@ -114,5 +114,75 @@ observablematrix = observable.to_matrixform()
 classicalresult = cS_instance.get_expectations_observables(observablematrix)
 #print(classicalresult)
 plt.plot(times,classicalresult,label='Classical')
+
+#Run QAS
+p_invcond = 10**(-6)
+optimizer = 'zvode'
+#create Initial Ansatz for K = 0
+ansatz = acp.initial_ansatz(num_qubits)
+
+#finalresults
+finalresults = []
+finalresults.append(ansatz)
+
+for k in range(1,uptowhatK+1):
+    print(k)
+
+    #Generate Ansatz for this round
+    ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits)
+
+    #Set initial alphas for Ansatz
+    acp.set_initial_alphas(num_qubits,ansatz,'start_with_initial_state')
+
+    E_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "E")
+    D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
+
+    #Here is where we should be able to specify how to evaluate the matrices. However only the exact method (classical matrix multiplication) has been implemented so far
+    E_mat_evaluated =  E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+    D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+
+    #Get starting alphas
+    startingstrings,startingalphas = ansatz.get_alphas()
+
+    #initialize QAS instance
+    QAS_instance = pp.QAS(num_qubits, D_mat_evaluated, E_mat_evaluated, startingalphas)
+    QAS_instance.numberstep(num_steps)
+    QAS_instance.define_endtime(endtime)
+    QAS_instance.define_optimizer(optimizer)
+    QAS_instance.define_p_invcond(p_invcond)
+
+    #Run QAS instance
+    QAS_instance.evaluate()
+
+    #Get results
+    result = QAS_instance.get_results()
+
+    #Update ansatz with the new alphas
+    ansatz.update_alphas(result)
+
+    #Update final results with this
+    finalresults.append(ansatz)
+
+#plot the results for the final k-moment
+ansatz = finalresults[-1]
+times = QAS_instance.get_times()
+observable = hcp.generate_arbitary_observable(num_qubits, [1], ["300"]) 
+O_matrix_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, observable, "O")
+O_mat_evaluated = O_matrix_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+result_pauli_string, result_alphas = ansatz.get_alphas() 
+result_alphas = list(zip(*result_alphas))
+observable_vals = []
+
+for time_idx in range(len(times)):
+    time = times[time_idx]
+    alpha = result_alphas[time_idx] 
+    alpha = np.array(alpha)
+    observable_value = alpha.conj().T @ O_mat_evaluated @ alpha
+    observable_value = observable_value.real 
+    observable_vals.append(observable_value)
+
+plt.plot(times, observable_vals,label='QAS')
+
+
 plt.legend()
 plt.show()

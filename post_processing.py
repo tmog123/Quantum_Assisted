@@ -195,7 +195,7 @@ class QAS(quantumSimulators):
     def __init__(self, N, D_matrix, E_matrix, startingalphas):
         super().__init__(N, D_matrix, E_matrix, startingalphas)
         self.optimizer = None
-        self.p_invcond = None #threshold for pseudo-inverse
+        self.p_invcond = 10**(-6) #Default threshold for pseudo-inverse
         self.times = None
 
     def adot_vector(self, t, avec):
@@ -216,7 +216,7 @@ class QAS(quantumSimulators):
         self.times = times
         alphas = self.startingalphas
         initial_alpha = super().helper_getcurrentalphas(alphas)
-        solver = ode(self.adot_vector).set_integrator("zvode")
+        solver = ode(self.adot_vector).set_integrator(self.optimizer)
         solver.set_initial_value(initial_alpha, 0)
 
         if self.optimizer == "zvode":
@@ -240,7 +240,7 @@ class TTQS(quantumSimulators):
     def __init__(self, N, D_matrix, E_matrix, startingalphas):
         super().__init__(N, D_matrix, E_matrix, startingalphas)
         self.optimizer = None
-        self.invcond = 10**(-6)
+        self.invcond = 10**(-6) #Default
         self.times = None 
 
     def define_optimizer(self,optimizer):
