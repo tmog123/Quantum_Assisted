@@ -1,6 +1,8 @@
 # Quantum-Assisted
 
-Can look at the Jupyter notebook tutorial to see how the code is meant to work for the quantum simulators
+Refer to the Jupyter notebook tutorial to see how the code is meant to work for the quantum simulators (name is: Tutorial on how to use (Start here))
+
+
 
 Things done: Created the stuff needed to do simple IQAE, TTQS, QAS
 
