@@ -48,9 +48,11 @@ for k in range(1,uptowhatK+1):
 
     #Here is where we should be able to specify how to evaluate the matrices. However only the exact method (classical matrix multiplication) has been implemented so far
     E_mat_evaluated =  E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+    print(E_mat_evaluated)
     D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-    #E_mat_evaluated =  E_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state)
-    #D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state)
+    E_mat_evaluated =  E_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state,shots=20000)
+    print(E_mat_evaluated)
+    D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state,shots=20000)
 
     #Get starting alphas
     startingstrings,startingalphas = ansatz.get_alphas()
@@ -129,10 +131,10 @@ for k in range(1,uptowhatK+1):
     D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
 
     #Here is where we should be able to specify how to evaluate the matrices. However only the exact method (classical matrix multiplication) has been implemented so far
-    E_mat_evaluated =  E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-    D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-    #E_mat_evaluated =  E_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state)
-    #D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state)
+    #E_mat_evaluated =  E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+    #D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+    E_mat_evaluated =  E_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state)
+    D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state)
 
 
     #Get starting alphas
