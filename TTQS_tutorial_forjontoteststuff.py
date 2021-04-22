@@ -155,4 +155,5 @@ for k in range(1,uptowhatK+1):
 plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'QAS',observable,initial_state)
 
 #Show plot
-plotp.show_plot()
+#plotp.show_plot()
+plotp.print_plot("Jonstufftesting/plot.png")

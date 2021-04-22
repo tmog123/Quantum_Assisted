@@ -35,4 +35,7 @@ def show_plot():
     plt.legend()
     plt.show()
 
+def print_plot(location):
+    plt.legend()
+    plt.savefig(location)
 
