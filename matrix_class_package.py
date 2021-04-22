@@ -2,7 +2,7 @@ import numpy as np
 from ansatz_class_package import Ansatz
 from ansatz_class_package import Initialstate
 import pauli_class_package as pcp
-
+import Qiskit_helperfunctions_Jon as Qhf
 
 class unevaluatedmatrix(object):
     def __init__(self,N,ansatz,H_or_O,matrixtype):
@@ -54,7 +54,6 @@ class unevaluatedmatrix(object):
         return matrix
     def evaluate_matrix_with_qiskit_circuits(self,initial_state_object,sim='noiseless',shots=8192,whichcomputer=None,noisebackend=None):
         print('Evaluating matrix with Qiskit Circuits')
-        import Qiskit_helperfunctions_Jon as Qhf
         #initial_qiskitcircuit = initial_state_object.get_qiskit_circuit()
         size = self.size
         matrix = np.empty([size,size], dtype=np.complex128)

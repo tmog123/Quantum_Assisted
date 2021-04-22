@@ -5,7 +5,7 @@ Functions to combine pauli strings, represent pauli strings
 
 '''
 import numpy as np
-
+from qiskit import QuantumCircuit
 #Pauli matrices
 identity = np.array([(1,0),(0,1)],dtype=np.complex128)
 sigma_x = np.array([(0,1),(1,0)],dtype=np.complex128)
@@ -57,12 +57,15 @@ class paulistring(object):
     def get_N(self):
         return self.N
     def get_qiskit_circuit(self):
-        from qiskit import QuantumCircuit
+        index_string = self.string
         qc = QuantumCircuit(self.N)
+        #print(index_string)
         for i in range(self.N):
-            if self.string[i]==1:
+            if int(index_string[i])==1:
+                #print('H '+str(i))
                 qc.h(i)
-            if self.string[i]==2:
+            if int(index_string[i])==2:
+                #print('sdg + H '+str(i))
                 qc.sdg(i)
                 qc.h(i)
         return qc
