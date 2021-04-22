@@ -34,6 +34,11 @@ class paulistring(object):
         vals = [self.N, self.coefficient, stringified]
         keys = sorted(self.__dict__.items())
         return hash(tuple(zip(keys,vals)))
+    def get_string_for_hash(self):
+        result = ''
+        for i in self.string:
+            result = result + str(i)
+        return result
     def __str__(self):
         return self.__repr__()
     def get_complex_conjugate(self):
@@ -49,6 +54,18 @@ class paulistring(object):
         for j in index_string[1:]:
             matrix = np.kron(matrix, sigmas[int(j)])
         return coeff * matrix
+    def get_N(self):
+        return self.N
+    def get_qiskit_circuit(self):
+        from qiskit import QuantumCircuit
+        qc = QuantumCircuit(self.N)
+        for i in range(self.N):
+            if self.string[i]==1:
+                qc.h(i)
+            if self.string[i]==2:
+                qc.sdg(i)
+                qc.h(i)
+        return qc
 
 def create_identity(N):
     return paulistring(N,N*[0],1)

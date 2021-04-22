@@ -95,6 +95,13 @@ class Initialstate(object):
             statevector_backend = Aer.get_backend('statevector_simulator')
             state = execute(self.qiskit_circuit, statevector_backend).result().get_statevector()
             return state
+    
+    def get_qiskit_circuit(self):
+        if self.qiskit_circuit == None:
+            #print('Method chosen has not been implemented in circuit fashion. Check ansatz_class_package for details')
+            raise(RuntimeError('Method chosen has not been implemented in circuit fashion. Check ansatz_class_package for details'))
+        else:
+            return self.qiskit_circuit
 
 
 def initial_ansatz(N):

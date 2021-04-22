@@ -9,15 +9,17 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 #Parameters
-uptowhatK = 5
-num_qubits = 3
+uptowhatK = 2
+num_qubits = 2
 endtime = 8
 num_steps = 1001
 optimizer = 'eigh'
 inv_cond = 10**(-6)
+numberoflayers = 3
+randomseedforinitialstate = 123
 
 #create initial state
-initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 123, 5)
+initial_state = acp.Initialstate(num_qubits, "efficient_SU2", randomseedforinitialstate, numberoflayers)
 
 #define Hamiltonian
 hamiltonian = hcp.transverse_ising_model_1d(num_qubits)
@@ -47,6 +49,8 @@ for k in range(1,uptowhatK+1):
     #Here is where we should be able to specify how to evaluate the matrices. However only the exact method (classical matrix multiplication) has been implemented so far
     E_mat_evaluated =  E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
     D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+    #E_mat_evaluated =  E_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state)
+    #D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state)
 
     #Get starting alphas
     startingstrings,startingalphas = ansatz.get_alphas()
@@ -88,10 +92,10 @@ cS_instance.evaluate()
 
 #Observable we want to plot
 times = TTQS_instance.get_times()
-observable = hcp.generate_arbitary_observable(num_qubits, [1], ["300"]) 
+observable = hcp.generate_arbitary_observable(num_qubits, [1], ["30"]) 
 
 #What Ks we want to plot
-whatK = [4,5]
+whatK = [1,2]
 
 #Plotting results
 plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state)
@@ -103,7 +107,7 @@ plotp.CS_plotter_forobservable(times,classicalresult)
 
 
 #Run QAS
-p_invcond = 10**(-6)
+p_invcond = 10**(-3)
 optimizer = 'zvode'
 #create Initial Ansatz for K = 0
 ansatz = acp.initial_ansatz(num_qubits)
@@ -127,6 +131,9 @@ for k in range(1,uptowhatK+1):
     #Here is where we should be able to specify how to evaluate the matrices. However only the exact method (classical matrix multiplication) has been implemented so far
     E_mat_evaluated =  E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
     D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+    #E_mat_evaluated =  E_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state)
+    #D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state)
+
 
     #Get starting alphas
     startingstrings,startingalphas = ansatz.get_alphas()
