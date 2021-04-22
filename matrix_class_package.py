@@ -62,8 +62,9 @@ class unevaluatedmatrix(object):
             for j in range(size):
                 paulistrings = self.dict_of_uneval_matrix_elems[(i,j)]
                 #by construction, paulistrings has at least 1 element
+                temporary = 0
                 for k in range(len(paulistrings)):
-                    temporary = 0
+                
                     #thispaulistring = paulistrings[k].get_string_for_hash()
                     coeff = paulistrings[k].return_coefficient()
 

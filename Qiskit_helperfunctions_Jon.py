@@ -29,7 +29,7 @@ def evaluate_circuit(num_qubits,initial_state_object,paulistring_object,sim,shot
     for key in newcountdict.keys():
         subresult = 1
         for i in range(paulistring_object.get_N()):
-            if paulistring_object.return_string()[i] == 0:
+            if int(paulistring_object.return_string()[i]) == 0:
                 subresult = subresult
             else:
                 if key[i] == '0':
