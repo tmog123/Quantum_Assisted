@@ -7,6 +7,8 @@ def QS_plotter_forobservable(num_qubits,ansatzlist,times,whatKs,qstype,observabl
         name = 'TTQS'
     if qstype == 'QAS':
         name = 'QAS'
+    if qstype == 'CQFF':
+        name = 'CQFF'
     for i in range(len(ansatzlist)):
         if i in whatKs:
             print('Preparing observable for plotting for K = ' + str(i))
@@ -28,6 +30,7 @@ def QS_plotter_forobservable(num_qubits,ansatzlist,times,whatKs,qstype,observabl
                 observable_vals.append(observable_value)
             lab = name + ' K=' + str(i)
             plt.plot(times, observable_vals,label=lab)
+
 def CS_plotter_forobservable(times,classicalresult):
     plt.plot(times,classicalresult,label='Classical')
 
