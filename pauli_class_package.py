@@ -21,6 +21,7 @@ class paulistring(object):
         self.N = N
         self.coefficient = coefficient
         self.string = string
+        self.string_str_form = None
     def return_string(self):
         return self.string
     def return_coefficient(self):
@@ -35,10 +36,14 @@ class paulistring(object):
         keys = sorted(self.__dict__.items())
         return hash(tuple(zip(keys,vals)))
     def get_string_for_hash(self):
-        result = ''
-        for i in self.string:
-            result = result + str(i)
-        return result
+        if self.string_str_form:
+            return self.string_str_form
+        else:
+            result = ''
+            for i in self.string:
+                result = result + str(i)
+            self.string_str_form = result
+            return result
     def __str__(self):
         return self.__repr__()
     def get_complex_conjugate(self):

@@ -52,6 +52,39 @@ class unevaluatedmatrix(object):
                     temp_matrix += paulistrings[k].get_matrixform()
                 matrix[(i,j)] = initial_statevector.conj().T @ temp_matrix @ initial_statevector
         return matrix
+    
+    def return_set_of_pstrings_to_evaluate(self):
+        """
+        Takes the matrix and returns a list of the pstrings to be evaluated. This is a helper function to help prevent making duplicate measurements on the quantum computer.
+        """
+        to_return = set()
+        for i in range(self.size):
+            for j in range(self.size):
+                p_string_str_forms = set([x.get_string_for_hash() for x in self.dict_of_uneval_matrix_elems[(i,j)]])
+                to_return = to_return.union(p_string_str_forms)
+        return to_return
+    
+    def substitute_evaluated_pstring_results(self, eval_results_dict):
+        """
+        Takes in a dictionary, with the key value pairs being:
+        key -- tensored-Pauli operator P
+        value -- <psi|P|psi>, evaluated either by classical means or by the quantum computer
+
+        Then, returns an evaluated matrix
+        """
+        size = self.size
+        matrix = np.empty([size,size], dtype=np.complex128)
+        for i in range(size):
+            for j in range(size):
+                paulistrings = self.dict_of_uneval_matrix_elems[(i,j)]
+                #by construction, paulistrings has at least 1 element
+                value = 0 + 0j
+                for p in paulistrings:
+                    result = eval_results_dict[p.get_string_for_hash()]
+                    value += result * p.return_coefficient()
+                matrix[(i,j)] = value
+        return matrix
+
     def evaluate_matrix_with_qiskit_circuits(self,initial_state_object,sim='noiseless',shots=8192,whichcomputer=None,noisebackend=None):
         print('Evaluating matrix with Qiskit Circuits')
         #initial_qiskitcircuit = initial_state_object.get_qiskit_circuit()
@@ -81,4 +114,12 @@ class unevaluatedmatrix(object):
                     #    pastresultsevaluated[thispaulistring] = a
                 matrix[(i,j)] = temporary
         return matrix
+
+def evaluate_pstrings_strings_classicaly(set_of_pstrings_strforms, initial_statevector):
+    ans = dict()
+    for pstring_strform in set_of_pstrings_strforms:
+        pstring = pcp.paulistring(len(pstring_strform), pstring_strform, 1)
+        pstring_matform = pstring.get_matrixform() 
+        ans[pstring_strform] = initial_statevector.conj().T @ pstring_matform @ initial_statevector
+    return ans
 
