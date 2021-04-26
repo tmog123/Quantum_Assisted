@@ -62,6 +62,9 @@ class paulistring(object):
     def get_N(self):
         return self.N
     def get_qiskit_circuit(self):
+        """
+        Creates the circuit for measurement
+        """
         index_string = self.string
         qc = QuantumCircuit(self.N)
         #print(index_string)

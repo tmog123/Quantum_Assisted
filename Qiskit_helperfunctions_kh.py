@@ -16,23 +16,45 @@ from qiskit.ignis.mitigation.measurement import CompleteMeasFitter, complete_mea
 from qiskit.aqua.operators.state_fns import CircuitStateFn
 from qiskit.aqua.operators import PauliExpectation, CircuitSampler, StateFn
 
+import ansatz_class_package as acp
+import pauli_class_package as pcp
+import numpy as np
+from copy import deepcopy
 
 #load IBMQ account
 # This will throw an erorr if IMBQ account is not saved, consult qiskit docs for help
 IBMQ.load_account() 
 
-def measurement_error_mitigator(systemsize, sim, qc = "ibmq_rome",
+
+def choose_quantum_computer(hub, group, project, quantum_com):
+    """
+    Returns a dictionary, where the key is what type of simulation ("noisy_qasm", "noiseless_qasm", "real"), and the value are the objects required for that particular simulation
+    """
+    sims = ["noisy_qasm", "real", "noiseless_qasm"]
+    dicto = dict()
+    for sim in sims:
+        if sim == "noisy_qasm":
+            backend = Aer.get_backend('qasm_simulator')
+            provider = IBMQ.get_provider(hub = hub, group = group, project = project)
+            noisebackend = provider.get_backend(quantum_com)
+            noisebackend = provider.get_backend(quantum_com)
+            coupling_map = noisebackend.configuration().coupling_map 
+            # noise_model = NoiseModel.from_backend(noisebackend,gate_error=False,readout_error=False,thermal_relaxation=True)
+            noise_model = NoiseModel.from_backend(noisebackend)
+            dicto[sim] = (backend, coupling_map, noise_model)
+        elif sim == "real":
+            provider = IBMQ.get_provider(hub = hub, group = group, project = project)
+            backend = provider.get_backend(quantum_com)
+            dicto[sim] = backend
+        elif sim == "noiseless_qasm":
+            backend = Aer.get_backend('qasm_simulator')
+            dicto[sim] = backend
+    return dicto
+
+def measurement_error_mitigator(systemsize, sim, quantum_com_choice_results,
     shots = 8192):
-    if sim == "noisy":
-        backend = Aer.get_backend('qasm_simulator')
-        provider = IBMQ.get_provider(hub='ibm-q-nus',group='default',
-        project='reservations') #Change this line accordingly
-        noisebackend = provider.get_backend(qc)
-        print("Noise provider backend: ", noisebackend)
-        device = noisebackend
-        coupling_map = device.configuration().coupling_map
-        #noise_model = NoiseModel.from_backend(device,gate_error=False,readout_error=False,thermal_relaxation=True)
-        noise_model = NoiseModel.from_backend(device)
+    if sim == "noisy_qasm":
+        backend, coupling_map, noise_model = quantum_com_choice_results[sim]
 
         qr = QuantumRegister(systemsize)
         meas_calibs, state_labels = complete_meas_cal(qr=qr, circlabel='mcal')
@@ -41,9 +63,10 @@ def measurement_error_mitigator(systemsize, sim, qc = "ibmq_rome",
         cal_results = job.result()
         meas_fitter = CompleteMeasFitter(cal_results, state_labels, circlabel='mcal')
         meas_filter = meas_fitter.filter
+        print("Provider backend: ", backend)
+        return meas_filter
     elif sim == "real":
-        provider = IBMQ.get_provider(hub='ibm-q-nus', group='default', project='reservations')
-        backend = provider.get_backend("ibmq_rome")
+        backend = quantum_com_choice_results[sim]
 
         qr = QuantumRegister(systemsize)
         meas_calibs, state_labels = complete_meas_cal(qr=qr, circlabel='mcal')
@@ -53,9 +76,103 @@ def measurement_error_mitigator(systemsize, sim, qc = "ibmq_rome",
         cal_results = job.result()
         meas_fitter = CompleteMeasFitter(cal_results, state_labels, circlabel='mcal')
         meas_filter = meas_fitter.filter
-    print("Provider backend: ", backend)
-    return meas_filter
+        print("Provider backend: ", backend)
+        return meas_filter
 
 
+def make_qc_to_measure_pstring(initial_state_object, pauli_string_strform):
+    """
+    This is a helper function, won't be called directly
+    """
+    qc = deepcopy(initial_state_object.get_qiskit_circuit()) #we need to return a copy of the circuit, cause .get_qiskit_circuit() returns something that is mutable.
+    pauli_string_strform = pauli_string_strform[::-1] #cause qiskit reads stuff in reverse 
+    pauli_string = pauli_string_strform
+    for qubit_index in range(len(pauli_string)):
+        qubit = pauli_string[qubit_index]
+        if qubit == "0":
+            qc.id(qubit_index)
+        elif qubit == "1":
+            qc.h(qubit_index)
+        elif qubit == "2":
+            qc.sdg(qubit_index)
+            qc.h(qubit_index)
+        elif qubit == "3":
+            qc.id(qubit_index)
+    qc.measure_all()
+    return qc
 
-# Still doing!
+def make_expectation_calculator(initial_state_object, sim, quantum_com_choice_results, num_shots = 8192, meas_error_mitigate = False, meas_filter = None):
+    """
+    This upper function stores the previously calculated expectation values, so we don't do any re-calculation.
+
+    sim can be either noisy_qasm, noiseless_qasm, or real.
+    """
+    if sim == "noisy_qasm" or sim == "real":
+        if meas_error_mitigate == True and meas_filter == None:
+            raise(RuntimeError("no meas_filter specified, so no measurement error mitigation can be done!"))
+    if sim == "noisy_qasm":
+        backend, coupling_map, noise_model = quantum_com_choice_results[sim]
+    elif sim == "real" or sim == "noiseless_qasm":
+        backend = quantum_com_choice_results[sim]
+    previous_expectation_vals = dict() 
+
+    def expectation_calculator(pauli_string_object):
+        pauli_string_strform = pauli_string_object.get_string_for_hash()
+        pauli_string = pauli_string_strform
+        if pauli_string in previous_expectation_vals.keys():
+            return previous_expectation_vals[pauli_string]
+        qc = make_qc_to_measure_pstring(initial_state_object, pauli_string)
+
+        if sim == "noisy_qasm":
+            results = execute(qc, backend=backend, shots = num_shots, coupling_map = coupling_map, noise_model = noise_model).result()
+            if meas_error_mitigate == True:
+                results = meas_filter.apply(results)
+            counts = results.get_counts()
+        elif sim == "noiseless_qasm":
+            counts = execute(qc, backend=backend, shots = num_shots).result().get_counts() 
+        elif sim == "real":
+            job = execute(qc, backend = backend, shots = num_shots)
+            job_monitor(job, interval = 2)
+            results = job.result()
+            if meas_error_mitigate == True:
+                results = meas_filter.apply(results)
+            counts = results.get_counts() 
+        print("Finished shots")
+
+        frequency_dict = dict()
+        total_num_of_counts = sum(counts.values())
+        for key,value in counts.items():
+            frequency_dict[key] = value/total_num_of_counts
+        ans = 0
+        #since we did measurement in Z basis, we must change our pauli_string.
+        #Note that when we did "make qc to measure p_string", we have already
+        #reversed the p_string there.  for the "counts" object, note that the
+        #bitstrings are in qiskit order, i.e the rightmost bit is the 1st
+        #qubit.
+        new_pauli_string = []
+        for char in pauli_string:
+            new_pauli_string.append("1") if char != "0" else new_pauli_string.append(char)
+        new_pauli_string = "".join(new_pauli_string)
+        for key, value in frequency_dict.items():
+            # print(key)
+            coeff = np.base_repr(int(key,2) & int(new_pauli_string, 2), base = 2).count("1") #bitwise and
+            ans += (-1)**coeff * value
+        previous_expectation_vals[pauli_string] = ans
+        return ans
+    return expectation_calculator
+
+
+#%% Testing
+if __name__ == "__main__":
+    num_qubits = 3
+    test_pstring = "123"
+    quantum_computer = "ibmq_rome"
+    num_shots = 8192
+    sim = "noisy_qasm"
+
+    quantum_computer_choice_results = choose_quantum_computer("ibm-q-nus", group = "default", project = "reservations", quantum_com = quantum_computer)
+    meas_filter = measurement_error_mitigator(num_qubits, sim, quantum_computer_choice_results, shots = num_shots)
+    initial_state_object = acp.Initialstate(num_qubits, "efficient_SU2", 123, 2)
+    expectation_calculator = make_expectation_calculator(initial_state_object, sim, quantum_computer_choice_results, meas_error_mitigate = True, meas_filter = meas_filter)
+    pauli_string_object = pcp.paulistring(num_qubits, test_pstring, 1)
+    print(expectation_calculator(pauli_string_object))

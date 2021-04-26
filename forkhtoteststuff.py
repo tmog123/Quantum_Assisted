@@ -6,6 +6,7 @@ import matrix_class_package as mcp
 import post_processing as pp
 import plotting_package as plotp
 import warnings
+import Qiskit_helperfunctions_kh as qhf_kh
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 #Parameters
@@ -22,7 +23,8 @@ randomseedforinitialstate = 123
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", randomseedforinitialstate, numberoflayers)
 
 #define Hamiltonian
-hamiltonian = hcp.transverse_ising_model_1d(num_qubits)
+# hamiltonian = hcp.transverse_ising_model_1d(num_qubits)
+hamiltonian = hcp.heisenberg_xyz_model(num_qubits)
 
 #create Initial Ansatz for K = 0
 ansatz = acp.initial_ansatz(num_qubits)
@@ -61,10 +63,30 @@ D_mat_uneval_pstring_strforms = D_mat_uneval.return_set_of_pstrings_to_evaluate(
 all_uneval_pstring_strforms = E_mat_uneval_pstring_strforms.union(D_mat_uneval_pstring_strforms)
 
 #Here, we evaluate all the uneval_pstrings classically
-initial_statevector = initial_state.get_statevector()
-all_evaluated_pstring_strform_results = mcp.evaluate_pstrings_strings_classicaly(all_uneval_pstring_strforms, initial_statevector)
+# initial_statevector = initial_state.get_statevector()
+# all_evaluated_pstring_strform_results = mcp.evaluate_pstrings_strings_classicaly(all_uneval_pstring_strforms, initial_statevector)
 
 #Here, we do so in a quantum manner.
+num_qubits = num_qubits
+num_shots = 8192
+quantum_computer = "ibmq_rome"
+# sim = "noisy_qasm"
+# sim = "noiseless_qasm"
+sim = "real"
+
+quantum_computer_choice_results = qhf_kh.choose_quantum_computer(hub = "ibm-q-nus", group = "default", project = "reservations", quantum_com = quantum_computer)
+initial_state_object = initial_state
+
+meas_filter = qhf_kh.measurement_error_mitigator(num_qubits, sim, quantum_computer_choice_results, shots = num_shots)
+expectation_calculator = qhf_kh.make_expectation_calculator(initial_state_object, sim, quantum_computer_choice_results, meas_error_mitigate=True, meas_filter=meas_filter)
+
+# expectation_calculator = qhf_kh.make_expectation_calculator(initial_state_object, sim, quantum_computer_choice_results, meas_error_mitigate=False)
+
+all_evaluated_pstring_strform_results = dict() 
+for pstring_strform in all_uneval_pstring_strforms:
+    print("pstring_strform is", pstring_strform)
+    pauli_string_object = pcp.paulistring(num_qubits, pstring_strform, 1)
+    all_evaluated_pstring_strform_results[pstring_strform] = expectation_calculator(pauli_string_object)
 
 
 #Run TTQS
