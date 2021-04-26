@@ -61,22 +61,24 @@ class paulistring(object):
         return coeff * matrix
     def get_N(self):
         return self.N
-    def get_qiskit_circuit(self):
-        """
-        Creates the circuit for measurement
-        """
-        index_string = self.string
-        qc = QuantumCircuit(self.N)
-        #print(index_string)
-        for i in range(self.N):
-            if int(index_string[i])==1:
-                #print('H '+str(i))
-                qc.h(i)
-            if int(index_string[i])==2:
-                #print('sdg + H '+str(i))
-                qc.sdg(i)
-                qc.h(i)
-        return qc
+
+    #Don't need this anymore
+    # def get_qiskit_circuit(self):
+    #     """
+    #     Creates the circuit for measurement
+    #     """
+    #     index_string = self.string
+    #     qc = QuantumCircuit(self.N)
+    #     #print(index_string)
+    #     for i in range(self.N):
+    #         if int(index_string[i])==1:
+    #             #print('H '+str(i))
+    #             qc.h(i)
+    #         if int(index_string[i])==2:
+    #             #print('sdg + H '+str(i))
+    #             qc.sdg(i)
+    #             qc.h(i)
+    #     return qc
 
 def create_identity(N):
     return paulistring(N,N*[0],1)

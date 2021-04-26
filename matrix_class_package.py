@@ -2,7 +2,7 @@ import numpy as np
 from ansatz_class_package import Ansatz
 from ansatz_class_package import Initialstate
 import pauli_class_package as pcp
-import Qiskit_helperfunctions_Jon as Qhf
+import Qiskit_helperfunctions_kh as Qhf
 
 class unevaluatedmatrix(object):
     def __init__(self,N,ansatz,H_or_O,matrixtype):
@@ -85,35 +85,57 @@ class unevaluatedmatrix(object):
                 matrix[(i,j)] = value
         return matrix
 
-    def evaluate_matrix_with_qiskit_circuits(self,initial_state_object,sim='noiseless',shots=8192,whichcomputer=None,noisebackend=None):
+    def evaluate_matrix_with_qiskit_circuits(self, expectation_calculator_obj):
+        """
+        expectation_calculator_obj is an object that is found in the Qiskit_helperfunctions file
+        """
         print('Evaluating matrix with Qiskit Circuits')
-        #initial_qiskitcircuit = initial_state_object.get_qiskit_circuit()
+        expectation_calculator = expectation_calculator_obj
         size = self.size
         matrix = np.empty([size,size], dtype=np.complex128)
-        #pastresultsevaluated = {}
         for i in range(size):
             for j in range(size):
+                total_expectation_val = 0 + 0j
                 paulistrings = self.dict_of_uneval_matrix_elems[(i,j)]
-                #by construction, paulistrings has at least 1 element
-                temporary = 0
-                for k in range(len(paulistrings)):
-                
-                    #thispaulistring = paulistrings[k].get_string_for_hash()
-                    coeff = paulistrings[k].return_coefficient()
-
-                    paulistring_object = paulistrings[k]
-                    #print(paulistring_object.get_string_for_hash())
-                    a = Qhf.evaluate_circuit(self.N,initial_state_object,paulistring_object,sim,shots=shots,whichrealcomputer=whichcomputer,noisebackend=noisebackend)
-                    temporary = temporary + a*coeff
-                    #if thispaulistring in pastresultsevaluated.keys():
-                    #    temporary = temporary + pastresultsevaluated[thispaulistring]*coeff
-                    #else:
-                    #    paulistring_object = paulistrings[k]
-                    #    a = Qhf.evaluate_circuit(self.N,initial_state_object,paulistring_object,sim,shots)
-                    #    temporary = temporary + a*coeff
-                    #    pastresultsevaluated[thispaulistring] = a
-                matrix[(i,j)] = temporary
+                for pstring_obj in paulistrings:
+                    expectation_value = expectation_calculator(pstring_obj)
+                    # if i == 2 and j == 1:
+                    #     print("I'm here!")
+                    #     print(paulistrings)
+                    #     print(expectation_value)
+                    total_expectation_val += expectation_value
+                matrix[(i,j)] = total_expectation_val
         return matrix
+
+    # def evaluate_matrix_with_qiskit_circuits(self,initial_state_object,sim='noiseless',shots=8192,whichcomputer=None,noisebackend=None):
+    #     print('Evaluating matrix with Qiskit Circuits')
+    #     #initial_qiskitcircuit = initial_state_object.get_qiskit_circuit()
+    #     size = self.size
+    #     matrix = np.empty([size,size], dtype=np.complex128)
+    #     #pastresultsevaluated = {}
+    #     for i in range(size):
+    #         for j in range(size):
+    #             paulistrings = self.dict_of_uneval_matrix_elems[(i,j)]
+    #             #by construction, paulistrings has at least 1 element
+    #             temporary = 0
+    #             for k in range(len(paulistrings)):
+                
+    #                 #thispaulistring = paulistrings[k].get_string_for_hash()
+    #                 coeff = paulistrings[k].return_coefficient()
+
+    #                 paulistring_object = paulistrings[k]
+    #                 #print(paulistring_object.get_string_for_hash())
+    #                 a = Qhf.evaluate_circuit(self.N,initial_state_object,paulistring_object,sim,shots=shots,whichrealcomputer=whichcomputer,noisebackend=noisebackend)
+    #                 temporary = temporary + a*coeff
+    #                 #if thispaulistring in pastresultsevaluated.keys():
+    #                 #    temporary = temporary + pastresultsevaluated[thispaulistring]*coeff
+    #                 #else:
+    #                 #    paulistring_object = paulistrings[k]
+    #                 #    a = Qhf.evaluate_circuit(self.N,initial_state_object,paulistring_object,sim,shots)
+    #                 #    temporary = temporary + a*coeff
+    #                 #    pastresultsevaluated[thispaulistring] = a
+    #             matrix[(i,j)] = temporary
+    #     return matrix
 
 def evaluate_pstrings_strings_classicaly(set_of_pstrings_strforms, initial_statevector):
     ans = dict()
