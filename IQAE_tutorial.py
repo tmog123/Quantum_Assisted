@@ -5,7 +5,9 @@ import hamiltonian_class_package as hcp
 import matrix_class_package as mcp 
 import post_processing as pp
 
-#Parameters hi
+#The IQAE algorithm is found in https://arxiv.org/abs/2010.05638
+
+#Parameters
 uptowhatK = 3
 num_qubits = 4
 optimizer = 'eigh'
