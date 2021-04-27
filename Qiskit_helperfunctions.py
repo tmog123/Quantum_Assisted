@@ -103,7 +103,7 @@ def make_qc_to_measure_pstring(initial_state_object, pauli_string_strform):
 
 def make_expectation_calculator(initial_state_object, sim, quantum_com_choice_results, num_shots = 8192, meas_error_mitigate = False, meas_filter = None):
     """
-    This upper function stores the previously calculated expectation values, so we don't do any re-calculation.
+    This upper function has a dictionary that stores the previously calculated expectation values, so we don't do any re-calculation.
 
     sim can be either noisy_qasm, noiseless_qasm, or real.
     """
@@ -114,15 +114,15 @@ def make_expectation_calculator(initial_state_object, sim, quantum_com_choice_re
         backend, coupling_map, noise_model = quantum_com_choice_results[sim]
     elif sim == "real" or sim == "noiseless_qasm":
         backend = quantum_com_choice_results[sim]
-    # previous_expectation_vals = dict() 
+    previous_expectation_vals = dict() 
 
     def expectation_calculator(pauli_string_object):
         pauli_string_strform = pauli_string_object.get_string_for_hash()
         pauli_string_coeff = pauli_string_object.return_coefficient()
         # print(pauli_string_coeff)
         pauli_string = pauli_string_strform
-        # if pauli_string in previous_expectation_vals.keys():
-        #     return previous_expectation_vals[pauli_string]
+        if pauli_string in previous_expectation_vals.keys():
+            return pauli_string_coeff * previous_expectation_vals[pauli_string]
         qc = make_qc_to_measure_pstring(initial_state_object, pauli_string)
 
         if sim == "noisy_qasm":
@@ -159,41 +159,42 @@ def make_expectation_calculator(initial_state_object, sim, quantum_com_choice_re
             # print(key)
             coeff = np.base_repr(int(key,2) & int(new_pauli_string, 2), base = 2).count("1") #bitwise and
             ans += (-1)**coeff * value
-        # previous_expectation_vals[pauli_string] = ans
+        # print(pauli_string, ans)
+        previous_expectation_vals[pauli_string] = ans
         return ans * pauli_string_coeff
     return expectation_calculator
 
 
 #%% Testing
-if __name__ == "__main__":
-    num_qubits = 2
-    quantum_computer = "ibmq_rome"
+# if __name__ == "__main__":
+#     num_qubits = 2
+#     quantum_computer = "ibmq_rome"
 
-    sim = "noisy_qasm"
-    num_shots = 8192
+#     sim = "noisy_qasm"
+#     num_shots = 8192
 
-    # sim = "noiseless_qasm"
-    # num_shots = 100000
+#     # sim = "noiseless_qasm"
+#     # num_shots = 100000
 
-    test_pstring = "23"
-    pauli_string_object = pcp.paulistring(num_qubits, test_pstring, -1j)
-    initial_state_object = acp.Initialstate(num_qubits, "efficient_SU2", 123, 3)
+#     test_pstring = "23"
+#     pauli_string_object = pcp.paulistring(num_qubits, test_pstring, -1j)
+#     initial_state_object = acp.Initialstate(num_qubits, "efficient_SU2", 123, 3)
 
-    initial_statevector = initial_state_object.get_statevector()
-    print("the matrix multiplication result is",initial_statevector.conj().T @ pauli_string_object.get_matrixform() @ initial_statevector)
-
-
-    quantum_computer_choice_results = choose_quantum_computer("ibm-q-nus", group = "default", project = "reservations", quantum_com = quantum_computer)
-
-    #Noisy QASM
-    meas_filter = measurement_error_mitigator(num_qubits, sim, quantum_computer_choice_results, shots = num_shots)
-    expectation_calculator = make_expectation_calculator(initial_state_object, sim, quantum_computer_choice_results, meas_error_mitigate = True, meas_filter = meas_filter)
-
-    #Noiseless QASM
-    # expectation_calculator = make_expectation_calculator(initial_state_object, sim, quantum_computer_choice_results, meas_error_mitigate = False)
+#     initial_statevector = initial_state_object.get_statevector()
+#     print("the matrix multiplication result is",initial_statevector.conj().T @ pauli_string_object.get_matrixform() @ initial_statevector)
 
 
-    print("the quantum result is",expectation_calculator(pauli_string_object))
+#     quantum_computer_choice_results = choose_quantum_computer("ibm-q-nus", group = "default", project = "reservations", quantum_com = quantum_computer)
+
+#     #Noisy QASM
+#     meas_filter = measurement_error_mitigator(num_qubits, sim, quantum_computer_choice_results, shots = num_shots)
+#     expectation_calculator = make_expectation_calculator(initial_state_object, sim, quantum_computer_choice_results, meas_error_mitigate = True, meas_filter = meas_filter)
+
+#     #Noiseless QASM
+#     # expectation_calculator = make_expectation_calculator(initial_state_object, sim, quantum_computer_choice_results, meas_error_mitigate = False)
+
+
+#     print("the quantum result is",expectation_calculator(pauli_string_object))
 
 
 # import Qiskit_helperfunctions_kh as qhf #IBMQ account is loaded here in this import

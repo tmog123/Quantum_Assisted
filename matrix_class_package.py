@@ -99,10 +99,6 @@ class unevaluatedmatrix(object):
                 paulistrings = self.dict_of_uneval_matrix_elems[(i,j)]
                 for pstring_obj in paulistrings:
                     expectation_value = expectation_calculator(pstring_obj)
-                    # if i == 2 and j == 1:
-                    #     print("I'm here!")
-                    #     print(paulistrings)
-                    #     print(expectation_value)
                     total_expectation_val += expectation_value
                 matrix[(i,j)] = total_expectation_val
         return matrix
