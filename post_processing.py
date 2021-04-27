@@ -190,7 +190,7 @@ class CQFF(quantumSimulators):
 
         if self.optimizer == "eigh":
             eigvals, eigvecs = opt_package.diag_routine(self.D, self.E, inv_cond=self.eigh_invcond)
-            print("eigvals are", eigvals)
+            # print("eigvals are", eigvals)
 
             if self.method == "diagonalise_H":
                 for t in times:
