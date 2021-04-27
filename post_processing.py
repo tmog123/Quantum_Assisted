@@ -131,10 +131,10 @@ class quantumSimulators(ABC):
         self.has_it_been_evaluated = False
         self.finishedalphas = None
 
-        print('Ensuring E and D matrices are Hermitian by adding cc')
-
-        self.E = (self.E + self.E.conj().T)/2
-        self.D = (self.D + self.D.conj().T)/2
+        #This was required in the past for debugging, but we don't need this now
+        # print('Ensuring E and D matrices are Hermitian by adding cc')
+        # self.E = (self.E + self.E.conj().T)/2
+        # self.D = (self.D + self.D.conj().T)/2
 
     def numberstep(self, steps):
         self.steps = steps 
