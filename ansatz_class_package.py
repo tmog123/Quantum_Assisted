@@ -8,6 +8,7 @@ from hamiltonian_class_package import Hamiltonian
 from qiskit.circuit.library import EfficientSU2 
 from qiskit import execute, QuantumCircuit
 from qiskit.providers.aer import Aer
+from copy import deepcopy
 
 class moment(object): #This moments are the building blocks of the Ansatz, basically its the moments that we used to build the chi states. This stores the alphas
     def __init__(self,N,paulistring,*alphas):# alphas is either nothing, or a list/numpy array
@@ -65,7 +66,7 @@ class Ansatz(object):#moments is a list
         
 
 class Initialstate(object):
-    def __init__(self,N,method,numpyseed,numberoflayers):
+    def __init__(self,N, method, numpyseed, numberoflayers, qiskit_qc = None):
         """
         method can be either efficient_SU2, or random_numbers, or...
         """
@@ -75,6 +76,9 @@ class Initialstate(object):
         self.numberoflayers = numberoflayers
         self.qiskit_circuit = None
 
+        if self.method == "own_qiskit_circuit" and qiskit_qc == None:
+            raise(RuntimeError("You need to include a qiskit circuit to use this method"))
+
         if self.method == "efficient_SU2":
             qc = EfficientSU2(self.N, reps = self.numberoflayers, entanglement="full", skip_final_rotation_layer=False)
             num_params = qc.num_parameters 
@@ -83,6 +87,9 @@ class Initialstate(object):
             for index in range(num_params):
                 qc = qc.bind_parameters({qc.ordered_parameters[index]: initial_state_params[index]})
             self.qiskit_circuit = qc
+        
+        if self.method == "own_qiskit_circuit":
+            self.qiskit_circuit = deepcopy(qiskit_qc)
 
     def get_statevector(self):
         if self.method == "random_numbers":
