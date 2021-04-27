@@ -85,9 +85,10 @@ def QS_plotter_for_fidelity(num_qubits, ansatzlist, times,
                 hamiltonian_matrix = hamiltonian.to_matrixform()
                 theoretical_state = expm(-1j * hamiltonian_matrix * time) @ initial_statevector
                 # theoretical_state = final_results_from_classical_simulator[time_idx]
-                fidelity = np.sqrt(np.vdot(theoretical_state, state))
-                # if time_idx == 1:
-                #     print(fidelity)
+                fidelity = np.abs(np.vdot(theoretical_state, state))
+                # if time == 60:
+                #     print("actual_state_is", state)
+                #     print("theoretical_state_is", theoretical_state)
                 fidelity_vals.append(fidelity)
             lab = name + " K=" + str(i)
             plt.plot(times, fidelity_vals, label = lab)
