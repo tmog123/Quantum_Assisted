@@ -63,7 +63,7 @@ class unevaluatedmatrix(object):
                 p_string_str_forms = set([x.get_string_for_hash() for x in self.dict_of_uneval_matrix_elems[(i,j)]])
                 to_return = to_return.union(p_string_str_forms)
         return to_return
-    
+
     def substitute_evaluated_pstring_results(self, eval_results_dict):
         """
         Takes in a dictionary, with the key value pairs being:
@@ -90,7 +90,8 @@ class unevaluatedmatrix(object):
         expectation_calculator_obj is an object that is found in the Qiskit_helperfunctions file
         """
         print('Evaluating matrix with Qiskit Circuits')
-        expectation_calculator = expectation_calculator_obj
+        #this is the function to return the expectation value calculator
+        expectation_calculator_func = expectation_calculator_obj.calculate_expectation
         size = self.size
         matrix = np.empty([size,size], dtype=np.complex128)
         for i in range(size):
@@ -98,7 +99,7 @@ class unevaluatedmatrix(object):
                 total_expectation_val = 0 + 0j
                 paulistrings = self.dict_of_uneval_matrix_elems[(i,j)]
                 for pstring_obj in paulistrings:
-                    expectation_value = expectation_calculator(pstring_obj)
+                    expectation_value = expectation_calculator_func(pstring_obj)
                     total_expectation_val += expectation_value
                 matrix[(i,j)] = total_expectation_val
         return matrix
@@ -133,11 +134,12 @@ class unevaluatedmatrix(object):
     #             matrix[(i,j)] = temporary
     #     return matrix
 
-def evaluate_pstrings_strings_classicaly(set_of_pstrings_strforms, initial_statevector):
-    ans = dict()
-    for pstring_strform in set_of_pstrings_strforms:
-        pstring = pcp.paulistring(len(pstring_strform), pstring_strform, 1)
-        pstring_matform = pstring.get_matrixform() 
-        ans[pstring_strform] = initial_statevector.conj().T @ pstring_matform @ initial_statevector
-    return ans
+#don't need this anymore
+# def evaluate_pstrings_strings_classicaly(set_of_pstrings_strforms, initial_statevector):
+#     ans = dict()
+#     for pstring_strform in set_of_pstrings_strforms:
+#         pstring = pcp.paulistring(len(pstring_strform), pstring_strform, 1)
+#         pstring_matform = pstring.get_matrixform() 
+#         ans[pstring_strform] = initial_statevector.conj().T @ pstring_matform @ initial_statevector
+#     return ans
 
