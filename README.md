@@ -3,10 +3,10 @@
 Refer to the Jupyter notebook tutorial to see how the code is meant to work for the quantum simulators (name is: Tutorial on how to use (Start here))
 
 
+Things done: Created the stuff needed to do simple IQAE, TTQS, QAS, CQFF. Also
+created the ability to interface with IBMQ quantum computers
 
-Things done: Created the stuff needed to do simple IQAE, TTQS, QAS
-
-Things to do: Create the code needed to generate the E and D matrices for IBM quantum computer backend, create the code for more advanced plotting and analyzing.
+Things to do: Create the code for more advanced plotting and analyzing
 
 QCQP: NOT IMPLEMENTED YET. So far only optimization routine that has been implemented is eigh method (diagonalization). For TTQS/IQAE, should look into implementing a QCQP method in optimizers.py
 
@@ -36,7 +36,7 @@ Functions: transverse_ising_model_1d, heisemberg_XYZ_model
 
 ansatz_class_package:
 1) Generates Ansatzes
-2) Contains initial state clas representation
+2) Contains initial state class representation
 
 Objects: Ansatz, moment, Initialstate
 Functions: initial_ansatz, gen_next_ansatz
