@@ -9,26 +9,26 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 #Parameters
-uptowhatK = 1
+uptowhatK = 2
 num_qubits = 2
-endtime = 8
-num_steps = 1001
+endtime = 2.5
+num_steps = 51
 optimizer = 'eigh'
 inv_cond = 10**(-6)
 numberoflayers = 2
-randomseedforinitialstate = 123
+randomseedforinitialstate = 183
 
 #create initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", randomseedforinitialstate, numberoflayers)
 
 #Qiskit stuff
-import Qiskit_helperfunctions_kh as qhf #IBMQ account is loaded here in this import
+import Qiskit_helperfunctions as qhf #IBMQ account is loaded here in this import
 hub, group, project = "ibm-q-nus", "default", "reservations"
 quantum_com = "ibmq_rome" 
 
 #Other parameters for running on the quantum computer
 sim = "noiseless_qasm"
-num_shots = 10000
+num_shots = 8000
 
 quantum_computer_choice_results = qhf.choose_quantum_computer(hub, group, project, quantum_com)
 # mitigate_meas_error = True
@@ -124,7 +124,7 @@ observablematrix = observable.to_matrixform()
 classicalresult = cS_instance.get_expectations_observables(observablematrix)
 plotp.CS_plotter_forobservable(times,classicalresult)
 
-
+'''
 #Run QAS
 p_invcond = 10**(-3)
 optimizer = 'zvode'
@@ -173,7 +173,7 @@ for k in range(1,uptowhatK+1):
     ansatz.update_alphas(result)
 
     #Update final results with this
-    finalresults.append(ansatz)
+    finalresults.append(ansatz)'''
 
 
 #Plotting results

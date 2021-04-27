@@ -8,6 +8,8 @@ from qiskit import QuantumCircuit, execute, result, QuantumRegister
 from qiskit.providers.aer import Aer
 from qiskit.visualization import plot_histogram
 from qiskit.providers.aer.noise import NoiseModel
+from qiskit.providers.aer.noise import depolarizing_error
+from qiskit.providers.aer.noise import pauli_error
 from qiskit.providers.ibmq import least_busy
 from qiskit.tools.monitor import job_monitor
 from qiskit.aqua import QuantumInstance
@@ -15,6 +17,7 @@ from qiskit.aqua.operators.primitive_ops import CircuitOp
 from qiskit.ignis.mitigation.measurement import CompleteMeasFitter, complete_meas_cal
 from qiskit.aqua.operators.state_fns import CircuitStateFn
 from qiskit.aqua.operators import PauliExpectation, CircuitSampler, StateFn
+from qiskit.transpiler import CouplingMap
 
 import ansatz_class_package as acp
 import pauli_class_package as pcp
@@ -24,6 +27,38 @@ from copy import deepcopy
 #load IBMQ account
 # This will throw an erorr if IMBQ account is not saved, consult qiskit docs for help
 IBMQ.load_account() 
+
+
+
+
+def create_quantum_computer_simulation(couplingmap,depolarizingnoise=False,depolarizingnoiseparameter=0,bitfliperror=False,bitfliperrorparameter=0,measerror=False,measerrorparameter=0):
+    """
+    Returns a dictionary, where the key is what type of simulation ("noisy_qasm", "noiseless_qasm", "real"), and the value are the objects required for that particular simulation
+    """
+    sims = ["noisy_qasm", "noiseless_qasm"]
+    dicto = dict()
+    for sim in sims:
+        if sim == "noiseless_qasm":
+            backend = Aer.get_backend('qasm_simulator')
+            dicto[sim] = backend
+        elif sim == "noisy_qasm":
+            backend = Aer.get_backend('qasm_simulator')
+            coupling_map = CouplingMap(couplingmap)
+            noise_model = NoiseModel()
+            if depolarizingnoise == True:
+                depolarizingerror = depolarizing_error(depolarizingnoiseparameter, 1)
+                noise_model.add_all_qubit_quantum_error(depolarizingerror, ['u1', 'u2', 'u3'])
+            if bitfliperror == True:
+                error_gate1 = pauli_error([('X',bitfliperrorparameter), ('I', 1 - bitfliperrorparameter)])
+                noise_model.add_all_qubit_quantum_error(error_gate1, ["u1", "u2", "u3"])
+                error_gate2 = error_gate1.tensor(error_gate1)
+                noise_model.add_all_qubit_quantum_error(error_gate2, ["cx"])
+            if measerror == True:
+                error_meas = pauli_error([('X',measerrorparameter), ('I', 1 - measerrorparameter)])
+                noise_model.add_all_qubit_quantum_error(error_meas,"measure")
+            dicto[sim] = (backend, coupling_map, noise_model)
+    return dicto
+
 
 
 def choose_quantum_computer(hub, group, project, quantum_com):
