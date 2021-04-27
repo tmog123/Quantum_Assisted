@@ -1,8 +1,8 @@
 import numpy as np
-import hamiltonian_class_package as hcp
+# import hamiltonian_class_package as hcp
 import pauli_class_package as pcp
 from pauli_class_package import paulistring
-from hamiltonian_class_package import Hamiltonian
+# from hamiltonian_class_package import Hamiltonian
 
 #Qiskit functions. Since there is dependance on qiskit here, should make this explicit in README somehow
 from qiskit.circuit.library import EfficientSU2 
@@ -98,7 +98,7 @@ class Initialstate(object):
             state = np.random.rand(dimension) + 1j * np.random.rand(dimension)
             state = state / np.sqrt(np.vdot(state, state))
             return state 
-        elif self.method == "efficient_SU2":
+        elif self.method == "efficient_SU2" or "own_qiskit_circuit":
             statevector_backend = Aer.get_backend('statevector_simulator')
             state = execute(self.qiskit_circuit, statevector_backend).result().get_statevector()
             return state
