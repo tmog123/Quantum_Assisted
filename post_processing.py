@@ -248,8 +248,9 @@ class QAS(quantumSimulators):
             previous_time = None 
             for t in times:
                 if t == 0:
-                    newalpha = initial_alpha
+                    # newalpha = initial_alpha
                     previous_time = t
+                    continue
                 else:
                     time_advance_interval = t - previous_time 
                     previous_time = t 
