@@ -160,11 +160,17 @@ class quantumSimulators(ABC):
         pass
 
 class CQFF(quantumSimulators):
-    def __init__(self, N, D_matrix, E_matrix, startingalphas):
+    def __init__(self, N, D_matrix, E_matrix, startingalphas, method = "diagonalise_H"):
+        """
+        Method can be either diagonalise_H (which is the main method in https://arxiv.org/pdf/2104.01931.pdf)
+
+        or it can be U_dt (which is the proposed tweak in the discussion, in the same paper)
+        """
         super().__init__(N, D_matrix, E_matrix, startingalphas)
         self.optimizer = None
         self.eigh_invcond = None
         self.times = None 
+        self.method = method
 
     def define_optimizer(self, optimizer):
         self.optimizer = optimizer
@@ -185,12 +191,23 @@ class CQFF(quantumSimulators):
         if self.optimizer == "eigh":
             eigvals, eigvecs = opt_package.diag_routine(self.D, self.E, inv_cond=self.eigh_invcond)
 
-            for t in times:
-                U_big_Delta_t_diagterms = np.exp(-1j*eigvals*t)
-                U_big_Delta_t = eigvecs @ np.diag(U_big_Delta_t_diagterms) @ eigvecs.conj().T @ self.E 
-                newalpha = U_big_Delta_t @ initial_alpha
-                for i in range(len(newalpha)):
-                    alphas[i].append(newalpha[i])
+            if self.method == "diagonalise_H":
+                for t in times:
+                    U_big_Delta_t_diagterms = np.exp(-1j*eigvals*t)
+                    U_big_Delta_t = eigvecs @ np.diag(U_big_Delta_t_diagterms) @ eigvecs.conj().T @ self.E 
+                    newalpha = U_big_Delta_t @ initial_alpha
+                    for i in range(len(newalpha)):
+                        alphas[i].append(newalpha[i])
+
+            elif self.method == "U_dt":
+                delta_t = times[1] - times[0]
+                no_of_reps = len(times)
+                for rep in range(1,no_of_reps + 1):
+                    U_big_Delta_t_diagterms = (1 - 1j*eigvals*delta_t)**rep
+                    U_big_Delta_t = eigvecs @ np.diag(U_big_Delta_t_diagterms) @ eigvecs.conj().T @ self.E 
+                    newalpha = U_big_Delta_t @ initial_alpha
+                    for i in range(len(newalpha)):
+                        alphas[i].append(newalpha[i])
 
             self.has_it_been_evaluated = True
             self.finishedalphas = alphas
