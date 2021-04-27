@@ -190,9 +190,12 @@ class CQFF(quantumSimulators):
 
         if self.optimizer == "eigh":
             eigvals, eigvecs = opt_package.diag_routine(self.D, self.E, inv_cond=self.eigh_invcond)
+            print("eigvals are", eigvals)
 
             if self.method == "diagonalise_H":
                 for t in times:
+                    if t == 0:
+                        continue
                     U_big_Delta_t_diagterms = np.exp(-1j*eigvals*t)
                     U_big_Delta_t = eigvecs @ np.diag(U_big_Delta_t_diagterms) @ eigvecs.conj().T @ self.E 
                     newalpha = U_big_Delta_t @ initial_alpha

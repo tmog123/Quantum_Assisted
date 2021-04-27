@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matrix_class_package as mcp
 import pauli_class_package as pcp
+from scipy.linalg import expm 
 
 def QS_plotter_forobservable(num_qubits,ansatzlist,times,whatKs,qstype,observable,initial_state, evalmethod='matrix_multiplication', expectation_calculator = None):
     """
@@ -51,7 +52,7 @@ def print_plot(location):
     plt.savefig(location)
 
 def QS_plotter_for_fidelity(num_qubits, ansatzlist, times,
-     whatKs, qstype, final_results_from_classical_simulator, initial_state):
+     whatKs, qstype, hamiltonian, initial_state):
     initial_statevector = initial_state.get_statevector()
     if qstype == 'TTQS':
         name = 'TTQS'
@@ -80,8 +81,13 @@ def QS_plotter_for_fidelity(num_qubits, ansatzlist, times,
                     # print("i am here two", len(result_pauli_string_matrix))
                     # print("i am here three", alpha[j])
                     state += alpha[j] * result_pauli_string_matrix @initial_statevector
-                theoretical_state = final_results_from_classical_simulator[time_idx]
+                
+                hamiltonian_matrix = hamiltonian.to_matrixform()
+                theoretical_state = expm(-1j * hamiltonian_matrix * time) @ initial_statevector
+                # theoretical_state = final_results_from_classical_simulator[time_idx]
                 fidelity = np.sqrt(np.vdot(theoretical_state, state))
+                # if time_idx == 1:
+                #     print(fidelity)
                 fidelity_vals.append(fidelity)
             lab = name + " K=" + str(i)
             plt.plot(times, fidelity_vals, label = lab)

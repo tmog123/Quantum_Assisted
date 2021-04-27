@@ -75,7 +75,7 @@ def diag_routine(D_matrix, E_matrix, inv_cond = 10**(-6)):
             after_normalisation = np.column_stack((after_normalisation,
             jth_vector))
 
-    return (np.array(correct_eigvals) ,after_normalisation)
+    return (np.array(correct_eigvals), after_normalisation)
 
 #OPTIMIZERS MUST RETURN THE UPDATED ALPHAS
 def eigh_method_for_TTQS(E_matrix,W_matrix,alphas,inv_cond):
