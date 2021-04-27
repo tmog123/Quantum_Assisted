@@ -66,7 +66,7 @@ class Ansatz(object):#moments is a list
         
 
 class Initialstate(object):
-    def __init__(self,N, method, numpyseed, numberoflayers, qiskit_qc = None):
+    def __init__(self,N, method, numpyseed = 123, numberoflayers = 2, qiskit_qc = None):
         """
         method can be either efficient_SU2, or random_numbers, or...
         """
