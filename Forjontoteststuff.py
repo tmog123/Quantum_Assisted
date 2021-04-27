@@ -15,11 +15,30 @@ endtime = 8
 num_steps = 1001
 optimizer = 'eigh'
 inv_cond = 10**(-6)
-numberoflayers = 3
+numberoflayers = 2
 randomseedforinitialstate = 123
 
 #create initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", randomseedforinitialstate, numberoflayers)
+
+#Qiskit stuff
+import Qiskit_helperfunctions_kh as qhf #IBMQ account is loaded here in this import
+hub, group, project = "ibm-q-nus", "default", "reservations"
+quantum_com = "ibmq_rome" 
+
+#Other parameters for running on the quantum computer
+sim = "noiseless_qasm"
+num_shots = 10000
+
+quantum_computer_choice_results = qhf.choose_quantum_computer(hub, group, project, quantum_com)
+# mitigate_meas_error = True
+# meas_filter = qhf.measurement_error_mitigator(num_qubits, sim, quantum_computer_choice_results, shots = num_shots)
+mitigate_meas_error = False
+meas_filter = qhf.measurement_error_mitigator(num_qubits, sim, quantum_computer_choice_results, shots = num_shots)
+
+expectation_calculator = qhf.make_expectation_calculator(initial_state, sim, quantum_computer_choice_results, meas_error_mitigate = mitigate_meas_error, meas_filter = meas_filter)
+
+
 
 #define Hamiltonian
 hamiltonian = hcp.transverse_ising_model_1d(num_qubits)
@@ -47,12 +66,15 @@ for k in range(1,uptowhatK+1):
     D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
 
     #Here is where we should be able to specify how to evaluate the matrices. However only the exact method (classical matrix multiplication) has been implemented so far
-    E_mat_evaluated =  E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-    print(E_mat_evaluated)
-    D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-    E_mat_evaluated =  E_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state,shots=20000)
-    print(E_mat_evaluated)
-    D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state,shots=20000)
+    #E_mat_evaluated =  E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+    #print(E_mat_evaluated)
+    #D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+    #print(D_mat_evaluated)
+
+    E_mat_evaluated =  E_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
+    #print(E_mat_evaluated)
+    D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
+    #print(D_mat_evaluated)
 
     #Get starting alphas
     startingstrings,startingalphas = ansatz.get_alphas()
@@ -131,10 +153,9 @@ for k in range(1,uptowhatK+1):
     D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
 
     #Here is where we should be able to specify how to evaluate the matrices. However only the exact method (classical matrix multiplication) has been implemented so far
-    #E_mat_evaluated =  E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-    #D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-    E_mat_evaluated =  E_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state)
-    D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(initial_state)
+    E_mat_evaluated =  E_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
+    D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
+
 
 
     #Get starting alphas

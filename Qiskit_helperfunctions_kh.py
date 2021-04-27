@@ -139,7 +139,7 @@ def make_expectation_calculator(initial_state_object, sim, quantum_com_choice_re
             if meas_error_mitigate == True:
                 results = meas_filter.apply(results)
             counts = results.get_counts() 
-        print("Finished shots")
+        #print("Finished shots")
 
         frequency_dict = dict()
         total_num_of_counts = sum(counts.values())

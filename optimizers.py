@@ -2,7 +2,7 @@ import numpy as np
 import scipy
 
 
-def diag_routine(D_matrix, E_matrix, inv_cond = 10**(-2)):
+def diag_routine(D_matrix, E_matrix, inv_cond = 10**(-6)):
     #Like toby's diag routine, with some modifications (return all the eigvecs rather than just the first one)
     #inversion cutoff, e.g. eigenvalues smaller than this are set to zero
     #this value can be adjusted depending on shot noise, try to find value that fits your noise level
