@@ -211,6 +211,11 @@ class QAS(quantumSimulators):
         return self.times 
 
     def evaluate(self):
+
+        print('Ensuring E and D matrices are Hermitian by adding cc')
+
+        self.E = (self.E + self.E.conj().T)/2
+        self.D = (self.D + self.D.conj().T)/2
         
         times=np.linspace(0,self.endtime,num=self.steps, endpoint=True)
         self.times = times
@@ -258,8 +263,8 @@ class TTQS(quantumSimulators):
 
         self.E = (self.E + self.E.conj().T)/2
         self.D = (self.D + self.D.conj().T)/2
-        print(self.E)
-        print(self.D)
+        #print(self.E)
+        #print(self.D)
 
         deltat = self.endtime/(self.steps-1)
         times=np.linspace(0,self.endtime,num=self.steps)
