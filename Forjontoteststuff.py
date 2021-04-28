@@ -19,7 +19,7 @@ numberoflayers = 2
 randomseedforinitialstate = 183
 
 #create initial state
-initial_state = acp.Initialstate(num_qubits, "efficient_SU2", randomseedforinitialstate, numberoflayers)
+initial_state = acp.Initialstate(num_qubits, "TFI_hardware_inspired", randomseedforinitialstate, numberoflayers)
 
 #Qiskit stuff
 import Qiskit_helperfunctions as qhf #IBMQ account is loaded here in this import
@@ -36,7 +36,7 @@ quantum_computer_choice_results = qhf.choose_quantum_computer(hub, group, projec
 mitigate_meas_error = False
 meas_filter = qhf.measurement_error_mitigator(num_qubits, sim, quantum_computer_choice_results, shots = num_shots)
 
-expectation_calculator = qhf.make_expectation_calculator(initial_state, sim, quantum_computer_choice_results, meas_error_mitigate = mitigate_meas_error, meas_filter = meas_filter)
+expectation_calculator = qhf.expectation_calculator(initial_state, sim, quantum_computer_choice_results, meas_error_mitigate = mitigate_meas_error, meas_filter = meas_filter)
 
 
 
@@ -114,7 +114,7 @@ times = TTQS_instance.get_times()
 observable = hcp.generate_arbitary_observable(num_qubits, [1], ["30"]) 
 
 #What Ks we want to plot
-whatK = [1]
+whatK = [1,2]
 
 #Plotting results
 plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state)
