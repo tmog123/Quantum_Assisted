@@ -10,13 +10,13 @@ import json
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 #Parameters
-uptowhatK = 1
-num_qubits = 2
-endtime = 2.5
-num_steps = 51
+uptowhatK = 2
+num_qubits = 3
+endtime = 5
+num_steps = 101
 optimizer = 'eigh'
-inv_cond = 10**(-6)
-numberoflayers = 2
+inv_cond = 10**(-3)
+numberoflayers = 3
 randomseedforinitialstate = 183
 
 #create initial state
@@ -112,10 +112,10 @@ cS_instance.evaluate()
 
 #Observable we want to plot
 times = TTQS_instance.get_times()
-observable = hcp.generate_arbitary_observable(num_qubits, [1], ["20"]) 
+observable = hcp.generate_arbitary_observable(num_qubits, [1], ["020"]) 
 
 #What Ks we want to plot
-whatK = [1]
+whatK = [1,2]
 
 #Plotting results
 plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
