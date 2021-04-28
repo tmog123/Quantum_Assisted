@@ -2,7 +2,7 @@
 
 Code to implement:
 
-Quantum Assisted Simulator - https://arxiv.org/pdf/2011.06911.pdf
+Quantum Assisted Simulator - https://arxiv.org/pdf/2011.06911.pdf, https://arxiv.org/pdf/2011.14737.pdf, https://arxiv.org/pdf/2101.07677.pdf
 
 Truncated Taylor Quantum Simulator - https://arxiv.org/pdf/2103.05500.pdf
 
