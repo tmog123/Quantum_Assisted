@@ -25,7 +25,7 @@ def Qtensor(A, k, N_total):
     return np.kron(np.identity(2**(k-1)), np.kron(A, np.identity(2**(N_total-k))))'''
 
 def expectation_val(Qtensormatrix,psi):
-    return psi.conj().dot(Qtensormatrix.dot(psi))
+    return psi.conj().dot(Qtensormatrix.dot(psi)).real
 
 class classicalSimulator(object):
     """

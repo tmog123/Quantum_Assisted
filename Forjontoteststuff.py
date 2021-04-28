@@ -6,10 +6,11 @@ import matrix_class_package as mcp
 import post_processing as pp
 import plotting_package as plotp
 import warnings
+import json
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 #Parameters
-uptowhatK = 2
+uptowhatK = 1
 num_qubits = 2
 endtime = 2.5
 num_steps = 51
@@ -111,19 +112,29 @@ cS_instance.evaluate()
 
 #Observable we want to plot
 times = TTQS_instance.get_times()
-observable = hcp.generate_arbitary_observable(num_qubits, [1], ["30"]) 
+observable = hcp.generate_arbitary_observable(num_qubits, [1], ["20"]) 
 
 #What Ks we want to plot
-whatK = [1,2]
+whatK = [1]
 
 #Plotting results
-plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state)
+plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
+
+#get data for printing
+ttqsdata = plotp.get_data_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
+
+
 
 #Plotting classical result
 observablematrix = observable.to_matrixform()
 classicalresult = cS_instance.get_expectations_observables(observablematrix)
 plotp.CS_plotter_forobservable(times,classicalresult)
 
+#get data for printing
+
+ttqsdata['classical'] = list(classicalresult)
+
+#print(ttqsdata)
 '''
 #Run QAS
 p_invcond = 10**(-3)
@@ -177,8 +188,13 @@ for k in range(1,uptowhatK+1):
 
 
 #Plotting results
-plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'QAS',observable,initial_state)
+#plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'QAS',observable,initial_state)
 
 #Show plot
 #plotp.show_plot()
 plotp.print_plot("Jonstufftesting/plot.png")
+json.dump(ttqsdata, open( "Jonstufftesting/data.dat",'w+'))
+
+# Save data on file
+# Prepare a dictionary with the data
+dataprint = {}

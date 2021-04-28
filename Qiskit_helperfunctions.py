@@ -212,7 +212,7 @@ class expectation_calculator(object):
             if self.meas_error_mitigate == True:
                 results = self.meas_filter.apply(results)
             counts = results.get_counts() 
-        print("Finished shots")
+        #print("Finished shots")
 
         frequency_dict = dict()
         total_num_of_counts = sum(counts.values())
