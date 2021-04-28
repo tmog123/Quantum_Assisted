@@ -91,6 +91,23 @@ class Initialstate(object):
         if self.method == "own_qiskit_circuit":
             self.qiskit_circuit = deepcopy(qiskit_qc)
 
+        if self.method == "TFI_hardware_inspired":#Creates layers of single X rotations, followed by ZZ entangling gate rotations
+            qc = QuantumCircuit(self.N)
+            np.random.seed(self.numpyseed)
+            self.startingrandomnumbers = np.random.rand(self.numberoflayers*(self.N + self.N-1)+self.N)
+            counter = 0
+            for i in range(self.numberoflayers):
+                for j in range(self.N):
+                    qc.rx(self.startingrandomnumbers[counter],j)
+                    counter = counter + 1
+                for k in range(self.N-1):
+                    qc.rzz(self.startingrandomnumbers[counter],k,k+1)
+                    counter = counter + 1
+            for j in range(self.N):
+                qc.rx(self.startingrandomnumbers[counter],j)
+                counter = counter + 1
+            self.qiskit_circuit = qc
+
     def get_statevector(self):
         if self.method == "random_numbers":
             dimension = 2**self.N 
