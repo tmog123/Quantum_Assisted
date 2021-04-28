@@ -1,5 +1,12 @@
 # Quantum-Assisted
 
+Code to implement:
+Quantum Assisted Simulator - https://arxiv.org/pdf/2011.06911.pdf
+Truncated Taylor Quantum Simulator - https://arxiv.org/pdf/2103.05500.pdf
+Classical Quantum Fast Forwarding - https://arxiv.org/pdf/2104.01931.pdf
+
+If you use our code, please cite our respective papers.
+
 Refer to the Jupyter notebook tutorial to see how the code is meant to work for the quantum simulators (name is: Tutorial on how to use (Start here))
 
 
