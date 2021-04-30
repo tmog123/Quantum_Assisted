@@ -112,7 +112,7 @@ cS_instance.evaluate()
 
 #Observable we want to plot
 times = TTQS_instance.get_times()
-observable = hcp.generate_arbitary_observable(num_qubits, [1], ["020"]) 
+observable = hcp.generate_arbitary_observable(num_qubits, [1], ["030"]) 
 
 #What Ks we want to plot
 whatK = [1,2]
