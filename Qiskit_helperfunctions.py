@@ -24,6 +24,8 @@ import pauli_class_package as pcp
 import numpy as np
 from copy import deepcopy
 
+IBMQ.load_account() 
+
 def create_quantum_computer_simulation(couplingmap,depolarizingnoise=False,depolarizingnoiseparameter=0,bitfliperror=False,bitfliperrorparameter=0,measerror=False,measerrorparameter=0):
     """
     Returns a dictionary, where the key is what type of simulation ("noisy_qasm", "noiseless_qasm", "real"), and the value are the objects required for that particular simulation
