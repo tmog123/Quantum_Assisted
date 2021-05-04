@@ -132,7 +132,7 @@ def QS_plotter_for_fidelity(num_qubits, ansatzlist, times,
             lab = name + " K=" + str(i)
             plt.plot(times, fidelity_vals, label = lab)
 
-def save_fidelity_results(num_qubits, ansatzlist, times,
+def get_fidelity_results(num_qubits, ansatzlist, times,
     whatKs, hamiltonian, initial_state):
     """
     Returns a dictionary of dictionaries. The keys are the values of K that we
