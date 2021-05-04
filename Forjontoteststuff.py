@@ -10,13 +10,13 @@ import json
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 #Parameters
-uptowhatK = 2
-num_qubits = 3
+uptowhatK = 3
+num_qubits = 2
 endtime = 5
 num_steps = 101
 optimizer = 'eigh'
 inv_cond = 10**(-3)
-numberoflayers = 3
+numberoflayers = 2
 randomseedforinitialstate = 183
 
 #create initial state
@@ -24,11 +24,12 @@ initial_state = acp.Initialstate(num_qubits, "TFI_hardware_inspired", randomseed
 
 #Qiskit stuff
 import Qiskit_helperfunctions as qhf #IBMQ account is loaded here in this import
+#IBMQ.load_account() 
 hub, group, project = "ibm-q-nus", "default", "reservations"
-quantum_com = "ibmq_rome" 
+quantum_com = "ibmq_bogota" 
 
 #Other parameters for running on the quantum computer
-sim = "noiseless_qasm"
+sim = "noiseless_qasm" #"noisy_qasm" #"noiseless_qasm"
 num_shots = 8000
 
 quantum_computer_choice_results = qhf.choose_quantum_computer(hub, group, project, quantum_com)
@@ -112,10 +113,10 @@ cS_instance.evaluate()
 
 #Observable we want to plot
 times = TTQS_instance.get_times()
-observable = hcp.generate_arbitary_observable(num_qubits, [1], ["030"]) 
+observable = hcp.generate_arbitary_observable(num_qubits, [1], ["20"]) 
 
 #What Ks we want to plot
-whatK = [1,2]
+whatK = [1,2,3]
 
 #Plotting results
 plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
