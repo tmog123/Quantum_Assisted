@@ -113,7 +113,7 @@ cS_instance.evaluate()
 
 #Observable we want to plot
 times = TTQS_instance.get_times()
-observable = hcp.generate_arbitary_observable(num_qubits, [1], ["10"]) 
+observable = hcp.generate_arbitary_observable(num_qubits, [1], ["30"]) 
 
 #What Ks we want to plot
 whatK = [1,2,3]
@@ -122,8 +122,8 @@ whatK = [1,2,3]
 plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
 
 #get data for printing
-ttqsdata = plotp.get_data_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
-
+#ttqsdata = plotp.get_data_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
+ttqsdata = plotp.get_data_for_fidelity(num_qubits,finalresults,times,whatK,'TTQS',hamiltonian,initial_state)
 
 
 #Plotting classical result
@@ -190,6 +190,7 @@ for k in range(1,uptowhatK+1):
 
 #Plotting results
 #plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'QAS',observable,initial_state)
+plotp.QS_plotter_for_fidelity(num_qubits,finalresults,times,whatK,'TTQS',hamiltonian,initial_state)
 
 #Show plot
 #plotp.show_plot()
