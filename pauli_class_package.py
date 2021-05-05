@@ -6,6 +6,7 @@ Functions to combine pauli strings, represent pauli strings
 '''
 import numpy as np
 from qiskit import QuantumCircuit
+import math
 #Pauli matrices
 identity = np.array([(1,0),(0,1)],dtype=np.complex128)
 sigma_x = np.array([(0,1),(1,0)],dtype=np.complex128)
@@ -124,9 +125,39 @@ def pauli_helper(pauli1,pauli2):
             return 0,1
 
 
+def get_pauli_string_from_index_string(index_string):
+    """
+    helper function, won't be used outside of this scope
+    """
+    first_matrix = sigmas[int(index_string[0])]
+    matrix = first_matrix
+    for j in index_string[1:]:
+        matrix = np.kron(matrix, sigmas[int(j)])
+    return matrix
 
+def paulinomial_decomposition(matrix):
+    """
+    matrix is a numpy array
+    n is the number of qubits
 
+    Returns a dictionary, where the keys are the pauli_strings IN STRING FORM, and the values are the coefficients. E.g:
 
+    {"101":3, "231":1", etc etc}
+    """
+    n = int(math.log(len(matrix),2))
+    coeffs_dict = dict()
+    num_of_pauli_strings = int(4**n)
+    dimension = int(2**n)
+    for i in range(num_of_pauli_strings):
+        pauli_string_index = np.base_repr(i, base = 4)
+        # if len(pauli_string_index) < n:
+        to_pad = n - len(pauli_string_index)
+        index_string =  to_pad * "0" + pauli_string_index
+        # else:
+        #   index_string = pauli_string_index
+        pauli_string = get_pauli_string_from_index_string(index_string)
+        coeffs_dict[index_string] = (1/dimension) * np.trace(np.matmul(matrix, pauli_string))
+    return coeffs_dict
 
 
 
