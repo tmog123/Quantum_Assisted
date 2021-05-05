@@ -123,6 +123,7 @@ class IQAE_Lindblad(object):
         self.ground_state_alphas = None
         self.all_energies = None
         self.all_alphas = None
+        self.degeneracy_tol = None
     
     def define_optimizer(self, optimizer, eigh_invcond = 10**(-12),eig_invcond = 10**(-12),degeneracy_tol = 5):
         """
@@ -142,6 +143,7 @@ class IQAE_Lindblad(object):
         self.eigh_invcond = eigh_invcond
     def set_eig_invcond(self,eig_invcond):
         self.eig_invcond = eig_invcond
+
     def set_degeneracy_tol(self,degeneracy_tol):
         self.degeneracy_tol = degeneracy_tol
 
