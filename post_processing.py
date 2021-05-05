@@ -157,7 +157,7 @@ class IQAE_Lindblad(object):
             self.ground_state_energy = min_energy
             self.ground_state_alphas = qae_eigvecs[:,0]
         elif self.optimizer == "eig":
-            qae_energies, qae_eigvecs = opt_package.eig_diag_routine(self.D, self.E, inv_cond=self.eigh_invcond,degeneracy_tol=self.degeneracy_tol)
+            qae_energies, qae_eigvecs = opt_package.eig_diag_routine(self.D, self.E, inv_cond=self.eig_invcond,degeneracy_tol=self.degeneracy_tol)
             #min_energy = qae_energies[0]
             self.all_energies = qae_energies
             self.all_alphas = qae_eigvecs

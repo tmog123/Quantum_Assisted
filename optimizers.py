@@ -34,6 +34,8 @@ def eig_diag_routine(D_matrix, E_matrix, inv_cond = 10**(-2), degeneracy_tol = 5
     e_vals_inverted=np.array(e_vals)
 
     for k in range(len(e_vals_inverted)):
+        #print(e_vals_inverted[k])
+        #print(inv_cond)
         if(e_vals_inverted[k]<inv_cond):
             e_vals_inverted[k]=0
         else:
