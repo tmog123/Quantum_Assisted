@@ -4,8 +4,9 @@ from qiskit import ClassicalRegister
 
 #Same as jon
 from qiskit import IBMQ
-from qiskit import QuantumCircuit, execute, result, QuantumRegister
+from qiskit import QuantumCircuit, execute, result, QuantumRegister, transpile
 from qiskit.providers.aer import Aer
+from qiskit.providers.aer import AerSimulator
 from qiskit.visualization import plot_histogram
 from qiskit.providers.aer.noise import NoiseModel
 from qiskit.providers.aer.noise import depolarizing_error
@@ -194,7 +195,14 @@ class expectation_calculator(object):
         qc = self.make_qc_to_measure_pstring(self.initial_state_object, pauli_string)
 
         if self.sim == "noisy_qasm":
-            results = execute(qc, backend=self.backend, shots = self.num_shots, coupling_map = self.coupling_map, noise_model = self.noise_model).result()
+            '''NEED TO MAKE SOME CHANGES HERE FOR ARTIFICIAL NOISE MODEL: JON'''
+            #results = execute(qc, backend=self.backend, shots = self.num_shots, coupling_map = self.coupling_map, noise_model = self.noise_model).result()
+            
+            '''Changes Here'''
+            sim_noise = AerSimulator(noise_model=self.noise_model)
+            circ_noise = transpile(qc,sim_noise,coupling_map=self.coupling_map)
+            results = sim_noise.run(circ_noise).result()
+            
             if self.meas_error_mitigate == True:
                 results = self.meas_filter.apply(results)
             counts = results.get_counts()

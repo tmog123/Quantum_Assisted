@@ -81,7 +81,7 @@ class IQAE(object):
         self.ground_state_energy = None 
         self.ground_state_alphas = None
     
-    def define_optimizer(self, optimizer, eigh_invcond = 10**(-12)):
+    def define_optimizer(self, optimizer, eigh_invcond = 10**(-12),eig_invcond = 10**(-12),degeneracy_tol = 5):
         """
         Optimiser can either be eigh or qcqp or sdp or...
         Here we also take in the various invconds as arguments
@@ -89,11 +89,18 @@ class IQAE(object):
         self.optimizer = optimizer
         if optimizer == "eigh":
             self.set_eigh_invcond(eigh_invcond)
+        elif optimizer == "eig":
+            self.set_eig_invcond(eig_invcond)
+            self.set_degeneracy_tol(degeneracy_tol)
         elif optimizer == "qcqp":
             pass 
     
     def set_eigh_invcond(self, eigh_invcond):
         self.eigh_invcond = eigh_invcond
+    def set_eig_invcond(self,eig_invcond):
+        self.eig_invcond = eig_invcond
+    def set_degeneracy_tol(self,degeneracy_tol):
+        self.degeneracy_tol = degeneracy_tol
 
     def evaluate(self):
         if self.optimizer == None:
@@ -104,6 +111,12 @@ class IQAE(object):
             min_energy = qae_energies[0]
             self.ground_state_energy = min_energy
             self.ground_state_alphas = qae_eigvecs[:,0]
+        elif self.optimizer == "eig":
+            qae_energies, qae_eigvecs = opt_package.eig_diag_routine(self.D, self.E, inv_cond=self.eigh_invcond,degeneracy_tol=self.degeneracy_tol)
+            min_energy = qae_energies[0]
+            self.ground_state_energy = min_energy
+            self.ground_state_alphas = qae_eigvecs[:,0]
+
     
     def get_results(self):
         return (self.ground_state_energy, self.ground_state_alphas)
