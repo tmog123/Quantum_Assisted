@@ -81,6 +81,49 @@ class IQAE(object):
         self.ground_state_energy = None 
         self.ground_state_alphas = None
     
+    def define_optimizer(self, optimizer, eigh_invcond = 10**(-12)):
+        """
+        Optimiser can either be eigh or qcqp or sdp or...
+        Here we also take in the various invconds as arguments
+        """
+        self.optimizer = optimizer
+        if optimizer == "eigh":
+            self.set_eigh_invcond(eigh_invcond)
+        elif optimizer == "qcqp":
+            pass 
+    
+    def set_eigh_invcond(self, eigh_invcond):
+        self.eigh_invcond = eigh_invcond
+
+
+    def evaluate(self):
+        if self.optimizer == None:
+            raise(RuntimeError("run the define optimizer_function first"))
+
+        elif self.optimizer == "eigh":
+            qae_energies, qae_eigvecs = opt_package.diag_routine(self.D, self.E, inv_cond=self.eigh_invcond)
+            min_energy = qae_energies[0]
+            self.ground_state_energy = min_energy
+            self.ground_state_alphas = qae_eigvecs[:,0]
+    
+    def get_results(self):
+        return (self.ground_state_energy, self.ground_state_alphas)
+class IQAE_Lindblad(object):
+    def __init__(self, N, D_matrix, E_matrix):
+        """
+        These are the evaluated matrices
+        """
+        self.N = N
+        self.D = D_matrix
+        self.E = E_matrix
+        self.eigh_invcond = None
+        self.eig_invcond = None
+        self.optimizer = None
+        self.ground_state_energy = None 
+        self.ground_state_alphas = None
+        self.all_energies = None
+        self.all_alphas = None
+    
     def define_optimizer(self, optimizer, eigh_invcond = 10**(-12),eig_invcond = 10**(-12),degeneracy_tol = 5):
         """
         Optimiser can either be eigh or qcqp or sdp or...
@@ -113,13 +156,13 @@ class IQAE(object):
             self.ground_state_alphas = qae_eigvecs[:,0]
         elif self.optimizer == "eig":
             qae_energies, qae_eigvecs = opt_package.eig_diag_routine(self.D, self.E, inv_cond=self.eigh_invcond,degeneracy_tol=self.degeneracy_tol)
-            min_energy = qae_energies[0]
-            self.ground_state_energy = min_energy
-            self.ground_state_alphas = qae_eigvecs[:,0]
+            #min_energy = qae_energies[0]
+            self.all_energies = qae_energies
+            self.all_alphas = qae_eigvecs
 
     
-    def get_results(self):
-        return (self.ground_state_energy, self.ground_state_alphas)
+    def get_results_all(self):
+        return (self.all_energies, self.all_alphas)
 
 #This is an abstract class
 class quantumSimulators(ABC):
