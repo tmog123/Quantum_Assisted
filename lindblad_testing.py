@@ -14,11 +14,11 @@ degeneracy_tol = 5
 #Generate initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 189, 2)
 
-#define Hamiltonian
-gamma = 0.1
-delta = 0.1
-epsilon = 0.5
-hamiltonian = hcp.generate_arbitary_hamiltonian(2,[-1j*delta,1j*delta,-1j*epsilon,1j*epsilon,gamma,-1j*gamma,-1j*gamma,-gamma,-2*gamma],["03","30","01","10","11","21","12","22","00"])
+#Converting L^dag L into Hamiltonian
+LdagL = np.array([[0.145,0.025+0.0375j,0.025-0.0375j,-0.125],[0.025-0.0375j,0.1375,-0.125,-0.025-0.0125j],[0.025+0.0275j,-0.125,0.1375,-0.025+0.0125j],[-0.125,-0.025+0.0125j,-0.025-0.0125j,0.125]])
+pauli_decomp = pcp.paulinomial_decomposition(LdagL) 
+hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits, list(pauli_decomp.values()), list(pauli_decomp.keys()))
+
 ansatz = acp.initial_ansatz(num_qubits)
 
 #Run IQAE
