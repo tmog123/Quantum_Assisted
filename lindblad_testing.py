@@ -46,3 +46,26 @@ for k in range(1, uptowhatK + 1):
     all_energies,all_states = IQAE_instance.get_results_all()
     print(all_energies)
     print(all_states)
+
+
+#Testing if the IQAE result is a valid density matrix
+ground_state = all_states[1]
+
+#the ansatz states
+p_matrices = [i.get_paulistring().get_string_for_hash() for i in ansatz.get_moments()]
+# print(p_matrices)
+# p_matrices = ["00", "02", "03", "10", "11", "13", "20", "23", "30", "31", "32", "33"]
+p_matrices_matform = [pcp.get_pauli_string_from_index_string(i) for i in p_matrices]
+ini_statevec = initial_state.get_statevector()
+csk_states = [i @ ini_statevec for i in p_matrices_matform]
+
+final_state = np.zeros(4) * 1j*np.zeros(4)
+for i in range(len(csk_states)):
+    final_state += ground_state[i]*csk_states[i]
+
+density_mat = np.empty(shape=(2,2), dtype=np.complex128)   
+density_mat[(0,0)] = final_state[0]
+density_mat[(1,0)] = final_state[1]
+density_mat[(0,1)] = final_state[2]
+density_mat[(1,1)] = final_state[3]
+print("the density matrix is", density_mat)
