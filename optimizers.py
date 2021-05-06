@@ -182,6 +182,9 @@ def diag_routine(D_matrix, E_matrix, inv_cond = 10**(-6)):
         if np.abs(1-norm) < inv_cond:
             first_index = j 
             break 
+        #else:
+        #    print('Thrown away 1')
+    #print(first_index)
     first_vector = ini_alpha_vecs[:,first_index]
     correct_eigvals.append(qae_energy[first_index])
     after_normalisation = first_vector / np.sqrt(first_vector.conj().T @ E_matrix @ first_vector)
@@ -190,10 +193,13 @@ def diag_routine(D_matrix, E_matrix, inv_cond = 10**(-6)):
         jth_vector = ini_alpha_vecs[:,j]
         norm = np.sqrt(jth_vector.conj().T @ E_matrix @ jth_vector)
         if np.abs(1-norm) < inv_cond:
+            #print('Add 1 in')
             jth_vector = jth_vector/norm
             correct_eigvals.append(qae_energy[j])
             after_normalisation = np.column_stack((after_normalisation,
             jth_vector))
+        #else:
+        #    print('Thrown away 1')
 
     return (np.array(correct_eigvals), after_normalisation)
 

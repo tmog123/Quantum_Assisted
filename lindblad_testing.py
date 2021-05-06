@@ -44,5 +44,5 @@ for k in range(1, uptowhatK + 1):
 
     IQAE_instance.evaluate()
     all_energies,all_states = IQAE_instance.get_results_all()
-    #print(all_energies)
-    #print(all_states)
+    print(all_energies)
+    print(all_states)
