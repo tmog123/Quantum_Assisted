@@ -5,19 +5,21 @@ import hamiltonian_class_package as hcp
 import matrix_class_package as mcp 
 import post_processing as pp
 
-uptowhatK = 2
+uptowhatK = 1
 num_qubits = 2
-optimizer = 'eig'
-eig_inv_cond = 10**(-6)
+optimizer = 'eigh'
+eigh_inv_cond = 10**(-6)
 degeneracy_tol = 5
 
 #Generate initial state
-initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 189, 2)
+initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 267, 2)
 
 #Converting L^dag L into Hamiltonian
 LdagL = np.array([[0.145,0.025+0.0375j,0.025-0.0375j,-0.125],[0.025-0.0375j,0.1375,-0.125,-0.025-0.0125j],[0.025+0.0275j,-0.125,0.1375,-0.025+0.0125j],[-0.125,-0.025+0.0125j,-0.025-0.0125j,0.125]])
 pauli_decomp = pcp.paulinomial_decomposition(LdagL) 
 hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits, list(pauli_decomp.values()), list(pauli_decomp.keys()))
+
+print('Beta values are ' + str(hamiltonian.return_betas()))
 
 ansatz = acp.initial_ansatz(num_qubits)
 
@@ -38,8 +40,9 @@ for k in range(1, uptowhatK + 1):
     #Start of the classical post-processing. #
     ##########################################
     IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated)
-    IQAE_instance.define_optimizer(optimizer, eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol)
+    IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,degeneracy_tol=degeneracy_tol)
 
     IQAE_instance.evaluate()
     all_energies,all_states = IQAE_instance.get_results_all()
-    print(all_energies)
+    #print(all_energies)
+    #print(all_states)

@@ -22,6 +22,12 @@ class Hamiltonian(object):
         for j in range(1, len(self.paulistrings)):
             first += self.paulistrings[j].get_matrixform()
         return first 
+    def return_betas(self):
+        result = []
+        for ps in self.paulistrings:
+            result.append(ps.return_coefficient())
+        return result
+
 
 class Observable(Hamiltonian):
     def __init__(self, N, paulistrings):
