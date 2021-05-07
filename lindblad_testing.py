@@ -68,4 +68,4 @@ density_mat[(0,0)] = final_state[0]
 density_mat[(1,0)] = final_state[1]
 density_mat[(0,1)] = final_state[2]
 density_mat[(1,1)] = final_state[3]
-print("the density matrix is", density_mat)
+print("the density matrix is\n", density_mat)
