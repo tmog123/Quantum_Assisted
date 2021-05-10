@@ -129,7 +129,7 @@ def QS_plotter_for_fidelity(num_qubits, ansatzlist, times,
                 #     print("actual_state_is", state)
                 #     print("theoretical_state_is", theoretical_state)
                 fidelity_vals.append(fidelity)
-            lab = name + " K=" + str(i)
+            lab = name + "Fidelity K=" + str(i)
             plt.plot(times, fidelity_vals, label = lab)
 
 def get_data_for_fidelity(num_qubits, ansatzlist, times,whatKs, qstype, hamiltonian, initial_state):
@@ -144,7 +144,7 @@ def get_data_for_fidelity(num_qubits, ansatzlist, times,whatKs, qstype, hamilton
         name = 'CQFF'
     for i in range(len(ansatzlist)):
         if i in whatKs:
-            print('Plotting fidelity for K = ' + str(i))
+            #print('Plotting fidelity for K = ' + str(i))
             ansatz = ansatzlist[i]
             result_pauli_string, result_alphas = ansatz.get_alphas()
             result_alphas = list(zip(*result_alphas)) #transpose it so that each entry is a time value 

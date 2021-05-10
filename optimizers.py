@@ -246,8 +246,9 @@ def eigh_method_for_TTQS(E_matrix,W_matrix,alphas,inv_cond):
     newalpha=ini_alpha_vec/norm_ini_alpha
     return newalpha
 
-import mosek
-import cvxpy as cp
+#import mosek
+#import cvxpy as cp
+'''
 def mosek_qcqp_for_TTQS(E_matrix,W_matrix,alphas,bounddiff=10**(-6)):
     lengthofalpha = len(alphas)
     #Realification of E
@@ -271,7 +272,7 @@ def mosek_qcqp_for_TTQS(E_matrix,W_matrix,alphas,bounddiff=10**(-6)):
     newalpha = newalphareal + 1j*newalphaimag
     normalpha = np.sqrt(np.abs(np.dot(np.transpose(np.conjugate(newalpha)),np.dot(E_matrix,newalpha))))
     newalpha = newalpha/normalpha
-    return newalpha
+    return newalpha'''
 
 
 

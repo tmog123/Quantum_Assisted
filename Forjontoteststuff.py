@@ -16,7 +16,7 @@ uptowhatK = 3
 num_qubits = 2
 endtime = 5
 num_steps = 1001
-optimizer = 'eigh'
+optimizer ='eigh' #'eigh'
 inv_cond = 10**(-3)
 numberoflayers = 2
 randomseedforinitialstate = 183#183 #873
@@ -31,7 +31,7 @@ hub, group, project = "ibm-q-nus", "default", "reservations"
 quantum_com = "ibmq_bogota" 
 
 #Other parameters for running on the quantum computer
-sim = "noisy_qasm"# #"noisy_qasm" #"noiseless_qasm"
+sim = "noiseless_qasm"# #"noisy_qasm" #"noiseless_qasm"
 num_shots = 10000
 
 quantum_computer_choice_results = qhf.choose_quantum_computer(hub, group, project, quantum_com)
