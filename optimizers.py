@@ -245,3 +245,34 @@ def eigh_method_for_TTQS(E_matrix,W_matrix,alphas,inv_cond):
     norm_ini_alpha=np.sqrt(np.abs(np.dot(np.transpose(np.conjugate(ini_alpha_vec)),np.dot(E_matrix,ini_alpha_vec))))
     newalpha=ini_alpha_vec/norm_ini_alpha
     return newalpha
+
+import mosek
+import cvxpy as cp
+def mosek_qcqp_for_TTQS(E_matrix,W_matrix,alphas,bounddiff=10**(-6)):
+    lengthofalpha = len(alphas)
+    #Realification of E
+    E_real = np.real(E_matrix)
+    E_imag = np.imag(E_matrix)
+    E_realified = np.bmat([[E_real,-E_imag],[E_imag,E_real]])
+    #realification of W
+    W_real = np.real(W_matrix)
+    W_imag = np.imag(W_matrix)
+    W_realified = np.bmat([[W_real,-W_imag],[W_imag,W_real]])
+    X = cp.Variable(2*lengthofalpha)
+    objective = cp.Minimize(cp.quad_form(X,-W_realified))
+    constraints = [cp.quad_form(X,E_realified)<=1+bounddiff,1-bounddiff<=cp.quad_form(X,E_realified)]
+    prob = cp.Problem(objective, constraints)
+    #Solve
+    prob.solve(solver = cp.MOSEK, mosek_params = {mosek.dparam.optimizer_max_time:  100.0,mosek.iparam.intpnt_solve_form:   mosek.solveform.dual},save_file = 'dump.opf',verbose = True)
+    result = np.array(X.value)
+    #unrealify
+    newalphareal = result[:lengthofalpha]
+    newalphaimag = result[lengthofalpha:]
+    newalpha = newalphareal + 1j*newalphaimag
+    normalpha = np.sqrt(np.abs(np.dot(np.transpose(np.conjugate(newalpha)),np.dot(E_matrix,newalpha))))
+    newalpha = newalpha/normalpha
+    return newalpha
+
+
+
+
