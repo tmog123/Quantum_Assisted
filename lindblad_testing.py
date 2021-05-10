@@ -49,7 +49,7 @@ for k in range(1, uptowhatK + 1):
 
 
 #Testing if the IQAE result is a valid density matrix
-ground_state = all_states[1]
+ground_state = all_states[0]
 
 #the ansatz states
 p_matrices = [i.get_paulistring().get_string_for_hash() for i in ansatz.get_moments()]
