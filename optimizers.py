@@ -245,10 +245,10 @@ def eigh_method_for_TTQS(E_matrix,W_matrix,alphas,inv_cond):
     norm_ini_alpha=np.sqrt(np.abs(np.dot(np.transpose(np.conjugate(ini_alpha_vec)),np.dot(E_matrix,ini_alpha_vec))))
     newalpha=ini_alpha_vec/norm_ini_alpha
     return newalpha
-
-#import mosek
-#import cvxpy as cp
 '''
+import mosek
+import cvxpy as cp
+
 def mosek_qcqp_for_TTQS(E_matrix,W_matrix,alphas,bounddiff=10**(-6)):
     lengthofalpha = len(alphas)
     #Realification of E
@@ -259,13 +259,19 @@ def mosek_qcqp_for_TTQS(E_matrix,W_matrix,alphas,bounddiff=10**(-6)):
     W_real = np.real(W_matrix)
     W_imag = np.imag(W_matrix)
     W_realified = np.bmat([[W_real,-W_imag],[W_imag,W_real]])
-    X = cp.Variable(2*lengthofalpha)
-    objective = cp.Minimize(cp.quad_form(X,-W_realified))
-    constraints = [cp.quad_form(X,E_realified)<=1+bounddiff,1-bounddiff<=cp.quad_form(X,E_realified)]
+    #Create Variable
+    X = cp.Variable((2*lengthofalpha,2*lengthofalpha),symmetric=True)
+    #X = x.T@x
+    objective = cp.Minimize(cp.trace(X@W_realified))
+    #constraints = [cp.trace(X@E_realified)<=1+bounddiff,1-bounddiff<=cp.trace(X@E_realified)]
+    constraints = [cp.trace(X@E_realified)==1]
     prob = cp.Problem(objective, constraints)
     #Solve
     prob.solve(solver = cp.MOSEK, mosek_params = {mosek.dparam.optimizer_max_time:  100.0,mosek.iparam.intpnt_solve_form:   mosek.solveform.dual},save_file = 'dump.opf',verbose = True)
+    #prob.solve(verbose = True)
     result = np.array(X.value)
+    print(result)
+    result = np.array(np.sqrt(result.diagonal()))
     #unrealify
     newalphareal = result[:lengthofalpha]
     newalphaimag = result[lengthofalpha:]
