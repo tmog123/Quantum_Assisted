@@ -15,11 +15,11 @@ degeneracy_tol = 5
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 267, 2)
 
 #Converting L^dag L into Hamiltonian
-LdagL = np.array([[0.145,0.025+0.0375j,0.025-0.0375j,-0.125],[0.025-0.0375j,0.1375,-0.125,-0.025-0.0125j],[0.025+0.0275j,-0.125,0.1375,-0.025+0.0125j],[-0.125,-0.025+0.0125j,-0.025-0.0125j,0.125]])
+LdagL = np.array([[0.145,0.025+0.0375j,0.025-0.0375j,-0.125],[0.025-0.0375j,0.1375,-0.125,-0.025-0.0125j],[0.025+0.0375j,-0.125,0.1375,-0.025+0.0125j],[-0.125,-0.025+0.0125j,-0.025-0.0125j,0.125]])
 pauli_decomp = pcp.paulinomial_decomposition(LdagL) 
 hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits, list(pauli_decomp.values()), list(pauli_decomp.keys()))
 
-print('Beta values are ' + str(hamiltonian.return_betas()))
+#print('Beta values are ' + str(hamiltonian.return_betas()))
 
 ansatz = acp.initial_ansatz(num_qubits)
 
