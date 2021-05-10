@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 #Parameters
-uptowhatK = 3
+uptowhatK = 1
 num_qubits = 2
 endtime = 5
 num_steps = 1001
@@ -118,7 +118,7 @@ times = TTQS_instance.get_times()
 observable = hcp.generate_arbitary_observable(num_qubits, [1], ["30"]) 
 
 #What Ks we want to plot
-whatK = [1,2,3]
+whatK = [1]
 
 #Plotting results
 plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)

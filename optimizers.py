@@ -261,20 +261,21 @@ def mosek_qcqp_for_TTQS(E_matrix,W_matrix,alphas,bounddiff=10**(-6)):
     W_realified = np.bmat([[W_real,-W_imag],[W_imag,W_real]])
     #Create Variable
     X = cp.Variable((2*lengthofalpha,2*lengthofalpha),symmetric=True)
-    #X = x.T@x
-    objective = cp.Minimize(cp.trace(X@W_realified))
+    #x = cp.Variable((2*lengthofalpha,1))
+    #X = x@x.T
+    objective = cp.Minimize(cp.trace(X@-W_realified))
     #constraints = [cp.trace(X@E_realified)<=1+bounddiff,1-bounddiff<=cp.trace(X@E_realified)]
-    constraints = [cp.trace(X@E_realified)==1]
+    constraints = [cp.trace(X@E_realified)==1,X>>0]
     prob = cp.Problem(objective, constraints)
     #Solve
-    prob.solve(solver = cp.MOSEK, mosek_params = {mosek.dparam.optimizer_max_time:  100.0,mosek.iparam.intpnt_solve_form:   mosek.solveform.dual},save_file = 'dump.opf',verbose = True)
+    prob.solve(solver = cp.MOSEK, mosek_params = {mosek.dparam.optimizer_max_time:  100.0,mosek.iparam.intpnt_solve_form:   mosek.solveform.dual},verbose = False)
     #prob.solve(verbose = True)
     result = np.array(X.value)
-    print(result)
+    #print(result)
     result = np.array(np.sqrt(result.diagonal()))
     #unrealify
-    newalphareal = result[:lengthofalpha]
-    newalphaimag = result[lengthofalpha:]
+    newalphareal = np.array(result[:lengthofalpha])
+    newalphaimag = np.array(result[lengthofalpha:])
     newalpha = newalphareal + 1j*newalphaimag
     normalpha = np.sqrt(np.abs(np.dot(np.transpose(np.conjugate(newalpha)),np.dot(E_matrix,newalpha))))
     newalpha = newalpha/normalpha
