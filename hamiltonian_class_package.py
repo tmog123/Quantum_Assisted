@@ -15,6 +15,9 @@ class Hamiltonian(object):
     def return_paulistrings(self):
         return self.paulistrings
 
+    def return_N(self):
+        return self.N
+
     def to_matrixform(self):
         if len(self.paulistrings) < 1:
             raise(RuntimeError("Hamiltonian has no paulistrings yet"))
@@ -32,6 +35,36 @@ class Hamiltonian(object):
 class Observable(Hamiltonian):
     def __init__(self, N, paulistrings):
         super().__init__(N, paulistrings)
+
+def multiply_hamiltonians(ham1,ham2):#Multiplies 2 hamiltonians together and returns the new hamiltonian result
+    if ham1.return_N() != ham2.return_N():
+        raise(RuntimeError("Hamiltonians are not of same qubit size"))
+    newpauliclassobjs = []
+    stringsalready = []
+    ham1pauliclassobjs = ham1.return_paulistrings()
+    ham2pauliclassobjs = ham2.return_paulistrings()
+    for p1 in ham1pauliclassobjs:
+        for p2 in ham2pauliclassobjs:
+            pnew = pcp.pauli_combine(p1,p2)
+            #Avoid repeats of strings
+            if pnew.return_string() in stringsalready:
+                for pold in newpauliclassobjs:
+                    if pnew.return_string() == pold.return_string():
+                        pold.add_to_coefficient(pnew.return_coefficient())
+            else:
+                stringsalready.append(pnew.return_string())
+                newpauliclassobjs.append(pnew)
+    #create new hamiltonian
+    return Hamiltonian(ham1.return_N(),newpauliclassobjs)
+
+def dagger_hamiltonian(ham1):#Returns the dagger of the hamiltonian
+    newpauliclassobjs = []
+    N = ham1.return_N()
+    for pold in ham1.return_paulistrings():
+        newpauliclassobjs.append(pcp.paulistring(N,pold.return_string(),np.conj(pold.return_coefficient())))
+    return Hamiltonian(N,newpauliclassobjs)
+
+
 
 def generate_arbitary_hamiltonian(N, couplings, pauli_strings):
     """

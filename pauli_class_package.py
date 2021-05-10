@@ -27,6 +27,8 @@ class paulistring(object):
         return self.string
     def return_coefficient(self):
         return self.coefficient
+    def add_to_coefficient(self,coffadd):
+        self.coefficient = self.coefficient + coffadd
     def __eq__(self, other):
         return self.coefficient == other.coefficient and self.string == other.string
     def __hash__(self):
