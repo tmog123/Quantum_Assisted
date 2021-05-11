@@ -4,15 +4,17 @@ import pauli_class_package as pcp
 import hamiltonian_class_package as hcp 
 import matrix_class_package as mcp 
 import post_processing as pp
+import time
 
+#starting time
+starttime = time.time()
 #The IQAE algorithm is found in https://arxiv.org/abs/2010.05638
 
 #Parameters
 uptowhatK = 3
 num_qubits = 4
-optimizer = 'eigh'
+optimizer = 'eigh' #'eigh' or 'qcqp'
 eigh_inv_cond = 10**(-12)
-uptowhatK = 4
 
 #create initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 1, 5)
@@ -40,8 +42,20 @@ for k in range(1, uptowhatK + 1):
     #Start of the classical post-processing. #
     ##########################################
     IQAE_instance = pp.IQAE(num_qubits, D_mat_evaluated, E_mat_evaluated)
-    IQAE_instance.define_optimizer("eigh", eigh_invcond=eigh_inv_cond)
+    IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond)
 
     IQAE_instance.evaluate()
     ground_state_energy,ground_state_alphavec = IQAE_instance.get_results()
     print("The ground state energy is", ground_state_energy)
+
+#Compare with just diagonalizing matrix
+cS_instance = pp.classicalSimulator(num_qubits,initial_state,hamiltonian)
+ground_energy,ground_state = cS_instance.find_ground_state()
+print('The real ground state energy is '+str(ground_energy))
+
+#end time
+endtime = time.time()
+
+#total time taken
+print(f"Runtime of the program is {endtime - starttime}")
+

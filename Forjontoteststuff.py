@@ -9,14 +9,17 @@ import warnings
 import json
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
+import time
 
+#starting time
+timer_starttime = time.time()
 
 #Parameters
-uptowhatK = 2
+uptowhatK = 1
 num_qubits = 2
 endtime = 5
 num_steps = 1001
-optimizer ='eigh' #'eigh','qcqp'
+optimizer ='qcqp' #'eigh','qcqp'
 inv_cond = 10**(-3)
 numberoflayers = 2
 randomseedforinitialstate = 183#183 #873
@@ -118,7 +121,7 @@ times = TTQS_instance.get_times()
 observable = hcp.generate_arbitary_observable(num_qubits, [1], ["30"]) 
 
 #What Ks we want to plot
-whatK = [1,2]
+whatK = [1]
 
 #Plotting results
 plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
@@ -189,7 +192,10 @@ for k in range(1,uptowhatK+1):
     #Update final results with this
     finalresults.append(ansatz)'''
 
-
+#end time
+timer_endtime = time.time()
+#total time taken
+print(f"Runtime of the program is {timer_endtime - timer_starttime}")
 #Plotting results
 #plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'QAS',observable,initial_state)
 plotp.QS_plotter_for_fidelity(num_qubits,finalresults,times,whatK,'TTQS',hamiltonian,initial_state)

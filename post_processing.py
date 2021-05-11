@@ -29,7 +29,10 @@ def expectation_val(Qtensormatrix,psi):
 
 class classicalSimulator(object):
     """
-    I.e, just does e^{-i H t}|\psi(\alpha(t = 0))>
+    I.e, just does e^{-i H t}|\psi(\alpha(t = 0))> for time simulation
+
+    Or just diagonalizes matrix to find ground state
+
     """
     def __init__(self,N,initialstate,hamiltonian,method='matrix_multiplication'):
         self.N = N
@@ -45,6 +48,13 @@ class classicalSimulator(object):
     def numberstep(self,steps):
         self.steps = steps
     
+    def find_ground_state(self):
+        H = self.hamiltonian.to_matrixform()
+        values,vectors = scipy.linalg.eigh(H)
+        return (values[0],vectors[:,0])
+
+
+
     def evaluate(self):
         if self.method == 'matrix_multiplication':
             startingstate = self.initialstate.get_statevector()
@@ -89,8 +99,7 @@ class IQAE(object):
         self.optimizer = optimizer
         if optimizer == "eigh":
             self.set_eigh_invcond(eigh_invcond)
-        elif optimizer == "qcqp":
-            pass 
+            
     
     def set_eigh_invcond(self, eigh_invcond):
         self.eigh_invcond = eigh_invcond
@@ -105,6 +114,13 @@ class IQAE(object):
             min_energy = qae_energies[0]
             self.ground_state_energy = min_energy
             self.ground_state_alphas = qae_eigvecs[:,0]
+        elif self.optimizer == 'qcqp':
+            updatedalphas = opt_package.qcqp_IQAE_routine(self.D, self.E)
+            self.ground_state_alphas = updatedalphas
+            self.ground_state_energy = np.dot(np.conjugate(np.transpose(updatedalphas)),np.dot(self.D,updatedalphas))[0,0]
+
+
+
     
     def get_results(self):
         return (self.ground_state_energy, self.ground_state_alphas)

@@ -2,724 +2,87 @@ INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
 INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
 INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
 INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('id', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'swap', 'ryy', 'kraus', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
+INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 1.00088 (ms)
+INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('cx', 2), ('ry', 1), ('rz', 1)} to target basis {'mcp', 'save_expval', 'save_amplitudes', 'u', 'snapshot', 'cp', 'save_probs_ket', 'mcry', 'r', 'kraus', 'mcu3', 'y', 'h', 'cswap', 'mcswap', 'pauli', 'cz', 'u2', 'ry', 'mcx', 'id', 'save_statevector', 'mcu1', 'save_density_matrix', 'mcu2', 'u3', 'cu1', 'set_statevector', 'cy', 's', 'roerror', 'mcrx', 'delay', 'tdg', 'save_state', 'mcz', 'sdg', 'save_amplitudes_sq', 'csx', 'rzz', 'rzx', 'u1', 'initialize', 'mcy', 'multiplexer', 'barrier', 't', 'reset', 'z', 'ccx', 'mcrz', 'sx', 'diagonal', 'mcsx', 'mcr', 'rxx', 'cx', 'ryy', 'rz', 'swap', 'measure', 'cu3', 'unitary', 'x', 'cu2', 'rx', 'p', 'save_probs'}.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00152 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 1.00136 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00176 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 7.00688 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 66.06150 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'swap', 'ryy', 'kraus', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00200 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'swap', 'ryy', 'kraus', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
+INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 1.00040 (ms)
+INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('cx', 2), ('u3', 1)} to target basis {'mcp', 'save_expval', 'save_amplitudes', 'u', 'snapshot', 'cp', 'save_probs_ket', 'mcry', 'r', 'kraus', 'mcu3', 'y', 'h', 'cswap', 'mcswap', 'pauli', 'cz', 'u2', 'ry', 'mcx', 'id', 'save_statevector', 'mcu1', 'save_density_matrix', 'mcu2', 'u3', 'cu1', 'set_statevector', 'cy', 's', 'roerror', 'mcrx', 'delay', 'tdg', 'save_state', 'mcz', 'sdg', 'save_amplitudes_sq', 'csx', 'rzz', 'rzx', 'u1', 'initialize', 'mcy', 'multiplexer', 'barrier', 't', 'reset', 'z', 'ccx', 'mcrz', 'sx', 'diagonal', 'mcsx', 'mcr', 'rxx', 'cx', 'ryy', 'rz', 'swap', 'measure', 'cu3', 'unitary', 'x', 'cu2', 'rx', 'p', 'save_probs'}.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
 INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00112 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 2.00176 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'swap', 'ryy', 'kraus', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00105 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 1.00088 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 311.29932 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 2.00200 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 1.00136 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('id', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00176 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 8.00753 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00105 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00017 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00224 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00200 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 0.00000 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 29.02722 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 2.00176 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('id', 1), ('rzz', 2), ('measure', 1), ('h', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00272 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 7.00617 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('u2', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.002s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00200 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('u2', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 3.00288 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00064 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('u2', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.002s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00200 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 1.00088 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 28.02515 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 1.00136 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('id', 1), ('rzz', 2), ('measure', 1), ('h', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00176 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 5.00512 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('u2', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00017 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('u2', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00136 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 1.00064 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('u2', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00136 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 1.00112 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 21.01946 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 1.00017 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 1.00017 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('id', 1), ('rzz', 2), ('measure', 1), ('h', 1), ('sdg', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00017 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 4.00352 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00064 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00040 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 0.00000 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 18.01658 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('id', 1), ('rzz', 2), ('measure', 1), ('h', 1), ('sdg', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00200 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 6.00672 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00081 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00176 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00064 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00248 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 1.00112 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 21.01946 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 1.00040 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 1.00040 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('rzz', 2), ('measure', 1), ('h', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00129 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 7.00855 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u2', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00129 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u2', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00176 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00040 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u2', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00112 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 1.00040 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 24.02210 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('rzz', 2), ('measure', 1), ('h', 1), ('sdg', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00183 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 6.00481 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
+INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('cx', 2), ('u3', 1)} to target basis {'mcp', 'save_expval', 'save_amplitudes', 'u', 'snapshot', 'cp', 'save_probs_ket', 'mcry', 'r', 'kraus', 'mcu3', 'y', 'h', 'cswap', 'mcswap', 'pauli', 'cz', 'u2', 'ry', 'mcx', 'id', 'save_statevector', 'mcu1', 'save_density_matrix', 'mcu2', 'u3', 'cu1', 'set_statevector', 'cy', 's', 'roerror', 'mcrx', 'delay', 'tdg', 'save_state', 'mcz', 'sdg', 'save_amplitudes_sq', 'csx', 'rzz', 'rzx', 'u1', 'initialize', 'mcy', 'multiplexer', 'barrier', 't', 'reset', 'z', 'ccx', 'mcrz', 'sx', 'diagonal', 'mcsx', 'mcr', 'rxx', 'cx', 'ryy', 'rz', 'swap', 'measure', 'cu3', 'unitary', 'x', 'cu2', 'rx', 'p', 'save_probs'}.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
 INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00088 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00112 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 2.00200 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00064 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00200 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 0.00000 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 20.01739 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 1.00064 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 1.00136 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('rzz', 2), ('rx', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'initialize', 'roerror', 'cu1', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'rz', 'save_probs_ket', 'mcsx', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_probs', 'mcp', 's', 'delay', 'save_expval', 'swap', 'ryy', 'kraus', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 0.99993 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('rzz', 2), ('rx', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'initialize', 'roerror', 'cu1', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'rz', 'save_probs_ket', 'mcsx', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_probs', 'mcp', 's', 'delay', 'save_expval', 'swap', 'ryy', 'kraus', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00160 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00064 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('rzz', 2), ('rx', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'initialize', 'roerror', 'cu1', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'rz', 'save_probs_ket', 'mcsx', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_probs', 'mcp', 's', 'delay', 'save_expval', 'swap', 'ryy', 'kraus', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 0.00000 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 9.00674 (ms)
-INFO:qiskit.execute_function:<bound method BackendV1.name of StatevectorSimulator('statevector_simulator')> backend doesn't support option memory so not passing that kwarg to run()
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 1.00160 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('id', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 5.00393 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00064 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 1.00040 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00200 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 1.00064 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 1.00160 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 18.01562 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 1.00088 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('id', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00176 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 5.00464 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00152 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 1.00064 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00112 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 1.00064 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 19.01913 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 0.99993 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('id', 1), ('rzz', 2), ('measure', 1), ('h', 1), ('sdg', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00040 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 5.00393 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 3.00264 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00224 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00200 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 1.00088 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 23.02051 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 1.00088 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('id', 1), ('rzz', 2), ('measure', 1), ('h', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00064 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 5.00441 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('u2', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00105 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 1.00112 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('u2', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00064 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00040 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('u2', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 0.00000 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 20.01858 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 1.00112 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('id', 1), ('rzz', 2), ('measure', 1), ('h', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00160 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 5.00512 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('u2', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.001s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00176 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('u2', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00112 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00136 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('u2', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00040 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 1.00136 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 18.01610 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('id', 1), ('rzz', 2), ('measure', 1), ('h', 1), ('sdg', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00224 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 5.00441 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00200 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 1.00017 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00422 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00248 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 1.00088 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 20.01810 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 1.00112 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('rx', 1), ('rzz', 2), ('measure', 1), ('h', 1), ('sdg', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00200 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 5.00560 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('u2', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00009 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 1.00017 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('u2', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00160 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00160 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('barrier', 2), ('u3', 1), ('u2', 1), ('rx', 1), ('rzz', 2), ('measure', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'mcx_gray', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'set_stabilizer', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'mcphase', 'set_density_matrix', 'initialize', 'roerror', 'cu1', 'save_probabilities', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'save_stabilizer', 'save_expval_var', 'rz', 'mcsx', 'save_probabilities_dict', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_statevector_dict', 's', 'delay', 'save_expval', 'kraus', 'ryy', 'swap', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
+INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('cx', 2), ('u3', 1)} to target basis {'mcp', 'save_expval', 'save_amplitudes', 'u', 'snapshot', 'cp', 'save_probs_ket', 'mcry', 'r', 'kraus', 'mcu3', 'y', 'h', 'cswap', 'mcswap', 'pauli', 'cz', 'u2', 'ry', 'mcx', 'id', 'save_statevector', 'mcu1', 'save_density_matrix', 'mcu2', 'u3', 'cu1', 'set_statevector', 'cy', 's', 'roerror', 'mcrx', 'delay', 'tdg', 'save_state', 'mcz', 'sdg', 'save_amplitudes_sq', 'csx', 'rzz', 'rzx', 'u1', 'initialize', 'mcy', 'multiplexer', 'barrier', 't', 'reset', 'z', 'ccx', 'mcrz', 'sx', 'diagonal', 'mcsx', 'mcr', 'rxx', 'cx', 'ryy', 'rz', 'swap', 'measure', 'cu3', 'unitary', 'x', 'cu2', 'rx', 'p', 'save_probs'}.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.000s.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
 INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00057 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 0.00000 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 20.01834 (ms)
-INFO:qiskit.compiler.assembler:Total Assembly Time - 1.00136 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 2.00248 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('rzz', 2), ('rx', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'initialize', 'roerror', 'cu1', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'rz', 'save_probs_ket', 'mcsx', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_probs', 'mcp', 's', 'delay', 'save_expval', 'swap', 'ryy', 'kraus', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00064 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('rzz', 2), ('rx', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'initialize', 'roerror', 'cu1', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'rz', 'save_probs_ket', 'mcsx', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_probs', 'mcp', 's', 'delay', 'save_expval', 'swap', 'ryy', 'kraus', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00112 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('rzz', 2), ('rx', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'initialize', 'roerror', 'cu1', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'rz', 'save_probs_ket', 'mcsx', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_probs', 'mcp', 's', 'delay', 'save_expval', 'swap', 'ryy', 'kraus', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00088 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 0.00000 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 9.00865 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 2.00200 (ms)
+INFO:qiskit.compiler.transpiler:Total Transpile Time - 342.31019 (ms)
 INFO:qiskit.execute_function:<bound method BackendV1.name of StatevectorSimulator('statevector_simulator')> backend doesn't support option memory so not passing that kwarg to run()
 INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 1.00040 (ms)
+INFO:qiskit.execute_function:Total Job Submission Time - 3.00217 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('rzz', 2), ('rx', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'initialize', 'roerror', 'cu1', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'rz', 'save_probs_ket', 'mcsx', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_probs', 'mcp', 's', 'delay', 'save_expval', 'swap', 'ryy', 'kraus', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
+INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('cx', 2), ('ry', 1), ('rz', 1)} to target basis {'mcp', 'save_expval', 'save_amplitudes', 'u', 'snapshot', 'cp', 'save_probs_ket', 'mcry', 'r', 'kraus', 'mcu3', 'y', 'h', 'cswap', 'mcswap', 'pauli', 'cz', 'u2', 'ry', 'mcx', 'id', 'save_statevector', 'mcu1', 'save_density_matrix', 'mcu2', 'u3', 'cu1', 'set_statevector', 'cy', 's', 'roerror', 'mcrx', 'delay', 'tdg', 'save_state', 'mcz', 'sdg', 'save_amplitudes_sq', 'csx', 'rzz', 'rzx', 'u1', 'initialize', 'mcy', 'multiplexer', 'barrier', 't', 'reset', 'z', 'ccx', 'mcrz', 'sx', 'diagonal', 'mcsx', 'mcr', 'rxx', 'cx', 'ryy', 'rz', 'swap', 'measure', 'cu3', 'unitary', 'x', 'cu2', 'rx', 'p', 'save_probs'}.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00088 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00040 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: RemoveResetInZeroState - 0.00000 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 63.05718 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 1.00064 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
+INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('cx', 2), ('u3', 1)} to target basis {'mcp', 'save_expval', 'save_amplitudes', 'u', 'snapshot', 'cp', 'save_probs_ket', 'mcry', 'r', 'kraus', 'mcu3', 'y', 'h', 'cswap', 'mcswap', 'pauli', 'cz', 'u2', 'ry', 'mcx', 'id', 'save_statevector', 'mcu1', 'save_density_matrix', 'mcu2', 'u3', 'cu1', 'set_statevector', 'cy', 's', 'roerror', 'mcrx', 'delay', 'tdg', 'save_state', 'mcz', 'sdg', 'save_amplitudes_sq', 'csx', 'rzz', 'rzx', 'u1', 'initialize', 'mcy', 'multiplexer', 'barrier', 't', 'reset', 'z', 'ccx', 'mcrz', 'sx', 'diagonal', 'mcsx', 'mcr', 'rxx', 'cx', 'ryy', 'rz', 'swap', 'measure', 'cu3', 'unitary', 'x', 'cu2', 'rx', 'p', 'save_probs'}.
+INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
+INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.000s.
+INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
+INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 2.00200 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00064 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
 INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('rzz', 2), ('rx', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'initialize', 'roerror', 'cu1', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'rz', 'save_probs_ket', 'mcsx', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_probs', 'mcp', 's', 'delay', 'save_expval', 'swap', 'ryy', 'kraus', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
-INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
-INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00040 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00112 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 0.00000 (ms)
-INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('rzz', 2), ('rx', 1)} to target basis {'id', 'pauli', 'mcy', 'measure', 'cy', 'cx', 'r', 'u2', 'cu3', 'mcu3', 'p', 'mcrx', 'cu2', 'cz', 'u1', 'mcx', 'save_amplitudes', 'sx', 'h', 'ccx', 'mcz', 'mcu1', 'unitary', 'save_state', 'mcrz', 'rzz', 'rxx', 'mcu2', 'save_statevector', 'initialize', 'roerror', 'cu1', 'diagonal', 'save_amplitudes_sq', 'mcry', 'snapshot', 'cswap', 'rz', 'save_probs_ket', 'mcsx', 'reset', 'save_density_matrix', 'mcr', 'rzx', 'z', 'cp', 'sdg', 'csx', 'multiplexer', 't', 'u', 'barrier', 'x', 'save_probs', 'mcp', 's', 'delay', 'save_expval', 'swap', 'ryy', 'kraus', 'rx', 'ry', 'mcswap', 'u3', 'y', 'set_statevector', 'tdg'}.
+INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('cx', 2), ('u3', 1)} to target basis {'mcp', 'save_expval', 'save_amplitudes', 'u', 'snapshot', 'cp', 'save_probs_ket', 'mcry', 'r', 'kraus', 'mcu3', 'y', 'h', 'cswap', 'mcswap', 'pauli', 'cz', 'u2', 'ry', 'mcx', 'id', 'save_statevector', 'mcu1', 'save_density_matrix', 'mcu2', 'u3', 'cu1', 'set_statevector', 'cy', 's', 'roerror', 'mcrx', 'delay', 'tdg', 'save_state', 'mcz', 'sdg', 'save_amplitudes_sq', 'csx', 'rzz', 'rzx', 'u1', 'initialize', 'mcy', 'multiplexer', 'barrier', 't', 'reset', 'z', 'ccx', 'mcrz', 'sx', 'diagonal', 'mcsx', 'mcr', 'rxx', 'cx', 'ryy', 'rz', 'swap', 'measure', 'cu3', 'unitary', 'x', 'cu2', 'rx', 'p', 'save_probs'}.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
 INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
 INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00064 (ms)
-INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 0.00000 (ms)
-INFO:qiskit.compiler.transpiler:Total Transpile Time - 10.00929 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: Depth - 0.00000 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: FixedPoint - 0.00000 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: Optimize1qGatesDecomposition - 1.00136 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: CXCancellation - 0.00000 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: UnrollCustomDefinitions - 1.00088 (ms)
+INFO:qiskit.transpiler.passes.basis.basis_translator:Begin BasisTranslator from source basis {('cx', 2), ('u3', 1)} to target basis {'mcp', 'save_expval', 'save_amplitudes', 'u', 'snapshot', 'cp', 'save_probs_ket', 'mcry', 'r', 'kraus', 'mcu3', 'y', 'h', 'cswap', 'mcswap', 'pauli', 'cz', 'u2', 'ry', 'mcx', 'id', 'save_statevector', 'mcu1', 'save_density_matrix', 'mcu2', 'u3', 'cu1', 'set_statevector', 'cy', 's', 'roerror', 'mcrx', 'delay', 'tdg', 'save_state', 'mcz', 'sdg', 'save_amplitudes_sq', 'csx', 'rzz', 'rzx', 'u1', 'initialize', 'mcy', 'multiplexer', 'barrier', 't', 'reset', 'z', 'ccx', 'mcrz', 'sx', 'diagonal', 'mcsx', 'mcr', 'rxx', 'cx', 'ryy', 'rz', 'swap', 'measure', 'cu3', 'unitary', 'x', 'cu2', 'rx', 'p', 'save_probs'}.
+INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation path search completed in 0.000s.
+INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation paths composed in 0.001s.
+INFO:qiskit.transpiler.passes.basis.basis_translator:Basis translation instructions replaced in 0.000s.
+INFO:qiskit.transpiler.runningpassmanager:Pass: BasisTranslator - 1.00064 (ms)
+INFO:qiskit.transpiler.runningpassmanager:Pass: TimeUnitConversion - 2.00200 (ms)
+INFO:qiskit.compiler.transpiler:Total Transpile Time - 86.07817 (ms)
 INFO:qiskit.execute_function:<bound method BackendV1.name of StatevectorSimulator('statevector_simulator')> backend doesn't support option memory so not passing that kwarg to run()
-INFO:qiskit.compiler.assembler:Total Assembly Time - 0.00000 (ms)
-INFO:qiskit.execute_function:Total Job Submission Time - 1.00088 (ms)
+INFO:qiskit.compiler.assembler:Total Assembly Time - 1.00255 (ms)
+INFO:qiskit.execute_function:Total Job Submission Time - 2.00176 (ms)

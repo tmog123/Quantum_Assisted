@@ -1,6 +1,30 @@
 import numpy as np
 import scipy
 from scipy import linalg
+havedoneqcqpimports = False
+
+'''READ THIS IF YOU WANT TO USE QCQP'''
+#Need a very specific set of libraries
+#pip install  cvxpy==0.4.9
+#pip install CVXcanon==0.1.0
+#pip install qcqp
+#AFTER THIS: Go to the python files in your computer
+#For me its C:\Users\jonat\AppData\Local\Programs\Python\Python38\Lib\site-packages\cvxpy\atoms\log_sum_exp
+#Change from scipy.misc import logsumexp to from scipy.special import logsumexp
+#Also might require you to get a mosek license and install mosek
+#pip install Mosek
+#Request personal Academic License at https://www.mosek.com/products/academic-licenses/ and follow instructions
+
+'''2nd attempt'''
+#pip install gurobipy
+'''
+import cvxpy as cvx
+#import mosek
+from qcqp import *
+#import qcqp as qcp
+import importlib
+importlib.reload(qcqp)
+importlib.reload(cvx)'''
 
 def gram_schmidt(set_of_vectors, psd_matrix):
     """
@@ -203,6 +227,49 @@ def diag_routine(D_matrix, E_matrix, inv_cond = 10**(-6)):
 
     return (np.array(correct_eigvals), after_normalisation)
 
+def qcqp_IQAE_routine(D_matrix, E_matrix):
+    #global havedoneqcqpimports
+    '''if havedoneqcqpimports == False:
+        import cvxpy as cvx
+        import mosek
+        #from qcqp import *
+        import qcqp as qcp
+        import importlib
+        importlib.reload(qcqp)
+        importlib.reload(cvx)
+        havedoneqcqpimports = True'''
+    lengthofalpha = D_matrix.shape[0]
+    #Realification of E
+    E_real = np.real(E_matrix)
+    E_imag = np.imag(E_matrix)
+    E_realified = np.bmat([[E_real,-E_imag],[E_imag,E_real]])
+    #realification of D
+    D_real = np.real(D_matrix)
+    D_imag = np.imag(D_matrix)
+    D_realified = np.bmat([[D_real,-D_imag],[D_imag,D_real]])
+    #Create Variable
+    x = cvx.Variable(2*lengthofalpha)
+    #Define objective and constraints
+    objective = cvx.quad_form(x,D_realified)
+    constraints = [cvx.quad_form(x,E_realified)==1]
+    #Solve
+    prob = cvx.Problem(cvx.Minimize(objective), constraints)
+    qcqp = QCQP(prob)
+    #Here could use SDP relaxation to find a starting point for local methods
+    #Although here, we just use a random point
+    qcqp.suggest(SDR,solver=cvx.MOSEK)
+    #Attempt to improve the starting point given by the suggest method
+    f_cd, v_cd = qcqp.improve(COORD_DESCENT)
+    result = np.array(x.value)
+    #unrealify
+    newalphareal = np.array(result[:lengthofalpha])
+    newalphaimag = np.array(result[lengthofalpha:])
+    newalpha = newalphareal + 1j*newalphaimag
+    #normalpha = np.sqrt(np.abs(np.dot(np.transpose(np.conjugate(newalpha)),np.dot(E_matrix,newalpha))))
+    #newalpha = newalpha/normalpha
+    return newalpha
+
+
 #OPTIMIZERS MUST RETURN THE UPDATED ALPHAS
 def eigh_method_for_TTQS(E_matrix,W_matrix,alphas,inv_cond):
     e_vals,e_vecs=scipy.linalg.eigh(E_matrix)
@@ -246,30 +313,21 @@ def eigh_method_for_TTQS(E_matrix,W_matrix,alphas,inv_cond):
     newalpha=ini_alpha_vec/norm_ini_alpha
     return newalpha
 
-#Need a very specific set of libraries
-#pip install  cvxpy==0.4.9
-#pip install CVXcanon==0.1.0
-#pip install qcqp
-#AFTER THIS: Go to the python files in your computer
-#For me its C:\Users\jonat\AppData\Local\Programs\Python\Python38\Lib\site-packages\cvxpy\atoms\log_sum_exp
-#Change from scipy.misc import logsumexp to from scipy.special import logsumexp
-#Also might require you to get a mosek license and install mosek
-#pip install Mosek
-#Request personal Academic License at https://www.mosek.com/products/academic-licenses/ and follow instructions
 
-havedoneqcqpimports = False
-
+#havedoneqcqpimports = False
 
 def qcqp_for_TTQS(E_matrix,W_matrix,alphas,bounddiff=10**(-6)):
+    #global havedoneqcqpimports
+    '''
     if havedoneqcqpimports == False:
         import cvxpy as cvx
         import mosek
         #from qcqp import *
         import qcqp as qcp
         import importlib
-        importlib.reload(qcqp)
+        importlib.reload(qcp)
         importlib.reload(cvx)
-        havedoneqcqpimports = True
+        havedoneqcqpimports = True'''
     lengthofalpha = len(alphas)
     #Realification of E
     E_real = np.real(E_matrix)
@@ -291,11 +349,12 @@ def qcqp_for_TTQS(E_matrix,W_matrix,alphas,bounddiff=10**(-6)):
     #Solve
     #prob.solve(solver = cp.MOSEK, mosek_params = {mosek.dparam.optimizer_max_time:  100.0,mosek.iparam.intpnt_solve_form:   mosek.solveform.dual},verbose = False)
     #prob.solve(verbose = True)
-    qcqp = qcp.QCQP(prob)
+    qcqp = QCQP(prob)
     
     #Here could use SDP relaxation to find a starting point for local methods
     #Although here, we just use a random point
-    qcqp.suggest(SDR,solver=cvx.MOSEK)
+    #qcqp.suggest(SDR,solver=cvx.MOSEK)
+    qcqp.suggest(SDR)
     #qcqp.suggest(RANDOM)
 
     #Attempt to improve the starting point given by the suggest method
