@@ -18,7 +18,16 @@ created the ability to interface with IBMQ quantum computers
 
 Things to do: Create the code for more advanced plotting and analyzing
 
-QCQP: NOT IMPLEMENTED YET. So far only optimization routine that has been implemented is eigh method (diagonalization). For TTQS/IQAE, should look into implementing a QCQP method in optimizers.py
+QCQP: NEEDS SPECIFIC LIBRARIES
+#pip install  cvxpy==0.4.9
+#pip install CVXcanon==0.1.0
+#pip install qcqp
+#AFTER THIS: Go to the python files in your computer
+#For me its C:\Users\jonat\AppData\Local\Programs\Python\Python38\Lib\site-packages\cvxpy\atoms\log_sum_exp
+#Change from scipy.misc import logsumexp to from scipy.special import logsumexp
+#Also might require you to get a mosek license and install mosek
+#pip install Mosek
+#Request personal Academic License at https://www.mosek.com/products/academic-licenses/ and follow instructions
 
 
 Dependencies:
