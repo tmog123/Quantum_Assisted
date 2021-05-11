@@ -368,8 +368,8 @@ class TTQS(quantumSimulators):
                 newalpha = opt_package.eigh_method_for_TTQS(self.E,W_matrix,thisalpha,self.invcond)
                 for i in range(len(newalpha)):
                     alphas[i].append(newalpha[i])
-            elif self.optimizer == 'mosek_qcqp':
-                newalpha = opt_package.mosek_qcqp_for_TTQS(self.E,W_matrix,thisalpha)
+            elif self.optimizer == 'qcqp':
+                newalpha = opt_package.qcqp_for_TTQS(self.E,W_matrix,thisalpha)
                 for i in range(len(newalpha)):
                     alphas[i].append(newalpha[i])
 

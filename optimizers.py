@@ -245,11 +245,31 @@ def eigh_method_for_TTQS(E_matrix,W_matrix,alphas,inv_cond):
     norm_ini_alpha=np.sqrt(np.abs(np.dot(np.transpose(np.conjugate(ini_alpha_vec)),np.dot(E_matrix,ini_alpha_vec))))
     newalpha=ini_alpha_vec/norm_ini_alpha
     return newalpha
-'''
-import mosek
-import cvxpy as cp
 
-def mosek_qcqp_for_TTQS(E_matrix,W_matrix,alphas,bounddiff=10**(-6)):
+#Need a very specific set of libraries
+#pip install  cvxpy==0.4.9
+#pip install CVXcanon==0.1.0
+#pip install qcqp
+#AFTER THIS: Go to the python files in your computer
+#For me its C:\Users\jonat\AppData\Local\Programs\Python\Python38\Lib\site-packages\cvxpy\atoms\log_sum_exp
+#Change from scipy.misc import logsumexp to from scipy.special import logsumexp
+#Also might require you to get a mosek license and install mosek
+#pip install Mosek
+#Request personal Academic License at https://www.mosek.com/products/academic-licenses/ and follow instructions
+
+havedoneqcqpimports = False
+
+
+def qcqp_for_TTQS(E_matrix,W_matrix,alphas,bounddiff=10**(-6)):
+    if havedoneqcqpimports == False:
+        import cvxpy as cvx
+        import mosek
+        #from qcqp import *
+        import qcqp as qcp
+        import importlib
+        importlib.reload(qcqp)
+        importlib.reload(cvx)
+        havedoneqcqpimports = True
     lengthofalpha = len(alphas)
     #Realification of E
     E_real = np.real(E_matrix)
@@ -260,26 +280,38 @@ def mosek_qcqp_for_TTQS(E_matrix,W_matrix,alphas,bounddiff=10**(-6)):
     W_imag = np.imag(W_matrix)
     W_realified = np.bmat([[W_real,-W_imag],[W_imag,W_real]])
     #Create Variable
-    X = cp.Variable((2*lengthofalpha,2*lengthofalpha),symmetric=True)
+    x = cvx.Variable(2*lengthofalpha)
     #x = cp.Variable((2*lengthofalpha,1))
     #X = x@x.T
-    objective = cp.Minimize(cp.trace(X@-W_realified))
+    #Define objective and constraints
+    objective = cvx.quad_form(x,-W_realified)
     #constraints = [cp.trace(X@E_realified)<=1+bounddiff,1-bounddiff<=cp.trace(X@E_realified)]
-    constraints = [cp.trace(X@E_realified)==1,X>>0]
-    prob = cp.Problem(objective, constraints)
+    constraints = [cvx.quad_form(x,E_realified)==1]
+    prob = cvx.Problem(cvx.Minimize(objective), constraints)
     #Solve
-    prob.solve(solver = cp.MOSEK, mosek_params = {mosek.dparam.optimizer_max_time:  100.0,mosek.iparam.intpnt_solve_form:   mosek.solveform.dual},verbose = False)
+    #prob.solve(solver = cp.MOSEK, mosek_params = {mosek.dparam.optimizer_max_time:  100.0,mosek.iparam.intpnt_solve_form:   mosek.solveform.dual},verbose = False)
     #prob.solve(verbose = True)
-    result = np.array(X.value)
+    qcqp = qcp.QCQP(prob)
+    
+    #Here could use SDP relaxation to find a starting point for local methods
+    #Although here, we just use a random point
+    qcqp.suggest(SDR,solver=cvx.MOSEK)
+    #qcqp.suggest(RANDOM)
+
+    #Attempt to improve the starting point given by the suggest method
+    f_cd, v_cd = qcqp.improve(COORD_DESCENT)
+    #print("Coordinate descent: objective %.3f, violation %.3f" % (f_cd, v_cd))
+    #print(x.value)
+
     #print(result)
-    result = np.array(np.sqrt(result.diagonal()))
+    result = np.array(x.value)
     #unrealify
     newalphareal = np.array(result[:lengthofalpha])
     newalphaimag = np.array(result[lengthofalpha:])
     newalpha = newalphareal + 1j*newalphaimag
-    normalpha = np.sqrt(np.abs(np.dot(np.transpose(np.conjugate(newalpha)),np.dot(E_matrix,newalpha))))
-    newalpha = newalpha/normalpha
-    return newalpha'''
+    #normalpha = np.sqrt(np.abs(np.dot(np.transpose(np.conjugate(newalpha)),np.dot(E_matrix,newalpha))))
+    #newalpha = newalpha/normalpha
+    return newalpha
 
 
 

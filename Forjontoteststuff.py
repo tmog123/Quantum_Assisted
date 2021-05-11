@@ -12,11 +12,11 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 #Parameters
-uptowhatK = 1
+uptowhatK = 2
 num_qubits = 2
 endtime = 5
 num_steps = 1001
-optimizer ='mosek_qcqp' #'eigh','mosek_qcqp'
+optimizer ='eigh' #'eigh','qcqp'
 inv_cond = 10**(-3)
 numberoflayers = 2
 randomseedforinitialstate = 183#183 #873
@@ -118,7 +118,7 @@ times = TTQS_instance.get_times()
 observable = hcp.generate_arbitary_observable(num_qubits, [1], ["30"]) 
 
 #What Ks we want to plot
-whatK = [1]
+whatK = [1,2]
 
 #Plotting results
 plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
