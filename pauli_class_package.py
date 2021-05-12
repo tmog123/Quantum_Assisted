@@ -158,6 +158,7 @@ def paulinomial_decomposition(matrix):
         # else:
         #   index_string = pauli_string_index
         pauli_string = get_pauli_string_from_index_string(index_string)
+        #print(matrix)
         coeffs_dict[index_string] = (1/dimension) * np.trace(np.matmul(matrix, pauli_string))
     newdict = dict(filter(lambda x: x[1] !=0,coeffs_dict.items()))
     return newdict

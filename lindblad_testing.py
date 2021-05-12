@@ -4,15 +4,19 @@ import pauli_class_package as pcp
 import hamiltonian_class_package as hcp 
 import matrix_class_package as mcp 
 import post_processing as pp
+import scipy as scp
 
 uptowhatK = 1
 num_qubits = 2
-optimizer = 'eigh'
+optimizer = 'eigh'#'eigh' , 'eig'
 eigh_inv_cond = 10**(-6)
+eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
 
 #Generate initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 267, 2)
+
+L = np.array([[-0.1,-0.25j,0.25j,0],[-0.25j,-0.05-0.1j,0,0.25j],[0.25j,0,-0.05+0.1j,-0.25j],[0.1,0.25j,-0.25j,0]])
 
 #Converting L^dag L into Hamiltonian
 LdagL = np.array([[0.145,0.025+0.0375j,0.025-0.0375j,-0.125],[0.025-0.0375j,0.1375,-0.125,-0.025-0.0125j],[0.025+0.0375j,-0.125,0.1375,-0.025+0.0125j],[-0.125,-0.025+0.0125j,-0.025-0.0125j,0.125]])
@@ -40,7 +44,7 @@ for k in range(1, uptowhatK + 1):
     #Start of the classical post-processing. #
     ##########################################
     IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated)
-    IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,degeneracy_tol=degeneracy_tol)
+    IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol)
 
     IQAE_instance.evaluate()
     all_energies,all_states = IQAE_instance.get_results_all()
@@ -69,3 +73,6 @@ density_mat[(1,0)] = final_state[1]
 density_mat[(0,1)] = final_state[2]
 density_mat[(1,1)] = final_state[3]
 print("the density matrix is\n", density_mat)
+denmat_values,denmat_vects = scp.linalg.eig(density_mat)
+print("the density matrix eigenvalues are\n",denmat_values)
+print("the density matrix eigenvectors are\n",denmat_vects)

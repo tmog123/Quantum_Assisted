@@ -187,6 +187,19 @@ class IQAE_Lindblad(object):
                 gsa.append(qae_eigvecs[:,i])
             gsa = np.array(gsa)
             self.all_alphas = gsa
+            #need to sort
+            sortinglist = []
+            for i in range(len(self.all_energies)):
+                sortinglist.append([self.all_energies[i],self.all_alphas[i]])
+            sortinglist.sort(key=lambda x: np.abs(x[0]))
+            a = []
+            b = []
+            for i in range(len(sortinglist)):
+                a.append(sortinglist[i][0])
+                b.append(sortinglist[i][1])
+            self.all_energies = np.array(a)
+            self.all_alphas = np.array(b)
+            #return (np.array(a),np.array(b))
 
     
     def get_results_all(self):
