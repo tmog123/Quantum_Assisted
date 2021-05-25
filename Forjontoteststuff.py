@@ -15,17 +15,17 @@ import time
 timer_starttime = time.time()
 
 #Parameters
-uptowhatK = 1
-num_qubits = 2
+uptowhatK = 2
+num_qubits = 4
 endtime = 5
 num_steps = 1001
-optimizer ='qcqp' #'eigh','qcqp'
+optimizer ='eigh' #'eigh','qcqp'
 inv_cond = 10**(-3)
 numberoflayers = 2
 randomseedforinitialstate = 183#183 #873
 
 #create initial state
-initial_state = acp.Initialstate(num_qubits, "TFI_hardware_inspired", randomseedforinitialstate, numberoflayers)
+initial_state = acp.Initialstate(num_qubits, "efficient_SU2", randomseedforinitialstate, numberoflayers)#"efficient_SU2", "TFI_hardware_inspired"
 
 #Qiskit stuff
 import Qiskit_helperfunctions as qhf #IBMQ account is loaded here in this import
@@ -53,6 +53,9 @@ hamiltonian = hcp.transverse_ising_model_1d(num_qubits)
 #create Initial Ansatz for K = 0
 ansatz = acp.initial_ansatz(num_qubits)
 
+#Need this for pruning
+acp.set_initial_ansatz_alpha_for_pruning(ansatz,num_steps)
+
 #finalresults
 finalresults = []
 finalresults.append(ansatz)
@@ -62,7 +65,8 @@ for k in range(1,uptowhatK+1):
     print('Currently at K = ' + str(k))
 
     #Generate Ansatz for this round
-    ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits) #By default, there is no processing when generating next Ansatz
+    #ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits) #By default, there is no processing when generating next Ansatz
+    ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits,method = "pruning",pruning_condition = 0.1)
 
     #Set initial alphas for Ansatz
     #Only 'start_with_initial_state' has been implemented thus far. 
@@ -118,10 +122,11 @@ cS_instance.evaluate()
 
 #Observable we want to plot
 times = TTQS_instance.get_times()
-observable = hcp.generate_arbitary_observable(num_qubits, [1], ["30"]) 
+observable = hcp.generate_arbitary_observable(num_qubits, [1], ["3000"]) 
 
 #What Ks we want to plot
-whatK = [1]
+whatK = [1,2]
+whatK_alpha_plot = [1]
 
 #Plotting results
 plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
@@ -204,6 +209,10 @@ plotp.QS_plotter_for_fidelity(num_qubits,finalresults,times,whatK,'TTQS',hamilto
 #plotp.show_plot()
 plotp.print_plot("Jonstufftesting/plot.png")
 json.dump(ttqsdata, open( "Jonstufftesting/data.dat",'w+'))
+
+for k in whatK_alpha_plot:
+    plotp.QS_plotter_foralpha(finalresults[k],times)
+plotp.print_plot("Jonstufftesting/plot_alpha.png")
 
 # Save data on file
 # Prepare a dictionary with the data

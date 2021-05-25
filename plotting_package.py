@@ -4,6 +4,11 @@ import matrix_class_package as mcp
 import pauli_class_package as pcp
 from scipy.linalg import expm 
 
+def QS_plotter_foralpha(ansatz,times):
+    for mom in ansatz.get_moments():
+        plt.plot(times, np.abs(mom.alphas[:-1]),label=str(mom.paulistring.string))
+
+
 def QS_plotter_forobservable(num_qubits,ansatzlist,times,whatKs,qstype,observable,initial_state, evalmethod='matrix_multiplication', expectation_calculator = None):
     """
     evalmethod can either be "qiskit_circuits" or "matrix_multiplication"
@@ -89,6 +94,7 @@ def show_plot():
 def print_plot(location):
     plt.legend()
     plt.savefig(location)
+    plt.close()
 
 def QS_plotter_for_fidelity(num_qubits, ansatzlist, times,
      whatKs, qstype, hamiltonian, initial_state):

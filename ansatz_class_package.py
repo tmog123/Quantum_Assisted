@@ -132,10 +132,15 @@ def initial_ansatz(N):
     initialmoment = moment(N,paulistring(N,[0]*N,1))
     return Ansatz(N,0,[initialmoment])
 
+def set_initial_ansatz_alpha_for_pruning(ansatz,num_steps):
+    for i in range(num_steps):
+        ansatz.get_moments()[0].alphas.append(1)
+
+
 def helper_get_strings(x):
     return x.return_string()
 
-def gen_next_ansatz(anz,H,N,method = "no_processing"):
+def gen_next_ansatz(anz,H,N,method = "no_processing",pruning_condition = 0.1):
     if method == 'no_processing':
         newmomentstrings = []
         for mom in anz.moments:
@@ -150,6 +155,25 @@ def gen_next_ansatz(anz,H,N,method = "no_processing"):
         newmoment = []
         for i in newmomentstrings:
             newmoment.append(moment(N,paulistring(N,i,1)))#Appending the paulistring class objects
+    if method == 'pruning':
+        newmomentstrings = []
+        for mom in anz.moments:
+            maximum = max(mom.alphas)
+            if maximum>pruning_condition:
+                newmomentstrings.append(mom.paulistring.return_string())
+        for mom in anz.moments:
+            maximum = max(mom.alphas)
+            if maximum>pruning_condition:
+                for ham in H.return_paulistrings():
+                    newpauli = pcp.pauli_combine(mom.paulistring,ham)
+                    if newpauli.return_string() not in newmomentstrings:
+                        newmomentstrings.append(newpauli.return_string())#This is the string that is [0,1,2,1,1,2,...] ect, NOT the paulistring class
+        #print for debugging purposes
+        print("there are " + str(len(newmomentstrings)) + " states in CSk")
+        newmoment = []
+        for i in newmomentstrings:
+            newmoment.append(moment(N,paulistring(N,i,1)))#Appending the paulistring class objects
+        
     return Ansatz(N,anz.K + 1,newmoment)
 
 def set_initial_alphas(N,anz,method='start_with_initial_state'):
