@@ -31,30 +31,32 @@ def cvxpy_density_matrix_routine(D_matrix,E_matrix):
     numstate = len(D_matrix)
     #print(numstate)
     D_matrix_np = np.array(D_matrix)
+    D_matrix_np = 0.5*(D_matrix_np + np.conjugate(np.transpose(D_matrix_np)))
     E_matrix_np = np.array(E_matrix)
+    E_matrix_np = 0.5*(E_matrix_np + np.conjugate(np.transpose(E_matrix_np)))
     #Realification of E
-    E_real = np.real(E_matrix_np)
-    E_imag = np.imag(E_matrix_np)
-    E_realified = np.bmat([[E_real,-E_imag],[E_imag,E_real]])
+    #E_real = np.real(E_matrix_np)
+    #E_imag = np.imag(E_matrix_np)
+    #E_realified = np.bmat([[E_real,-E_imag],[E_imag,E_real]])
     #Realification of D
-    D_real = np.real(D_matrix_np)
-    D_imag = np.imag(D_matrix_np)
-    D_realified = np.bmat([[D_real,-D_imag],[D_imag,D_real]])
-    beta = cp.Variable((numstate*2,numstate*2))
+    #D_real = np.real(D_matrix_np)
+    #D_imag = np.imag(D_matrix_np)
+    #D_realified = np.bmat([[D_real,-D_imag],[D_imag,D_real]])
+    beta = cp.Variable((numstate,numstate),hermitian=True)
     #print(np.shape(beta))
 
     # Define and solve the CVXPY problem.
     constraints = [beta >> 0]
-    constraints += [cp.trace(E_realified @ beta) == 1]
-    prob = cp.Problem(cp.Minimize(cp.trace(D_realified @ beta)),constraints)
+    constraints += [cp.trace(E_matrix_np @ beta) == 1]
+    prob = cp.Problem(cp.Minimize(cp.trace(D_matrix_np @ beta)),constraints)
     prob.solve(solver=cp.MOSEK,verbose=False)
     #Return result.
     #Returns an np array of the density matrix and the min eigenvalue
     #Needs to unrealify
     denmat = beta.value
-    denmat_real = denmat[0:numstate,0:numstate]
-    denmat_imag = denmat[numstate:numstate*2,0:numstate]
-    denmat = denmat_real+1j*denmat_imag
+    #denmat_real = denmat[0:numstate,0:numstate]
+    #denmat_imag = denmat[numstate:numstate*2,0:numstate]
+    #denmat = denmat_real+1j*denmat_imag
     minval = np.trace(denmat@D_matrix_np)
     return denmat,minval
 
