@@ -47,7 +47,7 @@ def cvxpy_density_matrix_routine(D_matrix,E_matrix):
     constraints = [beta >> 0]
     constraints += [cp.trace(E_realified @ beta) == 1]
     prob = cp.Problem(cp.Minimize(cp.trace(D_realified @ beta)),constraints)
-    prob.solve()
+    prob.solve(solver=cp.MOSEK,verbose=False)
     #Return result.
     #Returns an np array of the density matrix and the min eigenvalue
     #Needs to unrealify
