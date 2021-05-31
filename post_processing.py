@@ -4,7 +4,7 @@ import pauli_class_package as pcp
 import hamiltonian_class_package as hcp 
 import matrix_class_package as mcp 
 import scipy
-import qutip as qt
+#import qutip as qt
 import optimizers as opt_package
 from abc import ABC, abstractmethod
 from scipy.integrate import ode 

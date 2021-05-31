@@ -29,6 +29,7 @@ importlib.reload(cvx)'''
 
 def cvxpy_density_matrix_routine(D_matrix,E_matrix):
     numstate = len(D_matrix)
+    #print(numstate)
     D_matrix_np = np.array(D_matrix)
     E_matrix_np = np.array(E_matrix)
     #Realification of E
@@ -40,6 +41,7 @@ def cvxpy_density_matrix_routine(D_matrix,E_matrix):
     D_imag = np.imag(D_matrix_np)
     D_realified = np.bmat([[D_real,-D_imag],[D_imag,D_real]])
     beta = cp.Variable((numstate*2,numstate*2))
+    #print(np.shape(beta))
 
     # Define and solve the CVXPY problem.
     constraints = [beta >> 0]
