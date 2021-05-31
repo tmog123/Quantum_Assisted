@@ -8,7 +8,7 @@ import scipy
 import optimizers as opt_package
 from abc import ABC, abstractmethod
 from scipy.integrate import ode 
-
+import scipy as scp
 ''' This is not necessary (But dont delete yet : Jonathan)
 #This is stuff to get observables for classicalSimulator
 X = np.array([[0.0, 1.0], [1.0, 0.0]])
@@ -218,11 +218,27 @@ class IQAE_Lindblad(object):
             raise(RuntimeError("You did not run the proper optimizer. Remember, if you ran SDP, the results are obtained in the form of density matrix and should use get_density_matrix_results instead"))
         else:
             return (self.all_energies, self.all_alphas)
+    def check_if_valid_density_matrix(self,cutoff = 10**(-10)):
+        if self.evaluated_denmat == False:
+            raise(RuntimeError("You did not run the proper optimizer. Remember, if you ran eigh or eig, the results are obtained in the form of alpha vectors and should use get_results_all instead"))
+        else:
+            denmat_values,denmat_vects = scp.linalg.eig(self.density_matrix)
+            imagvalues = np.imag(denmat_values)
+            allreal = True
+            for i in imagvalues:
+                if i>cutoff:
+                    allreal = False
+            if allreal == True:
+                print('All eigenvalues of density matrix are real up to cutoff\n',cutoff)
+            else:
+                print('Some eigenvalues of density matrix are not real, with the cutoff\n',cutoff)
+
     def get_density_matrix_results(self):
         if self.evaluated_denmat == False:
             raise(RuntimeError("You did not run the proper optimizer. Remember, if you ran eigh or eig, the results are obtained in the form of alpha vectors and should use get_results_all instead"))
         else:
             return (self.density_matrix,self.ground_state_energy)
+
 
 #This is an abstract class
 class quantumSimulators(ABC):

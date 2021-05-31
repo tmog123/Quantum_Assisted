@@ -42,13 +42,14 @@ def cvxpy_density_matrix_routine(D_matrix,E_matrix):
     #D_real = np.real(D_matrix_np)
     #D_imag = np.imag(D_matrix_np)
     #D_realified = np.bmat([[D_real,-D_imag],[D_imag,D_real]])
-    beta = cp.Variable((numstate,numstate),hermitian=True)
+    beta = cp.Variable((numstate,numstate),complex=True)
     #print(np.shape(beta))
 
     # Define and solve the CVXPY problem.
     constraints = [beta >> 0]
+    constraints += [beta == beta.H]
     constraints += [cp.trace(E_matrix_np @ beta) == 1]
-    prob = cp.Problem(cp.Minimize(cp.trace(D_matrix_np @ beta)),constraints)
+    prob = cp.Problem(cp.Minimize(cp.real(cp.trace(D_matrix_np @ beta))),constraints)
     prob.solve(solver=cp.MOSEK,verbose=False)
     #Return result.
     #Returns an np array of the density matrix and the min eigenvalue

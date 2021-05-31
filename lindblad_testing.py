@@ -54,12 +54,14 @@ for k in range(1, uptowhatK + 1):
     IQAE_instance.evaluate()
     #all_energies,all_states = IQAE_instance.get_results_all()
     density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
+    IQAE_instance.check_if_valid_density_matrix()
     #print(all_energies)
     #print(all_states)
     print('The ground state energy is\n',groundstateenergy)
-    print('The density matrix is\n',density_mat)
+    #print('The density matrix is\n',density_mat)
     denmat_values,denmat_vects = scp.linalg.eig(density_mat)
-    print("the density matrix eigenvalues are\n",denmat_values)
+    #print(np.imag(denmat_values))
+    #print("the density matrix eigenvalues are\n",denmat_values)
     #print("the density matrix eigenvectors are\n",denmat_vects)
 
 
