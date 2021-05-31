@@ -140,6 +140,9 @@ class IQAE_Lindblad(object):
         self.all_energies = None
         self.all_alphas = None
         self.degeneracy_tol = None
+        self.density_matrix = None
+        self.evaluated_alpha = False
+        self.evaluated_denmat = False
     
     def define_optimizer(self, optimizer, eigh_invcond = 10**(-12),eig_invcond = 10**(-12),degeneracy_tol = 5):
         """
@@ -154,6 +157,8 @@ class IQAE_Lindblad(object):
             self.set_degeneracy_tol(degeneracy_tol)
         elif optimizer == "qcqp":
             pass 
+        elif optimizer == 'sdp':
+            pass
     
     def set_eigh_invcond(self, eigh_invcond):
         self.eigh_invcond = eigh_invcond
@@ -166,7 +171,11 @@ class IQAE_Lindblad(object):
     def evaluate(self):
         if self.optimizer == None:
             raise(RuntimeError("run the define optimizer_function first"))
-
+        elif self.optimizer == 'sdp':
+            densitymat,minvalue = opt_package.cvxpy_density_matrix_routine(self.D,self.E)
+            self.density_matrix = densitymat
+            self.ground_state_energy = minvalue
+            self.evaluated_denmat = True
         elif self.optimizer == "eigh":
             qae_energies, qae_eigvecs = opt_package.diag_routine(self.D, self.E, inv_cond=self.eigh_invcond)
             min_energy = qae_energies[0]
@@ -178,6 +187,7 @@ class IQAE_Lindblad(object):
             self.all_alphas = gsa
             self.ground_state_energy = min_energy
             self.ground_state_alphas = qae_eigvecs[:,0]
+            self.evaluated_alpha = True
         elif self.optimizer == "eig":
             qae_energies, qae_eigvecs = opt_package.eig_diag_routine(self.D, self.E, inv_cond=self.eig_invcond,degeneracy_tol=self.degeneracy_tol)
             #min_energy = qae_energies[0]
@@ -199,11 +209,20 @@ class IQAE_Lindblad(object):
                 b.append(sortinglist[i][1])
             self.all_energies = np.array(a)
             self.all_alphas = np.array(b)
+            self.evaluated_alpha = True
             #return (np.array(a),np.array(b))
 
     
     def get_results_all(self):
-        return (self.all_energies, self.all_alphas)
+        if self.evaluated_alpha == False:
+            raise(RuntimeError("You did not run the proper optimizer. Remember, if you ran SDP, the results are obtained in the form of density matrix and should use get_density_matrix_results instead"))
+        else:
+            return (self.all_energies, self.all_alphas)
+    def get_density_matrix_results(self):
+        if self.evaluated_denmat == False:
+            raise(RuntimeError("You did not run the proper optimizer. Remember, if you ran eigh or eig, the results are obtained in the form of alpha vectors and should use get_results_all instead"))
+        else:
+            return (self.density_matrix,self.ground_state_energy)
 
 #This is an abstract class
 class quantumSimulators(ABC):
