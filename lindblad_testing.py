@@ -60,8 +60,9 @@ for k in range(1, uptowhatK + 1):
     print('The ground state energy is\n',groundstateenergy)
     #print('The density matrix is\n',density_mat)
     denmat_values,denmat_vects = scp.linalg.eig(density_mat)
+    denmat_values = np.real(np.round(denmat_values,6))
     #print(np.imag(denmat_values))
-    #print("the density matrix eigenvalues are\n",denmat_values)
+    print("the density matrix eigenvalues are\n",denmat_values)
     #print("the density matrix eigenvectors are\n",denmat_vects)
 
 

@@ -223,6 +223,7 @@ class IQAE_Lindblad(object):
             raise(RuntimeError("You did not run the proper optimizer. Remember, if you ran eigh or eig, the results are obtained in the form of alpha vectors and should use get_results_all instead"))
         else:
             denmat_values,denmat_vects = scp.linalg.eig(self.density_matrix)
+            #print(denmat_values)
             imagvalues = np.imag(denmat_values)
             allreal = True
             for i in imagvalues:
