@@ -65,6 +65,29 @@ for k in range(1, uptowhatK + 1):
     print("the density matrix eigenvalues are\n",denmat_values)
     #print("the density matrix eigenvectors are\n",denmat_vects)
 
+#%%
+#testing
+p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
+ini_statevec_vecform = initial_state.get_statevector()
+csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
+rho_prime = np.zeros(shape=(4,4), dtype = np.complex128)
+trace = 0
+for i in range(len(density_mat)):
+    for j in range(len(density_mat)):
+        i_j_entry = density_mat[(i,j)]
+        #in the bottom line, its j,i instead of i,j because of some bug somewhere. Something accidentally got reversed somewhere, I can't find...
+        i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
+        rho_prime += i_j_entry * i_j_ketbra
+        trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
+
+rho_prime_eigvals,rho_prime_eigvecs = scipy.linalg.eigh(rho_prime)        
+#here, we take the eigvec that corresponds to the non-zero eigval
+rho = np.zeros(shape=(2,2), dtype = np.complex128)
+rho[(0,0)] = rho_prime_eigvecs[:,3][0]
+rho[(0,1)] = rho_prime_eigvecs[:,3][1]
+rho[(1,0)] = rho_prime_eigvecs[:,3][2]
+rho[(1,1)] = rho_prime_eigvecs[:,3][3]
+print("The eigenvalues of rho are", scipy.linalg.eigvalsh(rho))
 
 '''
 #Testing if the IQAE result is a valid density matrix
@@ -91,3 +114,4 @@ print("the density matrix is\n", density_mat)
 denmat_values,denmat_vects = scp.linalg.eig(density_mat)
 print("the density matrix eigenvalues are\n",denmat_values)
 print("the density matrix eigenvectors are\n",denmat_vects)'''
+# %%
