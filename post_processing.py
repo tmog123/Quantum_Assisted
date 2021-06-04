@@ -125,13 +125,18 @@ class IQAE(object):
     def get_results(self):
         return (self.ground_state_energy, self.ground_state_alphas)
 class IQAE_Lindblad(object):
-    def __init__(self, N, D_matrix, E_matrix):
+    def __init__(self, N, D_matrix, E_matrix,R_matrices = [],F_matrices = [],gammas = []):
         """
         These are the evaluated matrices
         """
+        if len(R_matrices)!=len(F_matrices) or len(R_matrices)!=len(gammas) or len(F_matrices)!=len(gammas):
+            raise(RuntimeError("Number of R_matrices, F_matrices and gammas are not equal"))
         self.N = N
         self.D = D_matrix
         self.E = E_matrix
+        self.R_matrices = R_matrices
+        self.F_matrices = F_matrices
+        self.gammas = gammas
         self.eigh_invcond = None
         self.eig_invcond = None
         self.optimizer = None
@@ -159,6 +164,8 @@ class IQAE_Lindblad(object):
             pass 
         elif optimizer == 'sdp':
             pass
+        elif optimizer == 'feasibility_sdp':
+            pass
     
     def set_eigh_invcond(self, eigh_invcond):
         self.eigh_invcond = eigh_invcond
@@ -171,6 +178,11 @@ class IQAE_Lindblad(object):
     def evaluate(self):
         if self.optimizer == None:
             raise(RuntimeError("run the define optimizer_function first"))
+        elif self.optimizer == 'feasibility_sdp':
+            densitymat,minvalue = opt_package.cvxpy_density_matrix_feasibility_sdp_routine(self.D,self.E,self.R_matrices,self.F_matrices,self.gammas)
+            self.density_matrix = densitymat
+            self.ground_state_energy = minvalue
+            self.evaluated_denmat = True
         elif self.optimizer == 'sdp':
             densitymat,minvalue = opt_package.cvxpy_density_matrix_routine(self.D,self.E)
             self.density_matrix = densitymat
@@ -230,9 +242,9 @@ class IQAE_Lindblad(object):
                 if i>cutoff:
                     allreal = False
             if allreal == True:
-                print('All eigenvalues of density matrix are real up to cutoff\n',cutoff)
+                print('All eigenvalues of beta density matrix are real up to cutoff\n',cutoff)
             else:
-                print('Some eigenvalues of density matrix are not real, with the cutoff\n',cutoff)
+                print('Some eigenvalues of beta density matrix are not real, with the cutoff\n',cutoff)
 
     def get_density_matrix_results(self):
         if self.evaluated_denmat == False:

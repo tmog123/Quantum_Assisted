@@ -8,10 +8,13 @@ import scipy as scp
 import scipy.io
 uptowhatK = 1
 num_qubits = 2
-optimizer = 'sdp'#'eigh' , 'eig', 'sdp'
+optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
+
+if optimizer == 'feasibility_sdp':
+    num_qubits = 1
 
 #Generate initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 267, 2)
@@ -22,7 +25,15 @@ L = np.array([[-0.1,-0.25j,0.25j,0],[-0.25j,-0.05-0.1j,0,0.25j],[0.25j,0,-0.05+0
 LdagL = np.array([[0.145,0.025+0.0375j,0.025-0.0375j,-0.125],[0.025-0.0375j,0.1375,-0.125,-0.025-0.0125j],[0.025+0.0375j,-0.125,0.1375,-0.025+0.0125j],[-0.125,-0.025+0.0125j,-0.025-0.0125j,0.125]])
 pauli_decomp = pcp.paulinomial_decomposition(LdagL) 
 #print(list(pauli_decomp.values()))
-hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits, list(pauli_decomp.values()), list(pauli_decomp.keys()))
+
+if optimizer == 'feasibility_sdp':
+    delta = 0.1
+    gammas = [0.1]
+    epsilon = 0.5
+    hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,[delta,epsilon],['3','1'])
+    L_terms = [hcp.generate_arbitary_hamiltonian(num_qubits,[1,-1j],['1','2'])]
+else:    
+    hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits, list(pauli_decomp.values()), list(pauli_decomp.keys()))
 
 #print('Beta values are ' + str(hamiltonian.return_betas()))
 
@@ -37,18 +48,41 @@ for k in range(1, uptowhatK + 1):
     E_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "E")
     D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
 
+    if optimizer == 'feasibility_sdp':
+        R_mats_uneval = []
+        F_mats_uneval = []
+        for thisL in L_terms:
+            R_mats_uneval.append(mcp.unevaluatedmatrix(num_qubits,ansatz,thisL,"D"))
+            thisLdagL = hcp.multiply_hamiltonians(hcp.dagger_hamiltonian(thisL),thisL)
+            F_mats_uneval.append(mcp.unevaluatedmatrix(num_qubits,ansatz,thisLdagL,"D"))
+    
+            
+
     #Here is where we should be able to specify how to evaluate the matrices. However only the exact method (classical matrix multiplication) has been implemented so far
     E_mat_evaluated = E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
     D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+    if optimizer == 'feasibility_sdp':
+        R_mats_evaluated = []
+        for r in R_mats_uneval:
+            R_mats_evaluated.append(r.evaluate_matrix_by_matrix_multiplicaton(initial_state))
+        F_mats_evaluated = []
+        for f in F_mats_uneval:
+            F_mats_evaluated.append(f.evaluate_matrix_by_matrix_multiplicaton(initial_state))
+
 
     #Save matrices for testing with matlab
-    scipy.io.savemat("Jonstufftesting/Emat.mat",{"E": E_mat_evaluated,"D":D_mat_evaluated})
+    #scipy.io.savemat("Jonstufftesting/Emat.mat",{"E": E_mat_evaluated,"D":D_mat_evaluated})
 
     #print(D_mat_evaluated)
     ##########################################
     #Start of the classical post-processing. #
     ##########################################
-    IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated)
+    if optimizer == 'feasibility_sdp':
+        IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
+    else:
+        IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated)
+
+
     IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol)
 
     IQAE_instance.evaluate()

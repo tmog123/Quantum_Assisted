@@ -27,6 +27,34 @@ import importlib
 importlib.reload(qcqp)
 importlib.reload(cvx)'''
 
+def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_matrices,gammas):
+    numstate = len(D_matrix)
+    D_matrix_np = np.array(D_matrix)
+    #D_matrix_np = 0.5*(D_matrix_np + np.conjugate(np.transpose(D_matrix_np)))
+    E_matrix_np = np.array(E_matrix)
+    #E_matrix_np = 0.5*(E_matrix_np + np.conjugate(np.transpose(E_matrix_np)))
+    R_matrices_np = []
+    F_matrices_np = []
+    for r in R_matrices:
+        R_matrices_np.append(np.array(r))
+    for f in F_matrices:
+        F_matrices_np.append(np.array(f))
+    beta = cp.Variable((numstate,numstate),complex=True)
+    constraints = [beta >> 0]
+    constraints += [cp.trace(E_matrix_np @ beta) == 1]
+
+    a = -1j*(D_matrix_np@beta@E_matrix_np-E_matrix_np@beta@D_matrix_np)
+    #finalconstraints = []
+    for i in range(len(gammas)):
+        a = a + gammas[i]*(R_matrices_np[i]@beta@np.transpose(np.conjugate(R_matrices_np[i]))-0.5*F_matrices_np[i]@beta@E_matrix_np-0.5*E_matrix_np@beta@F_matrices_np[i])
+    #a = -1j*(D_matrix_np@beta@E_matrix_np-E_matrix_np@beta@D_matrix_np)+gammas[0]*(R_matrices_np[0]@beta@np.transpose(np.conjugate(R_matrices_np[0]))-0.5*F_matrices_np[0]@beta@E_matrix_np-0.5*E_matrix_np@beta@F_matrices_np[0])
+    constraints += [a == 0]
+    prob = cp.Problem(cp.Minimize(0),constraints)
+    prob.solve(solver=cp.MOSEK,verbose=False)
+    denmat = beta.value
+    minval = np.trace(denmat@D_matrix_np)
+    return denmat,minval
+
 def cvxpy_density_matrix_routine(D_matrix,E_matrix):
     numstate = len(D_matrix)
     #print(numstate)
