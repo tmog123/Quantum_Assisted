@@ -1,3 +1,4 @@
+#%%
 import numpy as np 
 import ansatz_class_package as acp 
 import pauli_class_package as pcp 
@@ -96,56 +97,88 @@ for k in range(1, uptowhatK + 1):
     denmat_values,denmat_vects = scp.linalg.eig(density_mat)
     denmat_values = np.real(np.round(denmat_values,6))
     #print(np.imag(denmat_values))
-    print("the density matrix eigenvalues are\n",denmat_values)
+    print("the density matrix (beta matrix) eigenvalues are\n",denmat_values)
     #print("the density matrix eigenvectors are\n",denmat_vects)
 
 #%%
-#testing
+#testing for the feasibility routine
 p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
 ini_statevec_vecform = initial_state.get_statevector()
 csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
-rho_prime = np.zeros(shape=(4,4), dtype = np.complex128)
+rho = np.zeros(shape=(2,2), dtype = np.complex128)
 trace = 0
 for i in range(len(density_mat)):
     for j in range(len(density_mat)):
         i_j_entry = density_mat[(i,j)]
-        #in the bottom line, its j,i instead of i,j because of some bug somewhere. Something accidentally got reversed somewhere, I can't find...
         i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
-        rho_prime += i_j_entry * i_j_ketbra
+        rho += i_j_entry * i_j_ketbra
         trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
 
-rho_prime_eigvals,rho_prime_eigvecs = scipy.linalg.eigh(rho_prime)        
-#here, we take the eigvec that corresponds to the non-zero eigval
-rho = np.zeros(shape=(2,2), dtype = np.complex128)
-rho[(0,0)] = rho_prime_eigvecs[:,3][0]
-rho[(0,1)] = rho_prime_eigvecs[:,3][1]
-rho[(1,0)] = rho_prime_eigvecs[:,3][2]
-rho[(1,1)] = rho_prime_eigvecs[:,3][3]
-print("The eigenvalues of rho are", scipy.linalg.eigvalsh(rho))
+rho_eigvals,rho_eigvecs = scipy.linalg.eigh(rho)        
 
-'''
+#now, we check if rho (the actual denmat) gives 0 for the linblad master equation
+def evaluate_rho_dot(rho, hamiltonian_class_object, gammas, L_terms):
+    hamiltonian_mat = hamiltonian_class_object.to_matrixform()
+    coherent_evo = -1j * (hamiltonian_mat @ rho - rho @ hamiltonian_mat)
+    quantum_jumps_total = 0 + 0*1j
+    for i in range(len(gammas)):
+        gamma_i = gammas[i]
+        L_i_mat = L_terms[i].to_matrixform()
+        L_i_dag_L_i = L_i_mat.conj().T @ L_i_mat
+        anti_commutator = L_i_dag_L_i @ rho + rho @ L_i_dag_L_i
+        jump_term = L_i_mat @ rho @ L_i_mat.conj().T
+        quantum_jumps_total += gamma_i * (jump_term - 0.5*anti_commutator)
+    return coherent_evo + quantum_jumps_total
+
+rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
+
+#%%
+#Testing for the mapping routine. 
+# p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
+# ini_statevec_vecform = initial_state.get_statevector()
+# csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
+# rho_prime = np.zeros(shape=(4,4), dtype = np.complex128)
+# trace = 0
+# for i in range(len(density_mat)):
+#     for j in range(len(density_mat)):
+#         i_j_entry = density_mat[(i,j)]
+#         #in the bottom line, its j,i instead of i,j because of some bug somewhere. Something accidentally got reversed somewhere, I can't find...
+#         i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
+#         rho_prime += i_j_entry * i_j_ketbra
+#         trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
+
+# rho_prime_eigvals,rho_prime_eigvecs = scipy.linalg.eigh(rho_prime)        
+# #here, we take the eigvec that corresponds to the non-zero eigval
+# rho = np.zeros(shape=(2,2), dtype = np.complex128)
+# rho[(0,0)] = rho_prime_eigvecs[:,3][0]
+# rho[(0,1)] = rho_prime_eigvecs[:,3][1]
+# rho[(1,0)] = rho_prime_eigvecs[:,3][2]
+# rho[(1,1)] = rho_prime_eigvecs[:,3][3]
+# print("The eigenvalues of rho are", scipy.linalg.eigvalsh(rho))
+
+#%% Old IQAE code that might be useful
 #Testing if the IQAE result is a valid density matrix
-ground_state = all_states[0]
+# ground_state = all_states[0]
 
-#the ansatz states
-p_matrices = [i.get_paulistring().get_string_for_hash() for i in ansatz.get_moments()]
-# print(p_matrices)
-# p_matrices = ["00", "02", "03", "10", "11", "13", "20", "23", "30", "31", "32", "33"]
-p_matrices_matform = [pcp.get_pauli_string_from_index_string(i) for i in p_matrices]
-ini_statevec = initial_state.get_statevector()
-csk_states = [i @ ini_statevec for i in p_matrices_matform]
+# #the ansatz states
+# p_matrices = [i.get_paulistring().get_string_for_hash() for i in ansatz.get_moments()]
+# # print(p_matrices)
+# # p_matrices = ["00", "02", "03", "10", "11", "13", "20", "23", "30", "31", "32", "33"]
+# p_matrices_matform = [pcp.get_pauli_string_from_index_string(i) for i in p_matrices]
+# ini_statevec = initial_state.get_statevector()
+# csk_states = [i @ ini_statevec for i in p_matrices_matform]
 
-final_state = np.zeros(4) * 1j*np.zeros(4)
-for i in range(len(csk_states)):
-    final_state += ground_state[i]*csk_states[i]
+# final_state = np.zeros(4) * 1j*np.zeros(4)
+# for i in range(len(csk_states)):
+#     final_state += ground_state[i]*csk_states[i]
 
-density_mat = np.empty(shape=(2,2), dtype=np.complex128)   
-density_mat[(0,0)] = final_state[0]
-density_mat[(1,0)] = final_state[1]
-density_mat[(0,1)] = final_state[2]
-density_mat[(1,1)] = final_state[3]
-print("the density matrix is\n", density_mat)
-denmat_values,denmat_vects = scp.linalg.eig(density_mat)
-print("the density matrix eigenvalues are\n",denmat_values)
-print("the density matrix eigenvectors are\n",denmat_vects)'''
+# density_mat = np.empty(shape=(2,2), dtype=np.complex128)   
+# density_mat[(0,0)] = final_state[0]
+# density_mat[(1,0)] = final_state[1]
+# density_mat[(0,1)] = final_state[2]
+# density_mat[(1,1)] = final_state[3]
+# print("the density matrix is\n", density_mat)
+# denmat_values,denmat_vects = scp.linalg.eig(density_mat)
+# print("the density matrix eigenvalues are\n",denmat_values)
+# print("the density matrix eigenvectors are\n",denmat_vects)
 # %%
