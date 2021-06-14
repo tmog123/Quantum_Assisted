@@ -7,7 +7,7 @@ import matrix_class_package as mcp
 import post_processing as pp
 import scipy as scp
 import scipy.io
-uptowhatK = 1
+uptowhatK = 2
 num_qubits = 2
 optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
@@ -15,7 +15,7 @@ eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
 
 if optimizer == 'feasibility_sdp':
-    num_qubits = 1
+    num_qubits = 2
 
 #Generate initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 267, 2)
@@ -29,10 +29,16 @@ pauli_decomp = pcp.paulinomial_decomposition(LdagL)
 
 if optimizer == 'feasibility_sdp':
     delta = 0.1
-    gammas = [0.1]
+    #gammas = [0.1]
+    gammas = [0.1,0.1,0.1,0.1]
     epsilon = 0.5
-    hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,[delta,epsilon],['3','1'])
-    L_terms = [hcp.generate_arbitary_hamiltonian(num_qubits,[1,-1j],['1','2'])]
+    #hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,[delta,epsilon],['3','1'])
+    #L_terms = [hcp.generate_arbitary_hamiltonian(num_qubits,[1,-1j],['1','2'])]
+    hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,0.5,0.5],['33','01','10'])
+    L_terms = [hcp.generate_arbitary_hamiltonian(num_qubits,[1],['30'])]
+    L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['10','20']))
+    L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[1],['03']))
+    L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['01','02']))
 else:    
     hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits, list(pauli_decomp.values()), list(pauli_decomp.keys()))
 
@@ -105,7 +111,7 @@ for k in range(1, uptowhatK + 1):
 p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
 ini_statevec_vecform = initial_state.get_statevector()
 csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
-rho = np.zeros(shape=(2,2), dtype = np.complex128)
+rho = np.zeros(shape=(4,4), dtype = np.complex128)
 trace = 0
 for i in range(len(density_mat)):
     for j in range(len(density_mat)):
@@ -115,7 +121,7 @@ for i in range(len(density_mat)):
         trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
 
 rho_eigvals,rho_eigvecs = scipy.linalg.eigh(rho)        
-
+print('rho_eigvals is: ' + str(rho_eigvals))
 #now, we check if rho (the actual denmat) gives 0 for the linblad master equation
 def evaluate_rho_dot(rho, hamiltonian_class_object, gammas, L_terms):
     hamiltonian_mat = hamiltonian_class_object.to_matrixform()
@@ -131,7 +137,7 @@ def evaluate_rho_dot(rho, hamiltonian_class_object, gammas, L_terms):
     return coherent_evo + quantum_jumps_total
 
 rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
-
+print('rho_dot is: ' + str(rho_dot))
 #%%
 #Testing for the mapping routine. 
 # p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]

@@ -230,7 +230,7 @@ class IQAE_Lindblad(object):
             raise(RuntimeError("You did not run the proper optimizer. Remember, if you ran SDP, the results are obtained in the form of density matrix and should use get_density_matrix_results instead"))
         else:
             return (self.all_energies, self.all_alphas)
-    def check_if_valid_density_matrix(self,cutoff = 10**(-10)):
+    def check_if_valid_density_matrix(self,cutoff = 10**(-5)):
         if self.evaluated_denmat == False:
             raise(RuntimeError("You did not run the proper optimizer. Remember, if you ran eigh or eig, the results are obtained in the form of alpha vectors and should use get_results_all instead"))
         else:
@@ -245,6 +245,8 @@ class IQAE_Lindblad(object):
                 print('All eigenvalues of beta density matrix are real up to cutoff\n',cutoff)
             else:
                 print('Some eigenvalues of beta density matrix are not real, with the cutoff\n',cutoff)
+                print('The imaginary parts are: ')
+                print(imagvalues)
 
     def get_density_matrix_results(self):
         if self.evaluated_denmat == False:

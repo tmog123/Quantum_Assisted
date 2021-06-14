@@ -8,7 +8,7 @@ import scipy as scp
 
 uptowhatK = 1
 num_qubits = 2
-optimizer = 'eigh'#'eigh' , 'eig'
+optimizer = 'eig'#'eigh' , 'eig'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
@@ -20,7 +20,7 @@ L = np.array([[-0.1,-0.25j,0.25j,0],[-0.25j,-0.05-0.1j,0,0.25j],[0.25j,0,-0.05+0
 
 #Converting L^dag L into Hamiltonian
 LdagL = np.array([[0.145,0.025+0.0375j,0.025-0.0375j,-0.125],[0.025-0.0375j,0.1375,-0.125,-0.025-0.0125j],[0.025+0.0375j,-0.125,0.1375,-0.025+0.0125j],[-0.125,-0.025+0.0125j,-0.025-0.0125j,0.125]])
-pauli_decomp = pcp.paulinomial_decomposition(LdagL) 
+pauli_decomp = pcp.paulinomial_decomposition(L) 
 hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits, list(pauli_decomp.values()), list(pauli_decomp.keys()))
 
 #print('Beta values are ' + str(hamiltonian.return_betas()))
@@ -48,8 +48,8 @@ for k in range(1, uptowhatK + 1):
 
     IQAE_instance.evaluate()
     all_energies,all_states = IQAE_instance.get_results_all()
-    print(all_energies)
-    print(all_states)
+    print('Eigenvalues of the LdagL/L matrix is: ' + str(all_energies))
+    #print(all_states)
 
 
 #Testing if the IQAE result is a valid density matrix
