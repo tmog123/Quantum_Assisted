@@ -13,6 +13,9 @@ optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
+loadmatlabmatrix = True
+runSDPonpython = False
+
 
 if optimizer == 'feasibility_sdp':
     num_qubits = 2
@@ -48,7 +51,7 @@ ansatz = acp.initial_ansatz(num_qubits)
 
 #Run IQAE
 for k in range(1, uptowhatK + 1):
-    print(k)
+    print('K = ' +str(k))
     #Generate Ansatz for this round
     ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits)
 
@@ -78,8 +81,9 @@ for k in range(1, uptowhatK + 1):
 
 
     #Save matrices for testing with matlab
-    #scipy.io.savemat("Jonstufftesting/Emat.mat",{"E": E_mat_evaluated,"D":D_mat_evaluated})
-
+    if optimizer == 'feasibility_sdp':
+        scipy.io.savemat("Jonstufftesting/Emat" +str(k) +".mat",{"E": E_mat_evaluated,"D":D_mat_evaluated,"R":R_mats_evaluated,"F":F_mats_evaluated})
+        print('Matrices have been generated, saved in Jonstufftestingfolder.')
     #print(D_mat_evaluated)
     ##########################################
     #Start of the classical post-processing. #
@@ -92,22 +96,32 @@ for k in range(1, uptowhatK + 1):
 
     IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol)
 
-    IQAE_instance.evaluate()
-    #all_energies,all_states = IQAE_instance.get_results_all()
-    density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
-    IQAE_instance.check_if_valid_density_matrix()
-    #print(all_energies)
-    #print(all_states)
-    print('The ground state energy is\n',groundstateenergy)
-    #print('The density matrix is\n',density_mat)
-    denmat_values,denmat_vects = scp.linalg.eig(density_mat)
-    denmat_values = np.real(np.round(denmat_values,6))
-    #print(np.imag(denmat_values))
-    print("the density matrix (beta matrix) eigenvalues are\n",denmat_values)
-    #print("the density matrix eigenvectors are\n",denmat_vects)
-
+    if optimizer == 'feasibility_sdp' and runSDPonpython == False:
+        print('NOT RUNNING SDP ON PYTHON. JUST USING FIRST PART OF CODE TO GENERATE ANSATZ FOR 2ND PART')
+    else:
+        IQAE_instance.evaluate()
+        #all_energies,all_states = IQAE_instance.get_results_all()
+        density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
+        IQAE_instance.check_if_valid_density_matrix()
+        #print(all_energies)
+        #print(all_states)
+        print('The ground state energy is\n',groundstateenergy)
+        #print('The density matrix is\n',density_mat)
+        denmat_values,denmat_vects = scp.linalg.eig(density_mat)
+        denmat_values = np.real(np.round(denmat_values,6))
+        #print(np.imag(denmat_values))
+        print("the sorted density matrix (beta matrix) eigenvalues are\n",np.sort(denmat_values))
+        #print("the density matrix eigenvectors are\n",denmat_vects)
 #%%
 #testing for the feasibility routine
+
+'''NOTES FOR SELF: Right now matlab functionality is not built into this. So, first time you run, this python file will generate the D, E, R, and F matrices. Ignore everything else. Then, go to matlab and run sdp.m . 
+That will generate the beta matrix. Then, run THIS same file again with loadmatlabmatrix = True. This file will still do the generating of matrices ect, but now for the 2nd half (checking) it will use the saved matlab matrix.'''
+
+if loadmatlabmatrix == True:
+    print('LOADING MATRICES THAT SHOULD HAVE BEEN GENERATED FROM MATLAB. ENSURE THIS IS DONE.')
+    density_mat = scipy.io.loadmat('Jonstufftesting/'+'savedmatrixfrommatlab.mat')['betarho']
+
 p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
 ini_statevec_vecform = initial_state.get_statevector()
 csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
