@@ -42,6 +42,7 @@ def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_
     beta = cp.Variable((numstate,numstate),complex=True)
     constraints = [beta >> 0]
     constraints += [cp.trace(E_matrix_np @ beta) == 1]
+    constraints += [beta.H == beta]
 
     a = -1j*(D_matrix_np@beta@E_matrix_np-E_matrix_np@beta@D_matrix_np)
     #finalconstraints = []

@@ -8,21 +8,21 @@ import matrix_class_package as mcp
 import post_processing as pp
 import scipy as scp
 import scipy.io
-uptowhatK = 3
+uptowhatK = 2
 num_qubits = 2
 optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
-loadmatlabmatrix = False
-runSDPonpython = True
+loadmatlabmatrix = True
+runSDPonpython = False
 
 
 if optimizer == 'feasibility_sdp':
-    num_qubits = 3
+    num_qubits = 5
 
 #Generate initial state
-initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 267, 2)
+initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 127, 5)
 
 L = np.array([[-0.1,-0.25j,0.25j,0],[-0.25j,-0.05-0.1j,0,0.25j],[0.25j,0,-0.05+0.1j,-0.25j],[0.1,0.25j,-0.25j,0]])
 

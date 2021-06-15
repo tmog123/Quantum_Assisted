@@ -8,13 +8,13 @@ numberstate = length(D);
 
 
 cvx_begin sdp
-    variable betarho(numberstate,numberstate) complex 
+    variable betarho(numberstate,numberstate) hermitian 
     minimize(0)
     %RHS = zeros(numberstate);
     RHS = -1j*(D*betarho*E - E*betarho*D);
     %disp(RHS)
     for k = 1:length(F(:,1,1))
-        disp(k)
+        %disp(k)
         thisR = squeeze(R(k,:,:));
         thisF = squeeze(F(k,:,:));
         RHS = RHS + gammas*(thisR*betarho*(thisR') - 0.5*thisF*betarho*E - 0.5*E*betarho*thisF);
