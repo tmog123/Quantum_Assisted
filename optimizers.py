@@ -52,8 +52,12 @@ def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_
     prob = cp.Problem(cp.Minimize(0),constraints)
     prob.solve(solver=cp.MOSEK,verbose=False)
     denmat = beta.value
-    minval = np.trace(denmat@D_matrix_np)
-    return denmat,minval
+    #print(denmat)
+    if type(denmat) == type(None):
+        return None,None
+    else:
+        minval = np.trace(denmat@D_matrix_np)
+        return denmat,minval
 
 def cvxpy_density_matrix_routine(D_matrix,E_matrix):
     numstate = len(D_matrix)

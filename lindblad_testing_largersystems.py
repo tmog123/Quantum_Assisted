@@ -1,5 +1,6 @@
 #%%
-import numpy as np 
+import numpy as np
+from numpy.core.numeric import tensordot 
 import ansatz_class_package as acp 
 import pauli_class_package as pcp 
 import hamiltonian_class_package as hcp 
@@ -7,7 +8,7 @@ import matrix_class_package as mcp
 import post_processing as pp
 import scipy as scp
 import scipy.io
-uptowhatK = 2
+uptowhatK = 3
 num_qubits = 2
 optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
@@ -18,7 +19,7 @@ runSDPonpython = True
 
 
 if optimizer == 'feasibility_sdp':
-    num_qubits = 2
+    num_qubits = 3
 
 #Generate initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 267, 2)
@@ -33,15 +34,31 @@ pauli_decomp = pcp.paulinomial_decomposition(LdagL)
 if optimizer == 'feasibility_sdp':
     delta = 0.1
     #gammas = [0.1]
-    gammas = [0.1,0.1,0.1,0.1]
+    gammas = []
     epsilon = 0.5
     #hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,[delta,epsilon],['3','1'])
     #L_terms = [hcp.generate_arbitary_hamiltonian(num_qubits,[1,-1j],['1','2'])]
-    hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,0.5,0.5],['33','01','10'])
-    L_terms = [hcp.generate_arbitary_hamiltonian(num_qubits,[1],['30'])]
-    L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['10','20']))
-    L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[1],['03']))
-    L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['01','02']))
+    hcoeffs = []
+    hstrings = []
+
+    for i in range(num_qubits-1):
+        hcoeffs.append(0.5)
+        hstrings.append('0'*i+'33'+'0'*(num_qubits-2-i))
+    for i in range(num_qubits):
+        hcoeffs.append(0.5)
+        hstrings.append('0'*i+'1'+'0'*(num_qubits-1-i))
+    hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,hcoeffs,hstrings)
+
+    L_terms = []
+    for i in range(num_qubits):
+        gammas.append(0.1)
+        L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[1],['0'*i+'3'+'0'*(num_qubits-1-i)]))
+        gammas.append(0.1)
+        L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['0'*i+'1'+'0'*(num_qubits-1-i),'0'*i+'2'+'0'*(num_qubits-1-i)]))
+    #L_terms = [hcp.generate_arbitary_hamiltonian(num_qubits,[1],['30'])]
+    #L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['10','20']))
+    #L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[1],['03']))
+    #L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['01','02']))
 else:    
     hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits, list(pauli_decomp.values()), list(pauli_decomp.keys()))
 
@@ -129,7 +146,7 @@ if loadmatlabmatrix == True:
 p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
 ini_statevec_vecform = initial_state.get_statevector()
 csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
-rho = np.zeros(shape=(4,4), dtype = np.complex128)
+rho = np.zeros(shape=(2**num_qubits,2**num_qubits), dtype = np.complex128)
 trace = 0
 for i in range(len(density_mat)):
     for j in range(len(density_mat)):
@@ -155,7 +172,7 @@ def evaluate_rho_dot(rho, hamiltonian_class_object, gammas, L_terms):
     return coherent_evo + quantum_jumps_total
 
 rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
-print('rho_dot is: ' + str(rho_dot))
+print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
 #%%
 #Testing for the mapping routine. 
 # p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
