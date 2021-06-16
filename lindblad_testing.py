@@ -17,11 +17,50 @@ loadmatlabmatrix = False
 runSDPonpython = True
 
 
+#%%
 if optimizer == 'feasibility_sdp':
     num_qubits = 2
 
 #Generate initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 267, 2)
+
+#%% IBMQ STUFF
+import Qiskit_helperfunctions as qhf #IBMQ account is loaded here in this import
+hub, group, project = "ibm-q-nus", "default", "reservations"
+
+
+#IMBQ account is loaded in the importing of Qiskit_helperfunctions for now, so this part is commented out (KH, 5 may 2021)
+#load IBMQ account. This step is needed if you want to run on the actual quantum computer
+# This will throw an erorr if IMBQ account is not saved, consult qiskit docs for help
+# IBMQ.load_account() 
+
+#Other parameters for running on the quantum computer. Choose 1 to uncomment.
+# sim = "noiseless_qasm"
+# num_shots = 30000 #max is 1000000
+
+sim = "noisy_qasm"
+quantum_com = "ibmq_rome" #which quantum computer to take the noise profile from
+num_shots = 8192 #max is 8192
+
+# sim = "real"
+# quantum_com = "ibmq_rome" #which quantum computer to actually run on
+# num_shots = 8192 #max is 8192
+
+quantum_computer_choice_results = qhf.choose_quantum_computer(hub, group, project, quantum_com)
+
+#Example on how to create artificial noise model
+#couplingmap = [[0,1],[1,2],[2,3],[3,4]]
+#quantum_computer_choice_results = qhf.create_quantum_computer_simulation(couplingmap,depolarizingnoise=True,depolarizingnoiseparameter=0.03,bitfliperror=True,bitfliperrorparameter=0.03,measerror=True,measerrorparameter=0.03)
+
+mitigate_meas_error = True 
+meas_filter = qhf.measurement_error_mitigator(num_qubits, sim, quantum_computer_choice_results, shots = num_shots)
+
+# mitigate_meas_error = False
+# meas_filter = None
+
+#expectation calculator here is an object that has a method that takes in a paulistring object P, and returns a <psi|P|psi>.
+#This expectation calculator also stores previously calculated expectation values, so one doesn't need to compute the same expectation value twice.
+expectation_calculator = qhf.expectation_calculator(initial_state, sim, quantum_computer_choice_results, meas_error_mitigate = mitigate_meas_error, meas_filter = meas_filter)
 
 L = np.array([[-0.1,-0.25j,0.25j,0],[-0.25j,-0.05-0.1j,0,0.25j],[0.25j,0,-0.05+0.1j,-0.25j],[0.1,0.25j,-0.25j,0]])
 
@@ -69,16 +108,22 @@ for k in range(1, uptowhatK + 1):
     
             
 
-    #Here is where we should be able to specify how to evaluate the matrices. However only the exact method (classical matrix multiplication) has been implemented so far
-    E_mat_evaluated = E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-    D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+    #Here is where we should be able to specify how to evaluate the matrices.
+    #However only the exact method (classical matrix multiplication) has been
+    #implemented so far
+    # E_mat_evaluated = E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+    # D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+    E_mat_evaluated = E_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
+    D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
     if optimizer == 'feasibility_sdp':
         R_mats_evaluated = []
         for r in R_mats_uneval:
-            R_mats_evaluated.append(r.evaluate_matrix_by_matrix_multiplicaton(initial_state))
+            # R_mats_evaluated.append(r.evaluate_matrix_by_matrix_multiplicaton(initial_state))
+            R_mats_evaluated.append(r.evaluate_matrix_with_qiskit_circuits(expectation_calculator))
         F_mats_evaluated = []
         for f in F_mats_uneval:
-            F_mats_evaluated.append(f.evaluate_matrix_by_matrix_multiplicaton(initial_state))
+            # F_mats_evaluated.append(f.evaluate_matrix_by_matrix_multiplicaton(initial_state))
+            F_mats_evaluated.append(f.evaluate_matrix_with_qiskit_circuits(expectation_calculator))
 
 
     #Save matrices for testing with matlab
