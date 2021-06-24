@@ -13,7 +13,7 @@ num_qubits = 2
 optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
-sdp_tolerance_bound = 0
+sdp_tolerance_bound = 0.001
 
 degeneracy_tol = 5
 loadmatlabmatrix = False
