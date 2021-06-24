@@ -12,6 +12,7 @@ num_qubits = 2
 optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
+sdp_tolerance_bound = 10**(-4)
 degeneracy_tol = 5
 loadmatlabmatrix = False
 runSDPonpython = True
@@ -140,7 +141,7 @@ for k in range(1, uptowhatK + 1):
         IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated)
 
 
-    IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol)
+    IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound = 10**(-4))
 
     if optimizer == 'feasibility_sdp' and runSDPonpython == False:
         print('NOT RUNNING SDP ON PYTHON. JUST USING FIRST PART OF CODE TO GENERATE ANSATZ FOR 2ND PART')

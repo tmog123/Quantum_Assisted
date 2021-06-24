@@ -140,6 +140,7 @@ class IQAE_Lindblad(object):
         self.eigh_invcond = None
         self.eig_invcond = None
         self.optimizer = None
+        self.sdp_tolerance_bound = 0
         self.ground_state_energy = None 
         self.ground_state_alphas = None
         self.all_energies = None
@@ -149,7 +150,7 @@ class IQAE_Lindblad(object):
         self.evaluated_alpha = False
         self.evaluated_denmat = False
     
-    def define_optimizer(self, optimizer, eigh_invcond = 10**(-12),eig_invcond = 10**(-12),degeneracy_tol = 5):
+    def define_optimizer(self, optimizer, eigh_invcond = 10**(-12),eig_invcond = 10**(-12),degeneracy_tol = 5,sdp_tolerance_bound = 0):
         """
         Optimiser can either be eigh or qcqp or sdp or...
         Here we also take in the various invconds as arguments
@@ -165,12 +166,14 @@ class IQAE_Lindblad(object):
         elif optimizer == 'sdp':
             pass
         elif optimizer == 'feasibility_sdp':
-            pass
+            self.set_sdp_tolerance_bound(sdp_tolerance_bound)
     
     def set_eigh_invcond(self, eigh_invcond):
         self.eigh_invcond = eigh_invcond
     def set_eig_invcond(self,eig_invcond):
         self.eig_invcond = eig_invcond
+    def set_sdp_tolerance_bound(self,bound):
+        self.sdp_tolerance_bound = bound
 
     def set_degeneracy_tol(self,degeneracy_tol):
         self.degeneracy_tol = degeneracy_tol
@@ -179,7 +182,7 @@ class IQAE_Lindblad(object):
         if self.optimizer == None:
             raise(RuntimeError("run the define optimizer_function first"))
         elif self.optimizer == 'feasibility_sdp':
-            densitymat,minvalue = opt_package.cvxpy_density_matrix_feasibility_sdp_routine(self.D,self.E,self.R_matrices,self.F_matrices,self.gammas)
+            densitymat,minvalue = opt_package.cvxpy_density_matrix_feasibility_sdp_routine(self.D,self.E,self.R_matrices,self.F_matrices,self.gammas,self.sdp_tolerance_bound)
             self.density_matrix = densitymat
             self.ground_state_energy = minvalue
             self.evaluated_denmat = True

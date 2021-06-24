@@ -27,7 +27,7 @@ import importlib
 importlib.reload(qcqp)
 importlib.reload(cvx)'''
 
-def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_matrices,gammas):
+def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_matrices,gammas,sdp_tolerance_bound):
     numstate = len(D_matrix)
     D_matrix_np = np.array(D_matrix)
     #D_matrix_np = 0.5*(D_matrix_np + np.conjugate(np.transpose(D_matrix_np)))
@@ -49,7 +49,13 @@ def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_
     for i in range(len(gammas)):
         a = a + gammas[i]*(R_matrices_np[i]@beta@np.transpose(np.conjugate(R_matrices_np[i]))-0.5*F_matrices_np[i]@beta@E_matrix_np-0.5*E_matrix_np@beta@F_matrices_np[i])
     #a = -1j*(D_matrix_np@beta@E_matrix_np-E_matrix_np@beta@D_matrix_np)+gammas[0]*(R_matrices_np[0]@beta@np.transpose(np.conjugate(R_matrices_np[0]))-0.5*F_matrices_np[0]@beta@E_matrix_np-0.5*E_matrix_np@beta@F_matrices_np[0])
-    constraints += [a == 0]
+    if sdp_tolerance_bound == 0:
+        print('Feasibility SDP is set up with hard constraint  == 0')
+        constraints += [a == 0]
+    else:
+        print('Feasibility SDP is set up with interval constraint <'+str(sdp_tolerance_bound)+ '& >-'+str(sdp_tolerance_bound))
+        constraints += [cp.abs(a)<=sdp_tolerance_bound]
+        constraints += [cp.abs(a)>=-sdp_tolerance_bound]
     prob = cp.Problem(cp.Minimize(0),constraints)
     prob.solve(solver=cp.MOSEK,verbose=False)
     denmat = beta.value
