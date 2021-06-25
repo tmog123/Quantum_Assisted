@@ -178,14 +178,11 @@ class IQAE_Lindblad(object):
     def set_degeneracy_tol(self,degeneracy_tol):
         self.degeneracy_tol = degeneracy_tol
 
-    def evaluate(self, kh_test = True):
+    def evaluate(self):
         if self.optimizer == None:
             raise(RuntimeError("run the define optimizer_function first"))
         elif self.optimizer == 'feasibility_sdp':
-            if kh_test:
-                densitymat,minvalue = opt_package.cvxpy_density_matrix_feasibility_sdp_routine_kh_test(self.D,self.E,self.R_matrices,self.F_matrices,self.gammas,self.sdp_tolerance_bound)
-            else:
-                densitymat,minvalue = opt_package.cvxpy_density_matrix_feasibility_sdp_routine(self.D,self.E,self.R_matrices,self.F_matrices,self.gammas,self.sdp_tolerance_bound)
+            densitymat,minvalue = opt_package.cvxpy_density_matrix_feasibility_sdp_routine(self.D,self.E,self.R_matrices,self.F_matrices,self.gammas,self.sdp_tolerance_bound)
             self.density_matrix = densitymat
             self.ground_state_energy = minvalue
             self.evaluated_denmat = True

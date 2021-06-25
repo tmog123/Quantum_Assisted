@@ -27,7 +27,7 @@ import importlib
 importlib.reload(qcqp)
 importlib.reload(cvx)'''
 
-def cvxpy_density_matrix_feasibility_sdp_routine_kh_test(D_matrix,E_matrix,R_matrices,F_matrices,gammas,sdp_tolerance_bound):
+def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_matrices,gammas,sdp_tolerance_bound):
     numstate = len(D_matrix)
     D_matrix_np = np.array(D_matrix)
     #D_matrix_np = 0.5*(D_matrix_np + np.conjugate(np.transpose(D_matrix_np)))
@@ -59,7 +59,7 @@ def cvxpy_density_matrix_feasibility_sdp_routine_kh_test(D_matrix,E_matrix,R_mat
         # constraints += [cp.trace(E_matrix_np @ beta) == 1] #try not enforcing the trace condition
     else:
         print('Feasibility SDP is set up with interval constraint <'+str(sdp_tolerance_bound)+ ' & >-'+str(sdp_tolerance_bound))
-        pass
+        raise(RuntimeError("Not implemented yet"))
         #constraints += [cp.abs(cp.trace(a@(a.H)))<=sdp_tolerance_bound]
         #constraints += [cp.abs(cp.trace(a@(a.H)))>=-sdp_tolerance_bound]
         # constraints += [cp.real(cp.trace(E_matrix_np @ beta)) <= 1+sdp_tolerance_bound]
@@ -75,7 +75,7 @@ def cvxpy_density_matrix_feasibility_sdp_routine_kh_test(D_matrix,E_matrix,R_mat
         minval = np.trace(denmat@D_matrix_np)
         return denmat,minval
 
-def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_matrices,gammas,sdp_tolerance_bound):
+def cvxpy_density_matrix_feasibility_sdp_routine_old(D_matrix,E_matrix,R_matrices,F_matrices,gammas,sdp_tolerance_bound):
     numstate = len(D_matrix)
     D_matrix_np = np.array(D_matrix)
     #D_matrix_np = 0.5*(D_matrix_np + np.conjugate(np.transpose(D_matrix_np)))

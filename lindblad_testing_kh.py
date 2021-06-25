@@ -13,13 +13,13 @@ optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
-use_qiskit = False
+use_qiskit = True
 loadmatlabmatrix = False
 runSDPonpython = True
 
 if optimizer == 'feasibility_sdp':
-    num_qubits = 5
-    uptowhatK = 5
+    num_qubits = 4
+    uptowhatK = 2
     sdp_tolerance_bound = 0
 else:
     num_qubits = 2
@@ -29,39 +29,40 @@ else:
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 267, 1)
 
 #%% IBMQ STUFF
-import Qiskit_helperfunctions as qhf #IBMQ account is loaded here in this import
-hub, group, project = "ibm-q-nus", "default", "reservations"
+if use_qiskit:
+    import Qiskit_helperfunctions as qhf #IBMQ account is loaded here in this import
+    hub, group, project = "ibm-q-nus", "default", "reservations"
 
-#IMBQ account is loaded in the importing of Qiskit_helperfunctions for now, so this part is commented out (KH, 5 may 2021)
-#load IBMQ account. This step is needed if you want to run on the actual quantum computer
+    #IMBQ account is loaded in the importing of Qiskit_helperfunctions for now, so this part is commented out (KH, 5 may 2021)
+    #load IBMQ account. This step is needed if you want to run on the actual quantum computer
 
-#Other parameters for running on the quantum computer. Choose 1 to uncomment.
-# sim = "noiseless_qasm"
-# num_shots = 30000 #max is 1000000
+    #Other parameters for running on the quantum computer. Choose 1 to uncomment.
+    # sim = "noiseless_qasm"
+    # num_shots = 30000 #max is 1000000
 
-sim = "noisy_qasm"
-quantum_com = "ibmq_rome" #which quantum computer to take the noise profile from
-num_shots = 8192 #max is 8192
+    sim = "noisy_qasm"
+    quantum_com = "ibmq_rome" #which quantum computer to take the noise profile from
+    num_shots = 8192 #max is 8192
 
-# sim = "real"
-# quantum_com = "ibmq_rome" #which quantum computer to actually run on
-# num_shots = 8192 #max is 8192
+    # sim = "real"
+    # quantum_com = "ibmq_rome" #which quantum computer to actually run on
+    # num_shots = 8192 #max is 8192
 
-quantum_computer_choice_results = qhf.choose_quantum_computer(hub, group, project, quantum_com)
+    quantum_computer_choice_results = qhf.choose_quantum_computer(hub, group, project, quantum_com)
 
-#Example on how to create artificial noise model
-#couplingmap = [[0,1],[1,2],[2,3],[3,4]]
-#quantum_computer_choice_results = qhf.create_quantum_computer_simulation(couplingmap,depolarizingnoise=True,depolarizingnoiseparameter=0.03,bitfliperror=True,bitfliperrorparameter=0.03,measerror=True,measerrorparameter=0.03)
+    #Example on how to create artificial noise model
+    #couplingmap = [[0,1],[1,2],[2,3],[3,4]]
+    #quantum_computer_choice_results = qhf.create_quantum_computer_simulation(couplingmap,depolarizingnoise=True,depolarizingnoiseparameter=0.03,bitfliperror=True,bitfliperrorparameter=0.03,measerror=True,measerrorparameter=0.03)
 
-mitigate_meas_error = True 
-meas_filter = qhf.measurement_error_mitigator(num_qubits, sim, quantum_computer_choice_results, shots = num_shots)
+    mitigate_meas_error = True 
+    meas_filter = qhf.measurement_error_mitigator(num_qubits, sim, quantum_computer_choice_results, shots = num_shots)
 
-# mitigate_meas_error = False
-# meas_filter = None
+    # mitigate_meas_error = False
+    # meas_filter = None
 
-#expectation calculator here is an object that has a method that takes in a paulistring object P, and returns a <psi|P|psi>.
-#This expectation calculator also stores previously calculated expectation values, so one doesn't need to compute the same expectation value twice.
-expectation_calculator = qhf.expectation_calculator(initial_state, sim, quantum_computer_choice_results, meas_error_mitigate = mitigate_meas_error, meas_filter = meas_filter)
+    #expectation calculator here is an object that has a method that takes in a paulistring object P, and returns a <psi|P|psi>.
+    #This expectation calculator also stores previously calculated expectation values, so one doesn't need to compute the same expectation value twice.
+    expectation_calculator = qhf.expectation_calculator(initial_state, sim, quantum_computer_choice_results, meas_error_mitigate = mitigate_meas_error, meas_filter = meas_filter)
 
 if optimizer == 'feasibility_sdp':
     delta = 0.1
@@ -190,6 +191,7 @@ for k in range(1, uptowhatK + 1):
             IQAE_instance.check_if_valid_density_matrix()
             #print(all_energies)
             #print(all_states)
+            print("the trace of the beta matrix is", np.trace(density_mat @ E_mat_evaluated))
             print('The ground state energy is\n',groundstateenergy)
             #print('The density matrix is\n',density_mat)
             if IQAE_instance.check_if_hermitian() == True:
@@ -214,6 +216,7 @@ for k in range(1, uptowhatK + 1):
 
             rho_eigvals,rho_eigvecs = scipy.linalg.eigh(rho)        
             print('rho_eigvals is: ' + str(rho_eigvals))
+            print("trace rho is", np.trace(rho))
             #now, we check if rho (the actual denmat) gives 0 for the linblad master equation
 
             rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
