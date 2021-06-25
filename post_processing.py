@@ -227,7 +227,9 @@ class IQAE_Lindblad(object):
             self.evaluated_alpha = True
             #return (np.array(a),np.array(b))
 
-    
+    def check_if_hermitian(self, cutoff = 10**(-10)):
+        return np.all(np.abs(self.density_matrix - self.density_matrix.conj().T) < cutoff)
+
     def get_results_all(self):
         if self.evaluated_alpha == False:
             raise(RuntimeError("You did not run the proper optimizer. Remember, if you ran SDP, the results are obtained in the form of density matrix and should use get_density_matrix_results instead"))
@@ -237,7 +239,14 @@ class IQAE_Lindblad(object):
         if self.evaluated_denmat == False:
             raise(RuntimeError("You did not run the proper optimizer. Remember, if you ran eigh or eig, the results are obtained in the form of alpha vectors and should use get_results_all instead"))
         else:
-            denmat_values,denmat_vects = scp.linalg.eig(self.density_matrix)
+            #checking the the density matrix is hermitian
+            is_hermitian = self.check_if_hermitian(cutoff = cutoff)
+            if is_hermitian:
+                #since density matrix is hermitian, we can use eigh
+                denmat_values,denmat_vects = scp.linalg.eigh(self.density_matrix)
+            else:
+                print("density_matrix is not hermitian")
+                denmat_values,denmat_vects = scp.linalg.eig(self.density_matrix)
             #print(denmat_values)
             imagvalues = np.imag(denmat_values)
             allreal = True
