@@ -1,5 +1,6 @@
 #%%
-import numpy as np 
+import numpy as np
+from numpy.core.numeric import tensordot 
 import ansatz_class_package as acp 
 import pauli_class_package as pcp 
 import hamiltonian_class_package as hcp 
@@ -7,19 +8,22 @@ import matrix_class_package as mcp
 import post_processing as pp
 import scipy as scp
 import scipy.io
-uptowhatK = 2
-num_qubits = 2
+
 optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
+use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-
-#%%
 if optimizer == 'feasibility_sdp':
-    num_qubits = 1
+    num_qubits = 3
+    uptowhatK = 2
+    sdp_tolerance_bound = 0
+else:
+    num_qubits = 2
+    uptowhatK = 2
 
 #Generate initial state
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 267, 1)
@@ -28,11 +32,8 @@ initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 267, 1)
 import Qiskit_helperfunctions as qhf #IBMQ account is loaded here in this import
 hub, group, project = "ibm-q-nus", "default", "reservations"
 
-
 #IMBQ account is loaded in the importing of Qiskit_helperfunctions for now, so this part is commented out (KH, 5 may 2021)
 #load IBMQ account. This step is needed if you want to run on the actual quantum computer
-# This will throw an erorr if IMBQ account is not saved, consult qiskit docs for help
-# IBMQ.load_account() 
 
 #Other parameters for running on the quantum computer. Choose 1 to uncomment.
 # sim = "noiseless_qasm"
@@ -62,35 +63,49 @@ meas_filter = qhf.measurement_error_mitigator(num_qubits, sim, quantum_computer_
 #This expectation calculator also stores previously calculated expectation values, so one doesn't need to compute the same expectation value twice.
 expectation_calculator = qhf.expectation_calculator(initial_state, sim, quantum_computer_choice_results, meas_error_mitigate = mitigate_meas_error, meas_filter = meas_filter)
 
-L = np.array([[-0.1,-0.25j,0.25j,0],[-0.25j,-0.05-0.1j,0,0.25j],[0.25j,0,-0.05+0.1j,-0.25j],[0.1,0.25j,-0.25j,0]])
-
-#Converting L^dag L into Hamiltonian
-LdagL = np.array([[0.145,0.025+0.0375j,0.025-0.0375j,-0.125],[0.025-0.0375j,0.1375,-0.125,-0.025-0.0125j],[0.025+0.0375j,-0.125,0.1375,-0.025+0.0125j],[-0.125,-0.025+0.0125j,-0.025-0.0125j,0.125]])
-pauli_decomp = pcp.paulinomial_decomposition(LdagL) 
-#print(list(pauli_decomp.values()))
-
 if optimizer == 'feasibility_sdp':
     delta = 0.1
     #gammas = [0.1]
-    # gammas = [0.1,0.1,0.1,0.1]
-    gammas = [0.1]
+    gammas = []
     epsilon = 0.5
     #hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,[delta,epsilon],['3','1'])
     #L_terms = [hcp.generate_arbitary_hamiltonian(num_qubits,[1,-1j],['1','2'])]
-    hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,0.5],['3','1'])
-    # L_terms = [hcp.generate_arbitary_hamiltonian(num_qubits,[1],['30'])]
-    L_terms = []
-    L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['1','2']))
-    # L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[1],['03']))
-    # L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['01','02']))
-else:    
-    hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits, list(pauli_decomp.values()), list(pauli_decomp.keys()))
+    hcoeffs = []
+    hstrings = []
+    if num_qubits == 1:
+        hcoeffs.append(0.5)
+        hstrings.append("3")
+        hstrings.append("1")
+        gammas.append(0.1)
+    for i in range(num_qubits-1):
+        hcoeffs.append(0.5)
+        hstrings.append('0'*i+'33'+'0'*(num_qubits-2-i))
+    for i in range(num_qubits):
+        hcoeffs.append(0.5)
+        hstrings.append('0'*i+'1'+'0'*(num_qubits-1-i))
+    hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,hcoeffs,hstrings)
 
-#print('Beta values are ' + str(hamiltonian.return_betas()))
+    L_terms = []
+    for i in range(num_qubits):
+        gammas.append(0.1)
+        L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[1],['0'*i+'3'+'0'*(num_qubits-1-i)]))
+        gammas.append(0.1)
+        L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['0'*i+'1'+'0'*(num_qubits-1-i),'0'*i+'2'+'0'*(num_qubits-1-i)]))
+    if num_qubits == 1:
+        gammas.append(0.1)
+        L_terms.append(hcp.generate_arbitary_hamiltonian(1, [0.5,0.5j],["1","2"]))
+else:    
+    # Going into the Fock-Liouville space, old code
+    L = np.array([[-0.1,-0.25j,0.25j,0],[-0.25j,-0.05-0.1j,0,0.25j],[0.25j,0,-0.05+0.1j,-0.25j],[0.1,0.25j,-0.25j,0]])
+    #Converting L^dag L into Hamiltonian
+    LdagL = np.array([[0.145,0.025+0.0375j,0.025-0.0375j,-0.125],[0.025-0.0375j,0.1375,-0.125,-0.025-0.0125j],[0.025+0.0375j,-0.125,0.1375,-0.025+0.0125j],[-0.125,-0.025+0.0125j,-0.025-0.0125j,0.125]])
+    pauli_decomp = pcp.paulinomial_decomposition(LdagL) 
+    # print(list(pauli_decomp.values()))
+    hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits, list(pauli_decomp.values()), list(pauli_decomp.keys()))
 
 ansatz = acp.initial_ansatz(num_qubits)
 
-#Run IQAE
+#compute GQAS matrices
 for k in range(1, uptowhatK + 1):
     print('##########################################')
     print('K = ' +str(k))
@@ -113,19 +128,25 @@ for k in range(1, uptowhatK + 1):
     #Here is where we should be able to specify how to evaluate the matrices.
     #However only the exact method (classical matrix multiplication) has been
     #implemented so far
-    # E_mat_evaluated = E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-    # D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-    E_mat_evaluated = E_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
-    D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
+    if use_qiskit:
+        E_mat_evaluated = E_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
+        D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
+    else:
+        E_mat_evaluated = E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+        D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
     if optimizer == 'feasibility_sdp':
         R_mats_evaluated = []
         for r in R_mats_uneval:
-            # R_mats_evaluated.append(r.evaluate_matrix_by_matrix_multiplicaton(initial_state))
-            R_mats_evaluated.append(r.evaluate_matrix_with_qiskit_circuits(expectation_calculator))
+            if use_qiskit:
+                R_mats_evaluated.append(r.evaluate_matrix_with_qiskit_circuits(expectation_calculator))
+            else:
+                R_mats_evaluated.append(r.evaluate_matrix_by_matrix_multiplicaton(initial_state))
         F_mats_evaluated = []
         for f in F_mats_uneval:
-            # F_mats_evaluated.append(f.evaluate_matrix_by_matrix_multiplicaton(initial_state))
-            F_mats_evaluated.append(f.evaluate_matrix_with_qiskit_circuits(expectation_calculator))
+            if use_qiskit:
+                F_mats_evaluated.append(f.evaluate_matrix_with_qiskit_circuits(expectation_calculator))
+            else:
+                F_mats_evaluated.append(f.evaluate_matrix_by_matrix_multiplicaton(initial_state))
 
 
     #Save matrices for testing with matlab
@@ -142,7 +163,7 @@ for k in range(1, uptowhatK + 1):
         IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated)
 
 
-    IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol)
+    IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
 
     if optimizer == 'feasibility_sdp' and runSDPonpython == False:
         print('NOT RUNNING SDP ON PYTHON. JUST USING FIRST PART OF CODE TO GENERATE ANSATZ FOR 2ND PART')
@@ -158,7 +179,10 @@ for k in range(1, uptowhatK + 1):
             #print(all_states)
             print('The ground state energy is\n',groundstateenergy)
             #print('The density matrix is\n',density_mat)
-            denmat_values,denmat_vects = scp.linalg.eig(density_mat)
+            if IQAE_instance.check_if_hermitian() == True:
+                denmat_values,denmat_vects = scp.linalg.eigh(density_mat)
+            else:
+                denmat_values,denmat_vects = scp.linalg.eig(density_mat)
             denmat_values = np.real(np.round(denmat_values,6))
             #print(np.imag(denmat_values))
             print("the sorted density matrix (beta matrix) eigenvalues are\n",np.sort(denmat_values))
@@ -176,7 +200,6 @@ if loadmatlabmatrix == True:
 p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
 ini_statevec_vecform = initial_state.get_statevector()
 csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
-# rho = np.zeros(shape=(4,4), dtype = np.complex128)
 rho = np.zeros(shape=(2**num_qubits,2**num_qubits), dtype = np.complex128)
 trace = 0
 for i in range(len(density_mat)):
@@ -203,7 +226,8 @@ def evaluate_rho_dot(rho, hamiltonian_class_object, gammas, L_terms):
     return coherent_evo + quantum_jumps_total
 
 rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
-print('rho_dot is: ' + str(rho_dot))
+# print('rho_dot is: ' + str(rho_dot))
+print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
 #%%
 #Testing for the mapping routine. 
 # p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
