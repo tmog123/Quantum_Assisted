@@ -18,8 +18,8 @@ loadmatlabmatrix = False
 runSDPonpython = True
 
 if optimizer == 'feasibility_sdp':
-    num_qubits = 3
-    uptowhatK = 2
+    num_qubits = 5
+    uptowhatK = 5
     sdp_tolerance_bound = 0
 else:
     num_qubits = 2
@@ -105,6 +105,20 @@ else:
 
 ansatz = acp.initial_ansatz(num_qubits)
 
+#function to evaluate the rho_dot in the linblad master eqn
+def evaluate_rho_dot(rho, hamiltonian_class_object, gammas, L_terms):
+    hamiltonian_mat = hamiltonian_class_object.to_matrixform()
+    coherent_evo = -1j * (hamiltonian_mat @ rho - rho @ hamiltonian_mat)
+    quantum_jumps_total = 0 + 0*1j
+    for i in range(len(gammas)):
+        gamma_i = gammas[i]
+        L_i_mat = L_terms[i].to_matrixform()
+        L_i_dag_L_i = L_i_mat.conj().T @ L_i_mat
+        anti_commutator = L_i_dag_L_i @ rho + rho @ L_i_dag_L_i
+        jump_term = L_i_mat @ rho @ L_i_mat.conj().T
+        quantum_jumps_total += gamma_i * (jump_term - 0.5*anti_commutator)
+    return coherent_evo + quantum_jumps_total
+
 #compute GQAS matrices
 for k in range(1, uptowhatK + 1):
     print('##########################################')
@@ -123,8 +137,6 @@ for k in range(1, uptowhatK + 1):
             thisLdagL = hcp.multiply_hamiltonians(hcp.dagger_hamiltonian(thisL),thisL)
             F_mats_uneval.append(mcp.unevaluatedmatrix(num_qubits,ansatz,thisLdagL,"D"))
     
-            
-
     #Here is where we should be able to specify how to evaluate the matrices.
     #However only the exact method (classical matrix multiplication) has been
     #implemented so far
@@ -168,7 +180,8 @@ for k in range(1, uptowhatK + 1):
     if optimizer == 'feasibility_sdp' and runSDPonpython == False:
         print('NOT RUNNING SDP ON PYTHON. JUST USING FIRST PART OF CODE TO GENERATE ANSATZ FOR 2ND PART')
     else:
-        IQAE_instance.evaluate()
+        IQAE_instance.evaluate(kh_test=True)
+        # IQAE_instance.evaluate(kh_test=False)
         #all_energies,all_states = IQAE_instance.get_results_all()
         density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
         if type(density_mat) == type(None):
@@ -186,6 +199,26 @@ for k in range(1, uptowhatK + 1):
             denmat_values = np.real(np.round(denmat_values,6))
             #print(np.imag(denmat_values))
             print("the sorted density matrix (beta matrix) eigenvalues are\n",np.sort(denmat_values))
+
+            p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
+            ini_statevec_vecform = initial_state.get_statevector()
+            csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
+            rho = np.zeros(shape=(2**num_qubits,2**num_qubits), dtype = np.complex128)
+            trace = 0
+            for i in range(len(density_mat)):
+                for j in range(len(density_mat)):
+                    i_j_entry = density_mat[(i,j)]
+                    i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
+                    rho += i_j_entry * i_j_ketbra
+                    trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
+
+            rho_eigvals,rho_eigvecs = scipy.linalg.eigh(rho)        
+            print('rho_eigvals is: ' + str(rho_eigvals))
+            #now, we check if rho (the actual denmat) gives 0 for the linblad master equation
+
+            rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
+            # print('rho_dot is: ' + str(rho_dot))
+            print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
             #print("the density matrix eigenvectors are\n",denmat_vects)
 #%%
 #testing for the feasibility routine
@@ -197,37 +230,24 @@ if loadmatlabmatrix == True:
     print('LOADING MATRICES THAT SHOULD HAVE BEEN GENERATED FROM MATLAB. ENSURE THIS IS DONE.')
     density_mat = scipy.io.loadmat('Jonstufftesting/'+'savedmatrixfrommatlab.mat')['betarho']
 
-p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
-ini_statevec_vecform = initial_state.get_statevector()
-csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
-rho = np.zeros(shape=(2**num_qubits,2**num_qubits), dtype = np.complex128)
-trace = 0
-for i in range(len(density_mat)):
-    for j in range(len(density_mat)):
-        i_j_entry = density_mat[(i,j)]
-        i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
-        rho += i_j_entry * i_j_ketbra
-        trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
+    p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
+    ini_statevec_vecform = initial_state.get_statevector()
+    csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
+    rho = np.zeros(shape=(2**num_qubits,2**num_qubits), dtype = np.complex128)
+    trace = 0
+    for i in range(len(density_mat)):
+        for j in range(len(density_mat)):
+            i_j_entry = density_mat[(i,j)]
+            i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
+            rho += i_j_entry * i_j_ketbra
+            trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
 
-rho_eigvals,rho_eigvecs = scipy.linalg.eigh(rho)        
-print('rho_eigvals is: ' + str(rho_eigvals))
-#now, we check if rho (the actual denmat) gives 0 for the linblad master equation
-def evaluate_rho_dot(rho, hamiltonian_class_object, gammas, L_terms):
-    hamiltonian_mat = hamiltonian_class_object.to_matrixform()
-    coherent_evo = -1j * (hamiltonian_mat @ rho - rho @ hamiltonian_mat)
-    quantum_jumps_total = 0 + 0*1j
-    for i in range(len(gammas)):
-        gamma_i = gammas[i]
-        L_i_mat = L_terms[i].to_matrixform()
-        L_i_dag_L_i = L_i_mat.conj().T @ L_i_mat
-        anti_commutator = L_i_dag_L_i @ rho + rho @ L_i_dag_L_i
-        jump_term = L_i_mat @ rho @ L_i_mat.conj().T
-        quantum_jumps_total += gamma_i * (jump_term - 0.5*anti_commutator)
-    return coherent_evo + quantum_jumps_total
-
-rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
-# print('rho_dot is: ' + str(rho_dot))
-print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
+    rho_eigvals,rho_eigvecs = scipy.linalg.eigh(rho)        
+    print('rho_eigvals is: ' + str(rho_eigvals))
+    #now, we check if rho (the actual denmat) gives 0 for the linblad master equation
+    rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
+    # print('rho_dot is: ' + str(rho_dot))
+    print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
 #%%
 #Testing for the mapping routine. 
 # p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
