@@ -8,12 +8,13 @@ import matrix_class_package as mcp
 import post_processing as pp
 import scipy as scp
 import scipy.io
+import qutip 
 
 optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
-use_qiskit = True
+use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
@@ -120,6 +121,16 @@ def evaluate_rho_dot(rho, hamiltonian_class_object, gammas, L_terms):
         quantum_jumps_total += gamma_i * (jump_term - 0.5*anti_commutator)
     return coherent_evo + quantum_jumps_total
 
+#%%
+#get the steady state using qutip(lol)
+import qutip 
+qtp_hamiltonian = qutip.Qobj(hamiltonian.to_matrixform())
+qtp_Lterms = [qutip.Qobj(i.to_matrixform()) for i in L_terms]
+qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
+qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops)
+
+
+#%%
 #compute GQAS matrices
 for k in range(1, uptowhatK + 1):
     print('##########################################')
@@ -167,6 +178,7 @@ for k in range(1, uptowhatK + 1):
         scipy.io.savemat("Jonstufftesting/Emat" +str(k) +".mat",{"E": E_mat_evaluated,"D":D_mat_evaluated,"R":R_mats_evaluated,"F":F_mats_evaluated})
         print('Matrices have been generated, saved in Jonstufftestingfolder.')
     #print(D_mat_evaluated)
+
     ##########################################
     #Start of the classical post-processing. #
     ##########################################
@@ -181,7 +193,7 @@ for k in range(1, uptowhatK + 1):
     if optimizer == 'feasibility_sdp' and runSDPonpython == False:
         print('NOT RUNNING SDP ON PYTHON. JUST USING FIRST PART OF CODE TO GENERATE ANSATZ FOR 2ND PART')
     else:
-        IQAE_instance.evaluate(kh_test=True)
+        IQAE_instance.evaluate()
         # IQAE_instance.evaluate(kh_test=False)
         #all_energies,all_states = IQAE_instance.get_results_all()
         density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
@@ -222,6 +234,9 @@ for k in range(1, uptowhatK + 1):
             rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
             # print('rho_dot is: ' + str(rho_dot))
             print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
+            qtp_rho = qutip.Qobj(rho)
+            fidelity = qutip.metrics.fidelity(qtp_rho, qtp_rho_ss)
+            print("The fidelity is", fidelity)
             #print("the density matrix eigenvectors are\n",denmat_vects)
 #%%
 #testing for the feasibility routine
