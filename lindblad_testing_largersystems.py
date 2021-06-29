@@ -8,12 +8,14 @@ import matrix_class_package as mcp
 import post_processing as pp
 import scipy as scp
 import scipy.io
+import plotting_package as plotp
 uptowhatK = 3
 num_qubits = 5
 optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 sdp_tolerance_bound = 0
+whatKs = [1,2,3]
 
 ansatzgenmethod = 'random_selection_new' #'random_selection_new',"no_processing", 'pruning'
 numberofnewstatestoadd = 10 #Only will be used if 'random_selection_new' is selected
@@ -70,13 +72,16 @@ else:
 #print('Beta values are ' + str(hamiltonian.return_betas()))
 
 ansatz = acp.initial_ansatz(num_qubits)
-
+ansatzlist = []
+ansatzlist.append(ansatz)
+betamatrixlist = []
 #Run IQAE
 for k in range(1, uptowhatK + 1):
     print('##########################################')
     print('K = ' +str(k))
     #Generate Ansatz for this round
     ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits,method='random_selection_new',num_new_to_add=numberofnewstatestoadd)
+    ansatzlist.append(ansatz)
 
     E_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "E")
     D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
@@ -125,6 +130,7 @@ for k in range(1, uptowhatK + 1):
         IQAE_instance.evaluate()
         #all_energies,all_states = IQAE_instance.get_results_all()
         density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
+        betamatrixlist.append(density_mat)
         if type(density_mat) == type(None):
             print('SDP failed for this run, probably due to not high enough K')
         else:
@@ -138,6 +144,13 @@ for k in range(1, uptowhatK + 1):
             #print(np.imag(denmat_values))
             print("the sorted density matrix (beta matrix) eigenvalues are\n",np.sort(denmat_values))
             #print("the density matrix eigenvectors are\n",denmat_vects)
+
+##########Calculate Observables##########
+observable = hcp.generate_arbitary_observable(num_qubits, [1], ["3" + (num_qubits - 1) * "0"])  #here its 3 0 0 0 0 
+observableresults = plotp.getdata_forbetamatrix_observable(num_qubits,ansatzlist,whatKs,observable,initial_state,betamatrixlist,evalmethod='matrix_multiplication')
+for i in range(len(whatKs)):
+    print('The result of the observable for K = '+str(whatKs[i])+' is: '+str(observableresults[i]))
+
 #%%
 #testing for the feasibility routine
 

@@ -163,7 +163,7 @@ def gen_next_ansatz(anz,H,N,method = "no_processing",pruning_condition = 0.1,num
         for mom in anz.moments:
             for ham in H.return_paulistrings():
                 newpauli = pcp.pauli_combine(mom.paulistring,ham)
-                if newpauli.return_string() not in oldmomentstrings:
+                if newpauli.return_string() not in oldmomentstrings and newpauli.return_string() not in newmomentstrings:
                     newmomentstrings.append(newpauli.return_string())#This is the string that is [0,1,2,1,1,2,...] ect, NOT the paulistring class
         newmoment = []
         for i in oldmomentstrings:

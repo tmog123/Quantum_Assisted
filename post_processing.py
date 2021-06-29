@@ -245,7 +245,7 @@ class IQAE_Lindblad(object):
                 #since density matrix is hermitian, we can use eigh
                 denmat_values,denmat_vects = scp.linalg.eigh(self.density_matrix)
             else:
-                print("density_matrix is not hermitian")
+                print("density_matrix is not hermitian up to cutoff: "+str(cutoff))
                 denmat_values,denmat_vects = scp.linalg.eig(self.density_matrix)
             #print(denmat_values)
             imagvalues = np.imag(denmat_values)
