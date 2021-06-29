@@ -140,7 +140,7 @@ def set_initial_ansatz_alpha_for_pruning(ansatz,num_steps):
 def helper_get_strings(x):
     return x.return_string()
 
-def gen_next_ansatz(anz,H,N,method = "no_processing",pruning_condition = 0.1):
+def gen_next_ansatz(anz,H,N,method = "no_processing",pruning_condition = 0.1,num_new_to_add = 5):
     if method == 'no_processing':
         newmomentstrings = []
         for mom in anz.moments:
@@ -155,6 +155,27 @@ def gen_next_ansatz(anz,H,N,method = "no_processing",pruning_condition = 0.1):
         newmoment = []
         for i in newmomentstrings:
             newmoment.append(moment(N,paulistring(N,i,1)))#Appending the paulistring class objects
+    if method == 'random_selection_new':
+        oldmomentstrings = []
+        for mom in anz.moments:
+            oldmomentstrings.append(mom.paulistring.return_string())
+        newmomentstrings = []
+        for mom in anz.moments:
+            for ham in H.return_paulistrings():
+                newpauli = pcp.pauli_combine(mom.paulistring,ham)
+                if newpauli.return_string() not in oldmomentstrings:
+                    newmomentstrings.append(newpauli.return_string())#This is the string that is [0,1,2,1,1,2,...] ect, NOT the paulistring class
+        newmoment = []
+        for i in oldmomentstrings:
+            newmoment.append(moment(N,paulistring(N,i,1)))#Appending the paulistring class objects
+        if len(newmomentstrings)<=num_new_to_add:
+            for i in newmomentstrings:
+                newmoment.append(moment(N,paulistring(N,i,1)))#Appending the paulistring class objects
+        else:
+            indicestoadd = np.random.choice(len(newmomentstrings),num_new_to_add,replace=False)
+            for i in indicestoadd:
+                newmoment.append(moment(N,paulistring(N,newmomentstrings[i],1)))#Appending the paulistring class objects
+        print("there are " + str(len(newmoment)) + " states in CSk")
     if method == 'pruning':
         newmomentstrings = []
         for mom in anz.moments:

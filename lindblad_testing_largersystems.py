@@ -8,12 +8,15 @@ import matrix_class_package as mcp
 import post_processing as pp
 import scipy as scp
 import scipy.io
-uptowhatK = 2
-num_qubits = 2
+uptowhatK = 3
+num_qubits = 5
 optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
-sdp_tolerance_bound = 0.001
+sdp_tolerance_bound = 0
+
+ansatzgenmethod = 'random_selection_new' #'random_selection_new',"no_processing", 'pruning'
+numberofnewstatestoadd = 10 #Only will be used if 'random_selection_new' is selected
 
 degeneracy_tol = 5
 loadmatlabmatrix = False
@@ -73,7 +76,7 @@ for k in range(1, uptowhatK + 1):
     print('##########################################')
     print('K = ' +str(k))
     #Generate Ansatz for this round
-    ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits)
+    ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits,method='random_selection_new',num_new_to_add=numberofnewstatestoadd)
 
     E_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "E")
     D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
