@@ -66,15 +66,18 @@ class Ansatz(object):#moments is a list
         
 
 class Initialstate(object):
-    def __init__(self,N, method, numpyseed = 123, numberoflayers = 2, qiskit_qc = None):
+    def __init__(self,N, method, rand_generator, numberoflayers = 2, qiskit_qc = None):
         """
         method can be either efficient_SU2, or random_numbers, or...
         """
         self.N = N
         self.method = method #Can be either random numbers or...
-        self.numpyseed = numpyseed
+        self.rand_generator = rand_generator
+        #self.numpyseed = rand_generator
         self.numberoflayers = numberoflayers
         self.qiskit_circuit = None
+        self.statevector_evaluatedbefore = False
+        self.statevector = None
 
         if self.method == "own_qiskit_circuit" and qiskit_qc == None:
             raise(RuntimeError("You need to include a qiskit circuit to use this method"))
@@ -82,8 +85,9 @@ class Initialstate(object):
         if self.method == "efficient_SU2":
             qc = EfficientSU2(self.N, reps = self.numberoflayers, entanglement="full", skip_final_rotation_layer=False)
             num_params = qc.num_parameters 
-            np.random.seed(self.numpyseed)
-            initial_state_params = np.random.rand(num_params)
+            #np.random.seed(self.numpyseed)
+            #initial_state_params = np.random.rand(num_params)
+            initial_state_params = self.rand_generator.random(num_params)
             for index in range(num_params):
                 qc = qc.bind_parameters({qc.ordered_parameters[index]: initial_state_params[index]})
             self.qiskit_circuit = qc
@@ -93,8 +97,9 @@ class Initialstate(object):
 
         if self.method == "TFI_hardware_inspired":#Creates layers of single X rotations, followed by ZZ entangling gate rotations
             qc = QuantumCircuit(self.N)
-            np.random.seed(self.numpyseed)
-            self.startingrandomnumbers = np.random.rand(self.numberoflayers*(self.N + self.N-1)+self.N)
+            #np.random.seed(self.numpyseed)
+            #self.startingrandomnumbers = np.random.rand(self.numberoflayers*(self.N + self.N-1)+self.N)
+            self.startingrandomnumbers = self.rand_generator.random(self.numberoflayers*(self.N + self.N-1)+self.N)
             counter = 0
             for i in range(self.numberoflayers):
                 for j in range(self.N):
@@ -109,12 +114,17 @@ class Initialstate(object):
             self.qiskit_circuit = qc
 
     def get_statevector(self):
-        if self.method == "random_numbers":
+        if self.method == "random_numbers" and self.statevector_evaluatedbefore==False:
             dimension = 2**self.N 
-            np.random.seed(self.numpyseed)
-            state = np.random.rand(dimension) + 1j * np.random.rand(dimension)
+            #np.random.seed(self.numpyseed)
+            state = self.rand_generator.random(dimension) + 1j * self.rand_generator.random(dimension)
+            #state = np.random.rand(dimension) + 1j * np.random.rand(dimension)
             state = state / np.sqrt(np.vdot(state, state))
+            self.statevector = state
+            self.statevector_evaluatedbefore=True
             return state 
+        elif self.method =="random_numbers" and self.statevector_evaluatedbefore==True:
+            return self.statevector
         elif self.method == "efficient_SU2" or "own_qiskit_circuit":
             statevector_backend = Aer.get_backend('statevector_simulator')
             state = execute(self.qiskit_circuit, statevector_backend).result().get_statevector()

@@ -29,7 +29,9 @@ if optimizer == 'feasibility_sdp':
     num_qubits = 5
 
 #Generate initial state
-initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 124, 5)
+
+random_generator = np.random.default_rng(123)
+initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 5)
 
 L = np.array([[-0.1,-0.25j,0.25j,0],[-0.25j,-0.05-0.1j,0,0.25j],[0.25j,0,-0.05+0.1j,-0.25j],[0.1,0.25j,-0.25j,0]])
 

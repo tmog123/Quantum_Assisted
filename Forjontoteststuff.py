@@ -15,17 +15,18 @@ import time
 timer_starttime = time.time()
 
 #Parameters
-uptowhatK = 2
+uptowhatK = 3
 num_qubits = 4
 endtime = 5
-num_steps = 1001
+num_steps = 2001
 optimizer ='eigh' #'eigh','qcqp'
 inv_cond = 10**(-3)
-numberoflayers = 2
-randomseedforinitialstate = 183#183 #873
+numberoflayers = 3
 
 #create initial state
-initial_state = acp.Initialstate(num_qubits, "efficient_SU2", randomseedforinitialstate, numberoflayers)#"efficient_SU2", "TFI_hardware_inspired"
+random_generator = np.random.default_rng(124)
+initial_state = acp.Initialstate(num_qubits, "efficient_SU2",random_generator, numberoflayers)
+
 
 #Qiskit stuff
 import Qiskit_helperfunctions as qhf #IBMQ account is loaded here in this import
@@ -48,7 +49,7 @@ expectation_calculator = qhf.expectation_calculator(initial_state, sim, quantum_
 
 
 #define Hamiltonian
-hamiltonian = hcp.transverse_ising_model_1d(num_qubits)
+hamiltonian = hcp.transverse_ising_model_1d(num_qubits)#
 
 #create Initial Ansatz for K = 0
 ansatz = acp.initial_ansatz(num_qubits)
@@ -125,7 +126,7 @@ times = TTQS_instance.get_times()
 observable = hcp.generate_arbitary_observable(num_qubits, [1], ["3000"]) 
 
 #What Ks we want to plot
-whatK = [1,2]
+whatK = [1,2,3]
 whatK_alpha_plot = [1]
 
 #Plotting results
