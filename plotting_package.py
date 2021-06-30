@@ -26,9 +26,10 @@ def getdata_forbetamatrix_observable(num_qubits,ansatzlist,whatKs,observable,ini
                 print("Evaluating Observable Matrix with Qiskit circuits")
                 Omat = O_matrix_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
             result = 0
-            for a in range(len(betamatrixlist[i-1])):
-                for b in range(len(betamatrixlist[i-1])):
-                    result = result + betamatrixlist[i-1][a][b]*Omat[b][a]
+            #for a in range(len(betamatrixlist[i-1])):
+            #    for b in range(len(betamatrixlist[i-1])):
+            #        result = result + betamatrixlist[i-1][a][b]*Omat[b][a]
+            result = result + np.trace(betamatrixlist[i-1]@Omat)
             allresultlist.append(result)
             #betacounter = betacounter+1
     return allresultlist

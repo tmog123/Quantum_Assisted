@@ -29,7 +29,7 @@ if optimizer == 'feasibility_sdp':
     num_qubits = 5
 
 #Generate initial state
-initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 127, 5)
+initial_state = acp.Initialstate(num_qubits, "efficient_SU2", 124, 5)
 
 L = np.array([[-0.1,-0.25j,0.25j,0],[-0.25j,-0.05-0.1j,0,0.25j],[0.25j,0,-0.05+0.1j,-0.25j],[0.1,0.25j,-0.25j,0]])
 
