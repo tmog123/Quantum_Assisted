@@ -1,6 +1,5 @@
 #%%
 import numpy as np
-from numpy.core.numeric import tensordot 
 import ansatz_class_package as acp 
 import pauli_class_package as pcp 
 import hamiltonian_class_package as hcp 
@@ -18,13 +17,9 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-if optimizer == 'feasibility_sdp':
-    num_qubits = 1
-    uptowhatK = 2
-    sdp_tolerance_bound = 0
-else:
-    num_qubits = 2
-    uptowhatK = 2
+num_qubits = 4
+uptowhatK = 2
+sdp_tolerance_bound = 0
 
 #Generate initial state
 random_generator = np.random.default_rng(123)
@@ -66,43 +61,34 @@ if use_qiskit:
     #This expectation calculator also stores previously calculated expectation values, so one doesn't need to compute the same expectation value twice.
     expectation_calculator = qhf.expectation_calculator(initial_state, sim, quantum_computer_choice_results, meas_error_mitigate = mitigate_meas_error, meas_filter = meas_filter)
 
-if optimizer == 'feasibility_sdp':
-    delta = 0.1
-    gammas = []
+#Here, we use fujiboy's hamiltonian, H = epsilon sum_i Z_i Z_{i+1} + g sum_i X_i
+#Here, fujiboy uses epsilon = 1/2
+def generate_fuji_boy_hamiltonian(num_qubits, g):
     epsilon = 0.5
-    #hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,[delta,epsilon],['3','1'])
-    #L_terms = [hcp.generate_arbitary_hamiltonian(num_qubits,[1,-1j],['1','2'])]
-    hcoeffs = []
-    hstrings = []
     if num_qubits == 1:
-        hcoeffs.append(0.5)
-        hstrings.append("3")
-    for i in range(num_qubits-1):
-        hcoeffs.append(0.5)
-        hstrings.append('0'*i+'33'+'0'*(num_qubits-2-i))
-    for i in range(num_qubits):
-        hcoeffs.append(0.5)
-        hstrings.append('0'*i+'1'+'0'*(num_qubits-1-i))
-    hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,hcoeffs,hstrings)
+        hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,[epsilon,g],['3','1'])
+    else:
+        hamiltonian = hcp.transverse_ising_model_1d(num_qubits, -0.5, g)
+    return hamiltonian
 
+def generate_fuji_boy_gamma_and_Lterms(num_qubits):
+    gammas_to_append = 0.1
+    gammas = []
     L_terms = []
-    for i in range(num_qubits):
-        gammas.append(0.1)
-        L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[1],['0'*i+'3'+'0'*(num_qubits-1-i)]))
-        gammas.append(0.1)
-        L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['0'*i+'1'+'0'*(num_qubits-1-i),'0'*i+'2'+'0'*(num_qubits-1-i)]))
     if num_qubits == 1:
-        gammas.append(0.1)
+        gammas.append(gammas_to_append)
         L_terms.append(hcp.generate_arbitary_hamiltonian(1, [0.5,0.5j],["1","2"]))
-else:    
-    # Going into the Fock-Liouville space, old code
-    L = np.array([[-0.1,-0.25j,0.25j,0],[-0.25j,-0.05-0.1j,0,0.25j],[0.25j,0,-0.05+0.1j,-0.25j],[0.1,0.25j,-0.25j,0]])
-    #Converting L^dag L into Hamiltonian
-    LdagL = np.array([[0.145,0.025+0.0375j,0.025-0.0375j,-0.125],[0.025-0.0375j,0.1375,-0.125,-0.025-0.0125j],[0.025+0.0375j,-0.125,0.1375,-0.025+0.0125j],[-0.125,-0.025+0.0125j,-0.025-0.0125j,0.125]])
-    pauli_decomp = pcp.paulinomial_decomposition(LdagL) 
-    # print(list(pauli_decomp.values()))
-    hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits, list(pauli_decomp.values()), list(pauli_decomp.keys()))
+    else:
+        for i in range(num_qubits):
+            gammas.append(gammas_to_append)
+            L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[1],['0'*i+'3'+'0'*(num_qubits-1-i)]))
+            gammas.append(gammas_to_append)
+            L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['0'*i+'1'+'0'*(num_qubits-1-i),'0'*i+'2'+'0'*(num_qubits-1-i)]))
+    return (gammas, L_terms)
 
+g = 1
+hamiltonian = generate_fuji_boy_hamiltonian(num_qubits, g)
+gammas, L_terms = generate_fuji_boy_gamma_and_Lterms(num_qubits)
 ansatz = acp.initial_ansatz(num_qubits)
 
 #function to evaluate the rho_dot in the linblad master eqn
@@ -170,13 +156,6 @@ for k in range(1, uptowhatK + 1):
             else:
                 F_mats_evaluated.append(f.evaluate_matrix_by_matrix_multiplicaton(initial_state))
 
-
-    #Save matrices for testing with matlab
-    if optimizer == 'feasibility_sdp':
-        scipy.io.savemat("Jonstufftesting/Emat" +str(k) +".mat",{"E": E_mat_evaluated,"D":D_mat_evaluated,"R":R_mats_evaluated,"F":F_mats_evaluated})
-        print('Matrices have been generated, saved in Jonstufftestingfolder.')
-    #print(D_mat_evaluated)
-
     ##########################################
     #Start of the classical post-processing. #
     ##########################################
@@ -239,31 +218,31 @@ for k in range(1, uptowhatK + 1):
 #%%
 #testing for the feasibility routine
 
-'''NOTES FOR SELF: Right now matlab functionality is not built into this. So, first time you run, this python file will generate the D, E, R, and F matrices. Ignore everything else. Then, go to matlab and run sdp.m . 
-That will generate the beta matrix. Then, run THIS same file again with loadmatlabmatrix = True. This file will still do the generating of matrices ect, but now for the 2nd half (checking) it will use the saved matlab matrix.'''
+# '''NOTES FOR SELF: Right now matlab functionality is not built into this. So, first time you run, this python file will generate the D, E, R, and F matrices. Ignore everything else. Then, go to matlab and run sdp.m . 
+# That will generate the beta matrix. Then, run THIS same file again with loadmatlabmatrix = True. This file will still do the generating of matrices ect, but now for the 2nd half (checking) it will use the saved matlab matrix.'''
 
-if loadmatlabmatrix == True:
-    print('LOADING MATRICES THAT SHOULD HAVE BEEN GENERATED FROM MATLAB. ENSURE THIS IS DONE.')
-    density_mat = scipy.io.loadmat('Jonstufftesting/'+'savedmatrixfrommatlab.mat')['betarho']
+# if loadmatlabmatrix == True:
+#     print('LOADING MATRICES THAT SHOULD HAVE BEEN GENERATED FROM MATLAB. ENSURE THIS IS DONE.')
+#     density_mat = scipy.io.loadmat('Jonstufftesting/'+'savedmatrixfrommatlab.mat')['betarho']
 
-    p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
-    ini_statevec_vecform = initial_state.get_statevector()
-    csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
-    rho = np.zeros(shape=(2**num_qubits,2**num_qubits), dtype = np.complex128)
-    trace = 0
-    for i in range(len(density_mat)):
-        for j in range(len(density_mat)):
-            i_j_entry = density_mat[(i,j)]
-            i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
-            rho += i_j_entry * i_j_ketbra
-            trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
+#     p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
+#     ini_statevec_vecform = initial_state.get_statevector()
+#     csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
+#     rho = np.zeros(shape=(2**num_qubits,2**num_qubits), dtype = np.complex128)
+#     trace = 0
+#     for i in range(len(density_mat)):
+#         for j in range(len(density_mat)):
+#             i_j_entry = density_mat[(i,j)]
+#             i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
+#             rho += i_j_entry * i_j_ketbra
+#             trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
 
-    rho_eigvals,rho_eigvecs = scipy.linalg.eigh(rho)        
-    print('rho_eigvals is: ' + str(rho_eigvals))
-    #now, we check if rho (the actual denmat) gives 0 for the linblad master equation
-    rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
-    # print('rho_dot is: ' + str(rho_dot))
-    print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
+#     rho_eigvals,rho_eigvecs = scipy.linalg.eigh(rho)        
+#     print('rho_eigvals is: ' + str(rho_eigvals))
+#     #now, we check if rho (the actual denmat) gives 0 for the linblad master equation
+#     rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
+#     # print('rho_dot is: ' + str(rho_dot))
+#     print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
 #%%
 #Testing for the mapping routine. 
 # p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
