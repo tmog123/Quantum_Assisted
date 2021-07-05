@@ -87,89 +87,87 @@ def generate_fuji_boy_gamma_and_Lterms(num_qubits):
     return (gammas, L_terms)
 
 g = 1
-hamiltonian = generate_fuji_boy_hamiltonian(num_qubits, g)
-gammas, L_terms = generate_fuji_boy_gamma_and_Lterms(num_qubits)
-ansatz = acp.initial_ansatz(num_qubits)
+def big_ass_loop(g):
+    hamiltonian = generate_fuji_boy_hamiltonian(num_qubits, g)
+    gammas, L_terms = generate_fuji_boy_gamma_and_Lterms(num_qubits)
+    ansatz = acp.initial_ansatz(num_qubits)
 
-#function to evaluate the rho_dot in the linblad master eqn
-def evaluate_rho_dot(rho, hamiltonian_class_object, gammas, L_terms):
-    hamiltonian_mat = hamiltonian_class_object.to_matrixform()
-    coherent_evo = -1j * (hamiltonian_mat @ rho - rho @ hamiltonian_mat)
-    quantum_jumps_total = 0 + 0*1j
-    for i in range(len(gammas)):
-        gamma_i = gammas[i]
-        L_i_mat = L_terms[i].to_matrixform()
-        L_i_dag_L_i = L_i_mat.conj().T @ L_i_mat
-        anti_commutator = L_i_dag_L_i @ rho + rho @ L_i_dag_L_i
-        jump_term = L_i_mat @ rho @ L_i_mat.conj().T
-        quantum_jumps_total += gamma_i * (jump_term - 0.5*anti_commutator)
-    return coherent_evo + quantum_jumps_total
+    #function to evaluate the rho_dot in the linblad master eqn
+    def evaluate_rho_dot(rho, hamiltonian_class_object, gammas, L_terms):
+        hamiltonian_mat = hamiltonian_class_object.to_matrixform()
+        coherent_evo = -1j * (hamiltonian_mat @ rho - rho @ hamiltonian_mat)
+        quantum_jumps_total = 0 + 0*1j
+        for i in range(len(gammas)):
+            gamma_i = gammas[i]
+            L_i_mat = L_terms[i].to_matrixform()
+            L_i_dag_L_i = L_i_mat.conj().T @ L_i_mat
+            anti_commutator = L_i_dag_L_i @ rho + rho @ L_i_dag_L_i
+            jump_term = L_i_mat @ rho @ L_i_mat.conj().T
+            quantum_jumps_total += gamma_i * (jump_term - 0.5*anti_commutator)
+        return coherent_evo + quantum_jumps_total
 
-#%%
-#get the steady state using qutip(lol)
-import qutip 
-qtp_hamiltonian = qutip.Qobj(hamiltonian.to_matrixform())
-qtp_Lterms = [qutip.Qobj(i.to_matrixform()) for i in L_terms]
-qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
-qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops)
-
-
-#%%
-#compute GQAS matrices
-for k in range(1, uptowhatK + 1):
-    print('##########################################')
-    print('K = ' +str(k))
-    #Generate Ansatz for this round
-    ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits)
-
-    E_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "E")
-    D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
-
-    if optimizer == 'feasibility_sdp':
-        R_mats_uneval = []
-        F_mats_uneval = []
-        for thisL in L_terms:
-            R_mats_uneval.append(mcp.unevaluatedmatrix(num_qubits,ansatz,thisL,"D"))
-            thisLdagL = hcp.multiply_hamiltonians(hcp.dagger_hamiltonian(thisL),thisL)
-            F_mats_uneval.append(mcp.unevaluatedmatrix(num_qubits,ansatz,thisLdagL,"D"))
-    
-    #Here is where we should be able to specify how to evaluate the matrices.
-    #However only the exact method (classical matrix multiplication) has been
-    #implemented so far
-    if use_qiskit:
-        E_mat_evaluated = E_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
-        D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
-    else:
-        E_mat_evaluated = E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-        D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-    if optimizer == 'feasibility_sdp':
-        R_mats_evaluated = []
-        for r in R_mats_uneval:
-            if use_qiskit:
-                R_mats_evaluated.append(r.evaluate_matrix_with_qiskit_circuits(expectation_calculator))
-            else:
-                R_mats_evaluated.append(r.evaluate_matrix_by_matrix_multiplicaton(initial_state))
-        F_mats_evaluated = []
-        for f in F_mats_uneval:
-            if use_qiskit:
-                F_mats_evaluated.append(f.evaluate_matrix_with_qiskit_circuits(expectation_calculator))
-            else:
-                F_mats_evaluated.append(f.evaluate_matrix_by_matrix_multiplicaton(initial_state))
-
-    ##########################################
-    #Start of the classical post-processing. #
-    ##########################################
-    if optimizer == 'feasibility_sdp':
-        IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
-    else:
-        IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated)
+    #%%
+    #get the steady state using qutip(lol)
+    qtp_hamiltonian = qutip.Qobj(hamiltonian.to_matrixform())
+    qtp_Lterms = [qutip.Qobj(i.to_matrixform()) for i in L_terms]
+    qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
+    qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops)
 
 
-    IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
+    #%%
+    #compute GQAS matrices
+    fidelity_results = dict()
+    for k in range(1, uptowhatK + 1):
+        print('##########################################')
+        print('K = ' +str(k))
+        #Generate Ansatz for this round
+        ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits)
 
-    if optimizer == 'feasibility_sdp' and runSDPonpython == False:
-        print('NOT RUNNING SDP ON PYTHON. JUST USING FIRST PART OF CODE TO GENERATE ANSATZ FOR 2ND PART')
-    else:
+        E_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "E")
+        D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
+
+        if optimizer == 'feasibility_sdp':
+            R_mats_uneval = []
+            F_mats_uneval = []
+            for thisL in L_terms:
+                R_mats_uneval.append(mcp.unevaluatedmatrix(num_qubits,ansatz,thisL,"D"))
+                thisLdagL = hcp.multiply_hamiltonians(hcp.dagger_hamiltonian(thisL),thisL)
+                F_mats_uneval.append(mcp.unevaluatedmatrix(num_qubits,ansatz,thisLdagL,"D"))
+        
+        #Here is where we should be able to specify how to evaluate the matrices.
+        #However only the exact method (classical matrix multiplication) has been
+        #implemented so far
+        if use_qiskit:
+            E_mat_evaluated = E_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
+            D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
+        else:
+            E_mat_evaluated = E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+            D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+        if optimizer == 'feasibility_sdp':
+            R_mats_evaluated = []
+            for r in R_mats_uneval:
+                if use_qiskit:
+                    R_mats_evaluated.append(r.evaluate_matrix_with_qiskit_circuits(expectation_calculator))
+                else:
+                    R_mats_evaluated.append(r.evaluate_matrix_by_matrix_multiplicaton(initial_state))
+            F_mats_evaluated = []
+            for f in F_mats_uneval:
+                if use_qiskit:
+                    F_mats_evaluated.append(f.evaluate_matrix_with_qiskit_circuits(expectation_calculator))
+                else:
+                    F_mats_evaluated.append(f.evaluate_matrix_by_matrix_multiplicaton(initial_state))
+
+        ##########################################
+        #Start of the classical post-processing. #
+        ##########################################
+        if optimizer == 'feasibility_sdp':
+            IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
+        else:
+            IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated)
+
+
+        IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
+
         IQAE_instance.evaluate()
         # IQAE_instance.evaluate(kh_test=False)
         #all_energies,all_states = IQAE_instance.get_results_all()
@@ -214,8 +212,10 @@ for k in range(1, uptowhatK + 1):
             qtp_rho = qutip.Qobj(rho)
             fidelity = qutip.metrics.fidelity(qtp_rho, qtp_rho_ss)
             print("The fidelity is", fidelity)
-            #print("the density matrix eigenvectors are\n",denmat_vects)
-#%%
+            fidelity_results[k] = fidelity
+    return fidelity_results
+
+fidelity_results = big_ass_loop(g)
 #testing for the feasibility routine
 
 # '''NOTES FOR SELF: Right now matlab functionality is not built into this. So, first time you run, this python file will generate the D, E, R, and F matrices. Ignore everything else. Then, go to matlab and run sdp.m . 
