@@ -15,10 +15,12 @@ from copy import deepcopy
 
 def basic_decomp_tfi(N,rotation,J=1,g=1):#Sum -JZ_iZ_i+1 + Sum gX_i
     qc = QuantumCircuit(N)
-    for i in range(N-1):
-        qc.rzz(-rotation*J,i,i+1)
     for i in range(N):
         qc.rx(rotation*g,i)
+    for i in range(N-1):
+        qc.rzz(-rotation*J,i,i+1)
+    #for i in range(N):
+    #    qc.rx(rotation*g,i)
     return qc.to_gate()
 
 
@@ -33,7 +35,7 @@ def do_trotter_decomposition(initialstate,decomp_function,observable,simulator,q
     qc = QuantumCircuit(N)
     qc.append(deepcopy(initialstate.get_qiskit_circuit()),range(N))
     for i in range(numberofsteps):
-        qc.append(decomp_function(N,rotation,timestep),range(N))
+        qc.append(decomp_function(N,rotation,J=1,g=1),range(N))
     #print(qc)
     ps = observable.return_paulistrings()[0].return_string()
     #print(ps)
