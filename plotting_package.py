@@ -8,6 +8,8 @@ def QS_plotter_foralpha(ansatz,times):
     for mom in ansatz.get_moments():
         plt.plot(times, np.abs(mom.alphas[:-1]),label=str(mom.paulistring.string))
 
+def plotter_fortrotter(trotvalues,times):
+    plt.plot(times,trotvalues,label='Trotter')
 
 def getdata_forbetamatrix_observable(num_qubits,ansatzlist,whatKs,observable,initial_state,betamatrixlist,evalmethod='matrix_multiplication',expectation_calculator=None):
     if evalmethod == "qiskit_circuits" and expectation_calculator == None:

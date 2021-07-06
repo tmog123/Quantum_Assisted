@@ -5,6 +5,7 @@ import hamiltonian_class_package as hcp
 import matrix_class_package as mcp 
 import post_processing as pp
 import plotting_package as plotp
+import trotter_package as trotp
 import warnings
 import json
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
@@ -15,13 +16,16 @@ import time
 timer_starttime = time.time()
 
 #Parameters
-uptowhatK = 3
-num_qubits = 4
+uptowhatK = 2
+num_qubits = 2
 endtime = 5
-num_steps = 2001
+num_steps = 1001
 optimizer ='eigh' #'eigh','qcqp'
 inv_cond = 10**(-3)
-numberoflayers = 3
+numberoflayers = 2
+
+trotter_num_steps = 101
+trotter_timestep = endtime/(trotter_num_steps-1)
 
 #create initial state
 random_generator = np.random.default_rng(124)
@@ -67,7 +71,7 @@ for k in range(1,uptowhatK+1):
 
     #Generate Ansatz for this round
     #ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits) #By default, there is no processing when generating next Ansatz
-    ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits,method = "pruning",pruning_condition = 0.1)
+    ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits,method = "no_processing",pruning_condition = 0.1)
 
     #Set initial alphas for Ansatz
     #Only 'start_with_initial_state' has been implemented thus far. 
@@ -123,10 +127,10 @@ cS_instance.evaluate()
 
 #Observable we want to plot
 times = TTQS_instance.get_times()
-observable = hcp.generate_arbitary_observable(num_qubits, [1], ["3000"]) 
+observable = hcp.generate_arbitary_observable(num_qubits, [1], ["3"+ (num_qubits - 1)*"0"]) 
 
 #What Ks we want to plot
-whatK = [1,2,3]
+whatK = [1,2]
 whatK_alpha_plot = [1]
 
 #Plotting results
@@ -198,14 +202,22 @@ for k in range(1,uptowhatK+1):
     #Update final results with this
     finalresults.append(ansatz)'''
 
-#end time
-timer_endtime = time.time()
-#total time taken
-print(f"Runtime of the program is {timer_endtime - timer_starttime}")
 #Plotting results
 #plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'QAS',observable,initial_state)
 plotp.QS_plotter_for_fidelity(num_qubits,finalresults,times,whatK,'TTQS',hamiltonian,initial_state)
+plotp.print_plot("Jonstufftesting/plottqs.png")
 
+trottertimes = []
+trottervalues = []
+trotdecomp_function = trotp.basic_decomp_tfi
+for i in range(trotter_num_steps):
+    trottertimes.append(trotter_timestep*i)
+    trottervalues.append(trotp.do_trotter_decomposition(initial_state,trotdecomp_function,observable,sim,quantum_computer_choice_results,trotter_timestep,i,num_shots))
+
+plotp.plotter_fortrotter(trottervalues,trottertimes)
+plotp.print_plot("Jonstufftesting/plottrotter.png")
+
+'''
 #Show plot
 #plotp.show_plot()
 plotp.print_plot("Jonstufftesting/plot.png")
@@ -217,4 +229,8 @@ plotp.print_plot("Jonstufftesting/plot_alpha.png")
 
 # Save data on file
 # Prepare a dictionary with the data
-dataprint = {}
+dataprint = {}'''
+#end time
+timer_endtime = time.time()
+#total time taken
+print(f"Runtime of the program is {timer_endtime - timer_starttime}")

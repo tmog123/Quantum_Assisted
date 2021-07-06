@@ -201,7 +201,7 @@ class expectation_calculator(object):
             '''Changes Here'''
             sim_noise = AerSimulator(noise_model=self.noise_model)
             circ_noise = transpile(qc,sim_noise,coupling_map=self.coupling_map)
-            results = sim_noise.run(circ_noise).result()
+            results = sim_noise.run(circ_noise,shots=self.num_shots).result()
             
             if self.meas_error_mitigate == True:
                 results = self.meas_filter.apply(results)
