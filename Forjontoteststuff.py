@@ -22,7 +22,7 @@ endtime = 5
 num_steps = 1001
 optimizer ='eigh' #'eigh','qcqp'
 inv_cond = 10**(-3)
-numberoflayers = 2
+numberoflayers = 3
 
 trotter_num_steps = 101
 trotter_timestep = endtime/(trotter_num_steps-1)
