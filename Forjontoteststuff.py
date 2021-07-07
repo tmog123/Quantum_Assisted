@@ -203,7 +203,7 @@ for k in range(1,uptowhatK+1):
     finalresults.append(ansatz)'''
 
 #Plotting results for fidelity
-plotp.QS_plotter_for_fidelity(num_qubits,finalresults,times,whatK,'TTQS',hamiltonian,initial_state)
+#plotp.QS_plotter_for_fidelity(num_qubits,finalresults,times,whatK,'TTQS',hamiltonian,initial_state)
 #plotp.print_plot("Jonstufftesting/plottqs.png")
 
 trottertimes = []
