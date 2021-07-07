@@ -17,13 +17,17 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 4
-uptowhatK = 2
+num_qubits = 3
+uptowhatK = 100
 sdp_tolerance_bound = 0
 
 #Generate initial state
 random_generator = np.random.default_rng(123)
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 1)
+
+random_selection_new = True
+if random_selection_new == True:
+    numberofnewstatestoadd = 3 #Only will be used if 'random_selection_new' is selected
 
 #%% IBMQ STUFF
 if use_qiskit:
@@ -86,8 +90,27 @@ def generate_fuji_boy_gamma_and_Lterms(num_qubits):
             L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['0'*i+'1'+'0'*(num_qubits-1-i),'0'*i+'2'+'0'*(num_qubits-1-i)]))
     return (gammas, L_terms)
 
+def plot_theoretical_expectation_curves(g_min,g_max, observable_obj_list):
+    g_vals = np.linspace(g_min, g_max, 50)
+    results = dict()
+    for g in g_vals:
+        hamiltonian = generate_fuji_boy_hamiltonian(num_qubits, g)
+        gammas, L_terms = generate_fuji_boy_gamma_and_Lterms(num_qubits)
+        qtp_hamiltonian = qutip.Qobj(hamiltonian.to_matrixform())
+        qtp_Lterms = [qutip.Qobj(i.to_matrixform()) for i in L_terms]
+        qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
+        qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops)
+        #compute the theoretical observable expectation values
+        observable_matrixforms = [observable.to_matrixform() for observable in observable_obj_list]
+        theoretical_expectation_values = [np.trace(qtp_rho_ss @ observable_matform) for observable_matform in observable_matrixforms]
+        results[g] = theoretical_expectation_values
+    return results
+
 g = 1
-def big_ass_loop(g):
+def big_ass_loop(g, observable_obj_list):
+    """
+    Here, observable_obj_list refers to a list of observable objects
+    """
     hamiltonian = generate_fuji_boy_hamiltonian(num_qubits, g)
     gammas, L_terms = generate_fuji_boy_gamma_and_Lterms(num_qubits)
     ansatz = acp.initial_ansatz(num_qubits)
@@ -113,16 +136,27 @@ def big_ass_loop(g):
     qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
     qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops)
 
+    #compute the theoretical observable expectation values
+    observable_matrixforms = [observable.to_matrixform() for observable in observable_obj_list]
+    theoretical_expectation_values = [np.trace(qtp_rho_ss @ observable_matform) for observable_matform in observable_matrixforms]
+
 
     #%%
     #compute GQAS matrices
     fidelity_results = dict()
+    observable_expectation_results = dict()
     for k in range(1, uptowhatK + 1):
         print('##########################################')
         print('K = ' +str(k))
         #Generate Ansatz for this round
-        ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits)
-
+        if random_selection_new:
+            ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits,method='random_selection_new',num_new_to_add=numberofnewstatestoadd)
+        else:
+            ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits)
+        O_matrices_uneval = []
+        for observable in observable_obj_list:
+            O_matrix_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, observable, "O")
+            O_matrices_uneval.append(O_matrix_uneval)
         E_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "E")
         D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
 
@@ -140,9 +174,11 @@ def big_ass_loop(g):
         if use_qiskit:
             E_mat_evaluated = E_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
             D_mat_evaluated = D_mat_uneval.evaluate_matrix_with_qiskit_circuits(expectation_calculator)
+            O_matrices_evaluated = [i.evaluate_matrix_with_qiskit_circuits(expectation_calculator) for i in O_matrices_uneval]
         else:
             E_mat_evaluated = E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
             D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+            O_matrices_evaluated = [i.evaluate_matrix_by_matrix_multiplicaton(initial_state) for i in O_matrices_uneval]
         if optimizer == 'feasibility_sdp':
             R_mats_evaluated = []
             for r in R_mats_uneval:
@@ -212,84 +248,50 @@ def big_ass_loop(g):
             qtp_rho = qutip.Qobj(rho)
             fidelity = qutip.metrics.fidelity(qtp_rho, qtp_rho_ss)
             print("The fidelity is", fidelity)
+            observable_expectation_results[k] = [np.trace(density_mat @ O_mat_eval) for O_mat_eval in O_matrices_evaluated]
             fidelity_results[k] = fidelity
-    return fidelity_results
+            if round(fidelity, 6) == 1:
+                print("breaking loop as fidelity = 1 already")
+                break
+    return (observable_expectation_results, theoretical_expectation_values, fidelity_results)
 
-fidelity_results = big_ass_loop(g)
-#testing for the feasibility routine
+#%% the main chunk
+import pickle
+import os
+if not os.path.exists('pickled_objs'):
+    os.mkdir('pickled_objs')
 
-# '''NOTES FOR SELF: Right now matlab functionality is not built into this. So, first time you run, this python file will generate the D, E, R, and F matrices. Ignore everything else. Then, go to matlab and run sdp.m . 
-# That will generate the beta matrix. Then, run THIS same file again with loadmatlabmatrix = True. This file will still do the generating of matrices ect, but now for the 2nd half (checking) it will use the saved matlab matrix.'''
+def save_obj(obj, name):
+    #name is a string
+    with open('pickled_objs/'+ name + '.pkl', 'wb') as f:
+        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
-# if loadmatlabmatrix == True:
-#     print('LOADING MATRICES THAT SHOULD HAVE BEEN GENERATED FROM MATLAB. ENSURE THIS IS DONE.')
-#     density_mat = scipy.io.loadmat('Jonstufftesting/'+'savedmatrixfrommatlab.mat')['betarho']
+def load_obj(name):
+    #name is a string
+    with open('pickled_objs/' + name + '.pkl', 'rb') as f:
+        return pickle.load(f)
 
-#     p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
-#     ini_statevec_vecform = initial_state.get_statevector()
-#     csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
-#     rho = np.zeros(shape=(2**num_qubits,2**num_qubits), dtype = np.complex128)
-#     trace = 0
-#     for i in range(len(density_mat)):
-#         for j in range(len(density_mat)):
-#             i_j_entry = density_mat[(i,j)]
-#             i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
-#             rho += i_j_entry * i_j_ketbra
-#             trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
+load_prev = False
 
-#     rho_eigvals,rho_eigvecs = scipy.linalg.eigh(rho)        
-#     print('rho_eigvals is: ' + str(rho_eigvals))
-#     #now, we check if rho (the actual denmat) gives 0 for the linblad master equation
-#     rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
-#     # print('rho_dot is: ' + str(rho_dot))
-#     print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
-#%%
-#Testing for the mapping routine. 
-# p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
-# ini_statevec_vecform = initial_state.get_statevector()
-# csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
-# rho_prime = np.zeros(shape=(4,4), dtype = np.complex128)
-# trace = 0
-# for i in range(len(density_mat)):
-#     for j in range(len(density_mat)):
-#         i_j_entry = density_mat[(i,j)]
-#         #in the bottom line, its j,i instead of i,j because of some bug somewhere. Something accidentally got reversed somewhere, I can't find...
-#         i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
-#         rho_prime += i_j_entry * i_j_ketbra
-#         trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
+if load_prev == True:
+    result_fname = None #fill this up
+    theoretical_curves_fname = None # fill this up
+    observable_expectation_results, theoretical_expectation_values, fidelity_results = load_obj(result_fname) 
+    theoretical_curves = load_obj(theoretical_curves_fname)
+else:
+    observable_one = hcp.generate_arbitary_observable(num_qubits, [1], ["1" + "0"*(num_qubits-1)])
+    observable_two = hcp.generate_arbitary_observable(num_qubits, [1], ["2" + "0"*(num_qubits-1)])
+    observable_three = hcp.generate_arbitary_observable(num_qubits, [1], ["3" + "0"*(num_qubits-1)])
+    observables_list = [observable_one, observable_two, observable_three]
 
-# rho_prime_eigvals,rho_prime_eigvecs = scipy.linalg.eigh(rho_prime)        
-# #here, we take the eigvec that corresponds to the non-zero eigval
-# rho = np.zeros(shape=(2,2), dtype = np.complex128)
-# rho[(0,0)] = rho_prime_eigvecs[:,3][0]
-# rho[(0,1)] = rho_prime_eigvecs[:,3][1]
-# rho[(1,0)] = rho_prime_eigvecs[:,3][2]
-# rho[(1,1)] = rho_prime_eigvecs[:,3][3]
-# print("The eigenvalues of rho are", scipy.linalg.eigvalsh(rho))
+    observable_expectation_results, theoretical_expectation_values, fidelity_results = big_ass_loop(g, observables_list)
 
-#%% Old IQAE code that might be useful
-#Testing if the IQAE result is a valid density matrix
-# ground_state = all_states[0]
+    # print(observable_expectation_results)
+    # print(theoretical_expectation_values)
+    # print(fidelity_results)
+    g_vals = [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+    results = [big_ass_loop(g, observables_list) for g in g_vals]
+    theoretical_curves = plot_theoretical_expectation_curves(min(g_vals), max(g_vals), observables_list)
 
-# #the ansatz states
-# p_matrices = [i.get_paulistring().get_string_for_hash() for i in ansatz.get_moments()]
-# # print(p_matrices)
-# # p_matrices = ["00", "02", "03", "10", "11", "13", "20", "23", "30", "31", "32", "33"]
-# p_matrices_matform = [pcp.get_pauli_string_from_index_string(i) for i in p_matrices]
-# ini_statevec = initial_state.get_statevector()
-# csk_states = [i @ ini_statevec for i in p_matrices_matform]
-
-# final_state = np.zeros(4) * 1j*np.zeros(4)
-# for i in range(len(csk_states)):
-#     final_state += ground_state[i]*csk_states[i]
-
-# density_mat = np.empty(shape=(2,2), dtype=np.complex128)   
-# density_mat[(0,0)] = final_state[0]
-# density_mat[(1,0)] = final_state[1]
-# density_mat[(0,1)] = final_state[2]
-# density_mat[(1,1)] = final_state[3]
-# print("the density matrix is\n", density_mat)
-# denmat_values,denmat_vects = scp.linalg.eig(density_mat)
-# print("the density matrix eigenvalues are\n",denmat_values)
-# print("the density matrix eigenvectors are\n",denmat_vects)
-# %%
+    save_obj(results, str(num_qubits) + " results")
+    save_obj(theoretical_curves, str(num_qubits) + " theoretical_curves")
