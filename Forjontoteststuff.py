@@ -18,13 +18,13 @@ timer_starttime = time.time()
 #Parameters
 uptowhatK = 3
 num_qubits = 2
-endtime = 5
-num_steps = 5001
+endtime = 10
+num_steps = 10001
 optimizer ='eigh' #'eigh','qcqp'
 inv_cond = 10**(-3)
 numberoflayers = 3
 
-trotter_num_steps = 101
+trotter_num_steps = 201
 trotter_timestep = endtime/(trotter_num_steps-1)
 
 #create initial state
