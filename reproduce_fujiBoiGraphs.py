@@ -17,7 +17,7 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 3
+num_qubits = 4
 uptowhatK = 100
 sdp_tolerance_bound = 0
 
@@ -104,9 +104,14 @@ def plot_theoretical_expectation_curves(g_min,g_max, observable_obj_list):
         observable_matrixforms = [observable.to_matrixform() for observable in observable_obj_list]
         theoretical_expectation_values = [np.trace(qtp_rho_ss @ observable_matform) for observable_matform in observable_matrixforms]
         results[g] = theoretical_expectation_values
-    return results
+    keys = list(results.keys())
+    values = list(results.values())
+    values_transposed = list(zip(*values)) 
+    return (keys,values_transposed) #this is in a plottable form
+    # return results
 
-g = 1
+# g = 1
+# max_k_val = None
 def big_ass_loop(g, observable_obj_list):
     """
     Here, observable_obj_list refers to a list of observable objects
@@ -148,6 +153,7 @@ def big_ass_loop(g, observable_obj_list):
     for k in range(1, uptowhatK + 1):
         print('##########################################')
         print('K = ' +str(k))
+        # max_k_val = k
         #Generate Ansatz for this round
         if random_selection_new:
             ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits,method='random_selection_new',num_new_to_add=numberofnewstatestoadd)
@@ -274,9 +280,13 @@ def load_obj(name):
 load_prev = False
 
 if load_prev == True:
+    print("loading previously computed results for " + str(num_qubits) + " qubits")
     result_fname = None #fill this up
     theoretical_curves_fname = None # fill this up
-    observable_expectation_results, theoretical_expectation_values, fidelity_results = load_obj(result_fname) 
+    result_fname = str(num_qubits)+"_qubits_results"
+    theoretical_curves_fname = str(num_qubits)+"_qubits_theoretical_curves"
+    # observable_expectation_results, theoretical_expectation_values, fidelity_results = load_obj(result_fname) 
+    results = load_obj(result_fname)
     theoretical_curves = load_obj(theoretical_curves_fname)
 else:
     observable_one = hcp.generate_arbitary_observable(num_qubits, [1], ["1" + "0"*(num_qubits-1)])
@@ -284,14 +294,76 @@ else:
     observable_three = hcp.generate_arbitary_observable(num_qubits, [1], ["3" + "0"*(num_qubits-1)])
     observables_list = [observable_one, observable_two, observable_three]
 
-    observable_expectation_results, theoretical_expectation_values, fidelity_results = big_ass_loop(g, observables_list)
+    # observable_expectation_results, theoretical_expectation_values, fidelity_results = big_ass_loop(g, observables_list)
 
-    # print(observable_expectation_results)
-    # print(theoretical_expectation_values)
-    # print(fidelity_results)
-    g_vals = [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
-    results = [big_ass_loop(g, observables_list) for g in g_vals]
+    g_vals = [0, 0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+    results = {g:big_ass_loop(g, observables_list) for g in g_vals}
     theoretical_curves = plot_theoretical_expectation_curves(min(g_vals), max(g_vals), observables_list)
 
-    save_obj(results, str(num_qubits) + " results")
-    save_obj(theoretical_curves, str(num_qubits) + " theoretical_curves")
+
+    if use_qiskit == True:
+        fname_append = str(num_qubits) + "_qubits" + "_sim=" + str(sim) + "_"
+    else:
+        fname_append = str(num_qubits) + "_qubits" + "_"
+
+    save_obj(results, fname_append + "results")
+    save_obj(theoretical_curves, fname_append + "theoretical_curves")
+
+#%% plot stuff
+#theres' a small bug here lol. hmm
+import matplotlib.pyplot as plt 
+
+if random_selection_new:
+    num_of_csk_states = lambda k: numberofnewstatestoadd * k + 1
+
+def plot_fidelities(results):
+    x_vals = list(results.keys())
+    y_vals_all_k = [list(i[2].values()) for i in list(results.values())]
+    y_vals_all_k_transposed = list(zip(*y_vals_all_k))
+    y_vals_all_k_transposed_dict = {k+1:y_vals_all_k_transposed[k] for k in range(len(y_vals_all_k_transposed))}
+
+    for k,fidelities in y_vals_all_k_transposed_dict.items():
+        plt.plot(x_vals, fidelities, label=str(num_of_csk_states(k)) + " csk states")
+
+    plt.xlabel("g")
+    plt.ylabel("fidelity")
+    plt.title(str(num_qubits) + " qubits fidelity graph")
+    plt.legend()
+    plt.show()
+
+
+def plot_expectation_values(results, theoretical_curves, which_ks):
+    x_vals = list(results.keys())
+    observable_expectation_results = [list(i[0].items()) for i in list(results.values())]
+    observable_expectation_results_transposed = list(zip(*observable_expectation_results))
+    # don't need to know the details of what the heck this chunk does, but this
+    # chunk is such that the key is the k value, and for each k, we have
+    # [(observable one results against g), (observable 2 results against g),
+    # (observable 3 results against g)]
+    observable_expectation_results_transposed_dict = {k+1:list(zip(*[j[1] for j in observable_expectation_results_transposed[k]])) for k in range(len(observable_expectation_results_transposed))}
+
+    # which_observables = [0,1,2]
+    for k,observable_results in observable_expectation_results_transposed_dict.items():
+        if k not in which_ks:
+            continue
+        for index in range(len(observable_results)):
+            # if index not in which_observables:
+            #     continue
+            observable_result = observable_results[index]
+            plt.plot(x_vals, observable_result, "o", label = str(num_of_csk_states(k)) + " csk states" + " observable" + str(index + 1))
+    plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = "theoretical_observable1")
+    plt.plot(theoretical_curves[0], theoretical_curves[1][1],
+    label = "theoretical_observable2")
+    plt.plot(theoretical_curves[0], theoretical_curves[1][2],
+    label = "theoretical_observable3")
+
+    plt.xlabel("g")
+    plt.ylabel("expectation_vals")
+    plt.title(str(num_qubits) + " qubits expectation values")
+    plt.legend()
+    plt.show()
+    
+plot_fidelities(results)
+plot_expectation_values(results, theoretical_curves, [1])
+plot_expectation_values(results, theoretical_curves, [2])
+plot_expectation_values(results, theoretical_curves, [3])
