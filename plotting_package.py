@@ -4,6 +4,10 @@ import matrix_class_package as mcp
 import pauli_class_package as pcp
 from scipy.linalg import expm 
 
+def set_axis_labels(x_label,y_label,fontsize):
+    plt.xlabel(x_label,fontsize=fontsize)
+    plt.ylabel(y_label,fontsize=fontsize)
+
 def QS_plotter_foralpha(ansatz,times):
     for mom in ansatz.get_moments():
         plt.plot(times, np.abs(mom.alphas[:-1]),label=str(mom.paulistring.string))
@@ -43,8 +47,8 @@ def QS_plotter_forobservable(num_qubits,ansatzlist,times,whatKs,qstype,observabl
     """
     if evalmethod == "qiskit_circuits" and expectation_calculator == None:
         raise(RuntimeError("You need to pass in the expectation_calculator as an argument (see the Qiskit_helperfunctions package)."))
-    if qstype == 'TTQS':
-        name = 'TTQS'
+    if qstype == 'TQS':
+        name = 'TQS'
     if qstype == 'QAS':
         name = 'QAS'
     if qstype == 'CQFF':
@@ -78,8 +82,8 @@ def get_data_forobservable(num_qubits,ansatzlist,times,whatKs,qstype,observable,
     """
     if evalmethod == "qiskit_circuits" and expectation_calculator == None:
         raise(RuntimeError("You need to pass in the expectation_calculator as an argument (see the Qiskit_helperfunctions package)."))
-    if qstype == 'TTQS':
-        name = 'TTQS'
+    if qstype == 'TQS':
+        name = 'TQS'
     if qstype == 'QAS':
         name = 'QAS'
     if qstype == 'CQFF':
@@ -127,8 +131,8 @@ def print_plot(location):
 def QS_plotter_for_fidelity(num_qubits, ansatzlist, times,
      whatKs, qstype, hamiltonian, initial_state):
     initial_statevector = initial_state.get_statevector()
-    if qstype == 'TTQS':
-        name = 'TTQS'
+    if qstype == 'TQS':
+        name = 'TQS'
     if qstype == 'QAS':
         name = 'QAS'
     if qstype == 'CQFF':
@@ -170,8 +174,8 @@ def get_data_for_fidelity(num_qubits, ansatzlist, times,whatKs, qstype, hamilton
     finaldict = {}
     finaldict['times'] = list(times.real)
     initial_statevector = initial_state.get_statevector()
-    if qstype == 'TTQS':
-        name = 'TTQS'
+    if qstype == 'TQS':
+        name = 'TQS'
     if qstype == 'QAS':
         name = 'QAS'
     if qstype == 'CQFF':
