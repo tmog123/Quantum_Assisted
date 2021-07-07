@@ -17,8 +17,8 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 4
-uptowhatK = 100
+num_qubits = 2
+uptowhatK = 4
 sdp_tolerance_bound = 0
 
 #Generate initial state
@@ -42,7 +42,7 @@ if use_qiskit:
     # num_shots = 30000 #max is 1000000
 
     sim = "noisy_qasm"
-    quantum_com = "ibmq_rome" #which quantum computer to take the noise profile from
+    quantum_com = "ibmq_bogota" #which quantum computer to take the noise profile from
     num_shots = 8192 #max is 8192
 
     # sim = "real"
@@ -323,7 +323,11 @@ def plot_fidelities(results):
     y_vals_all_k_transposed_dict = {k+1:y_vals_all_k_transposed[k] for k in range(len(y_vals_all_k_transposed))}
 
     for k,fidelities in y_vals_all_k_transposed_dict.items():
-        plt.plot(x_vals, fidelities, label=str(num_of_csk_states(k)) + " csk states")
+        print(k)
+        if random_selection_new:
+            plt.plot(x_vals, fidelities, label=str(num_of_csk_states(k)) + " csk states")
+        else:
+            plt.plot(x_vals, fidelities, label="k=" + str(k))
 
     plt.xlabel("g")
     plt.ylabel("fidelity")
@@ -350,7 +354,10 @@ def plot_expectation_values(results, theoretical_curves, which_ks):
             # if index not in which_observables:
             #     continue
             observable_result = observable_results[index]
-            plt.plot(x_vals, observable_result, "o", label = str(num_of_csk_states(k)) + " csk states" + " observable" + str(index + 1))
+            if random_selection_new:
+                plt.plot(x_vals, observable_result, "o", label = str(num_of_csk_states(k)) + " csk states" + " observable" + str(index + 1))
+            else:
+                plt.plot(x_vals, observable_result, "o", label = "k=" + str(k) + " observable" + str(index + 1))
     plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = "theoretical_observable1")
     plt.plot(theoretical_curves[0], theoretical_curves[1][1],
     label = "theoretical_observable2")
@@ -364,6 +371,7 @@ def plot_expectation_values(results, theoretical_curves, which_ks):
     plt.show()
     
 plot_fidelities(results)
-plot_expectation_values(results, theoretical_curves, [1])
-plot_expectation_values(results, theoretical_curves, [2])
-plot_expectation_values(results, theoretical_curves, [3])
+# plot_expectation_values(results, theoretical_curves, [1])
+# plot_expectation_values(results, theoretical_curves, [2])
+# plot_expectation_values(results, theoretical_curves, [3])
+# %%
