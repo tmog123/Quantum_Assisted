@@ -16,10 +16,10 @@ import time
 timer_starttime = time.time()
 
 #Parameters
-uptowhatK = 2
+uptowhatK = 3
 num_qubits = 2
 endtime = 5
-num_steps = 1001
+num_steps = 5001
 optimizer ='eigh' #'eigh','qcqp'
 inv_cond = 10**(-3)
 numberoflayers = 3
@@ -35,12 +35,12 @@ initial_state = acp.Initialstate(num_qubits, "efficient_SU2",random_generator, n
 #Qiskit stuff
 import Qiskit_helperfunctions as qhf #IBMQ account is loaded here in this import
 #IBMQ.load_account() 
-hub, group, project = "ibm-q-nus", "default", "reservations"
-quantum_com = "ibmq_bogota" 
+hub, group, project = "ibm-q-nus", "default", "default"
+quantum_com = "ibmq_mumbai" 
 
 #Other parameters for running on the quantum computer
-sim = "noiseless_qasm"# #"noisy_qasm" #"noiseless_qasm"
-num_shots = 10000
+sim = "noisy_qasm"# #"noisy_qasm" #"noiseless_qasm"
+num_shots = 20000
 
 quantum_computer_choice_results = qhf.choose_quantum_computer(hub, group, project, quantum_com)
 # mitigate_meas_error = True
@@ -130,10 +130,10 @@ times = TTQS_instance.get_times()
 observable = hcp.generate_arbitary_observable(num_qubits, [1], ["3"+ (num_qubits - 1)*"0"]) 
 
 #What Ks we want to plot
-whatK = [1,2]
+whatK = [1,2,3]
 whatK_alpha_plot = [1]
 
-#Plotting results
+#Plotting results for observable
 plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
 
 #get data for printing
@@ -202,20 +202,19 @@ for k in range(1,uptowhatK+1):
     #Update final results with this
     finalresults.append(ansatz)'''
 
-#Plotting results
-#plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'QAS',observable,initial_state)
-plotp.QS_plotter_for_fidelity(num_qubits,finalresults,times,whatK,'TTQS',hamiltonian,initial_state)
-plotp.print_plot("Jonstufftesting/plottqs.png")
+#Plotting results for fidelity
+#plotp.QS_plotter_for_fidelity(num_qubits,finalresults,times,whatK,'TTQS',hamiltonian,initial_state)
+#plotp.print_plot("Jonstufftesting/plottqs.png")
 
 trottertimes = []
 trottervalues = []
 trotdecomp_function = trotp.basic_decomp_tfi
 for i in range(trotter_num_steps):
     trottertimes.append(trotter_timestep*i)
-    trottervalues.append(trotp.do_trotter_decomposition(initial_state,trotdecomp_function,observable,sim,quantum_computer_choice_results,trotter_timestep,i,num_shots))
+    trottervalues.append(trotp.do_trotter_decomposition_observable(initial_state,trotdecomp_function,observable,sim,quantum_computer_choice_results,trotter_timestep,i,num_shots))
 
 plotp.plotter_fortrotter(trottervalues,trottertimes)
-plotp.print_plot("Jonstufftesting/plottrotter.png")
+plotp.print_plot("Jonstufftesting/plottqstrot.png")
 
 '''
 #Show plot

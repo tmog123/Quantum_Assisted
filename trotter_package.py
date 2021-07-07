@@ -25,7 +25,7 @@ def basic_decomp_tfi(N,rotation,J=1,g=1):#Sum -JZ_iZ_i+1 + Sum gX_i
 
 
 
-def do_trotter_decomposition(initialstate,decomp_function,observable,simulator,quantum_computer_dict,timestep,numberofsteps,num_shots):
+def do_trotter_decomposition_observable(initialstate,decomp_function,observable,simulator,quantum_computer_dict,timestep,numberofsteps,num_shots):
     rotation = timestep*2
     if simulator == "noisy_qasm":
         backend, coupling_map, noise_model = quantum_computer_dict[simulator]
