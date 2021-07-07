@@ -8,6 +8,7 @@ import plotting_package as plotp
 import trotter_package as trotp
 import warnings
 import json
+import scipy.io
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 import time
@@ -19,12 +20,12 @@ timer_starttime = time.time()
 uptowhatK = 3
 num_qubits = 2
 endtime = 10
-num_steps = 10001
+num_steps = 2001
 optimizer ='eigh' #'eigh','qcqp'
 inv_cond = 10**(-3)
 numberoflayers = 3
 
-trotter_num_steps = 201
+trotter_num_steps = 101
 trotter_timestep = endtime/(trotter_num_steps-1)
 
 #create initial state
@@ -134,12 +135,16 @@ whatK = [1,2,3]
 whatK_alpha_plot = [1]
 
 #Plotting results for observable
-plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
+plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
 
 #get data for printing
-#ttqsdata = plotp.get_data_forobservable(num_qubits,finalresults,times,whatK,'TTQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
-ttqsdata = plotp.get_data_for_fidelity(num_qubits,finalresults,times,whatK,'TTQS',hamiltonian,initial_state)
+ttqsdata = plotp.get_data_forobservable(num_qubits,finalresults,times,whatK,'TQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
+#ttqsdata = plotp.get_data_for_fidelity(num_qubits,finalresults,times,whatK,'TTQS',hamiltonian,initial_state)
 
+#for key in ttqsdata.keys():
+#    print(key)
+#    print(np.array(ttqsdata[key]).shape)
+#    scipy.io.savemat("Jonstufftesting/tqsdata"+str(key)+".mat",{str(key):np.array(ttqsdata[key])})
 
 #Plotting classical result
 observablematrix = observable.to_matrixform()
@@ -214,8 +219,9 @@ for i in range(trotter_num_steps):
     trottervalues.append(trotp.do_trotter_decomposition_observable(initial_state,trotdecomp_function,observable,sim,quantum_computer_choice_results,trotter_timestep,i,num_shots))
 
 plotp.plotter_fortrotter(trottervalues,trottertimes)
+plotp.set_axis_labels("time","$\\langle Z_1 \\rangle$",18)
 plotp.print_plot("Jonstufftesting/plottqstrot.png")
-
+#scipy.io.savemat("Jonstufftesting/trotterdata.mat",{'Trotter_observable':np.array(trottervalues),'Trotter_times':np.array(trottertimes)})
 '''
 #Show plot
 #plotp.show_plot()
