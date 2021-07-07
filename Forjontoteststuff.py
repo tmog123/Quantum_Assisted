@@ -219,7 +219,7 @@ for i in range(trotter_num_steps):
     trottervalues.append(trotp.do_trotter_decomposition_observable(initial_state,trotdecomp_function,observable,sim,quantum_computer_choice_results,trotter_timestep,i,num_shots))
 
 plotp.plotter_fortrotter(trottervalues,trottertimes)
-plotp.set_axis_labels("time","$\\langle Z_1 \\rangle$",18)
+plotp.set_axis_labels("time","$\\langle Z_1 \\rangle$",13)
 plotp.print_plot("Jonstufftesting/plottqstrot.png")
 #scipy.io.savemat("Jonstufftesting/trotterdata.mat",{'Trotter_observable':np.array(trottervalues),'Trotter_times':np.array(trottertimes)})
 '''
