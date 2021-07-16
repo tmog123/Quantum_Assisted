@@ -18,7 +18,7 @@ loadmatlabmatrix = False
 runSDPonpython = True
 
 num_qubits = 5
-uptowhatK = 4
+uptowhatK = 5
 sdp_tolerance_bound = 0
 
 #Generate initial state
@@ -300,7 +300,7 @@ else:
 
     # observable_expectation_results, theoretical_expectation_values, fidelity_results = big_ass_loop(g, observables_list)
 
-    g_vals = [0, 0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+    g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
     results = {g:big_ass_loop(g, observables_list) for g in g_vals}
     theoretical_curves = plot_theoretical_expectation_curves(min(g_vals), max(g_vals), observables_list)
 
@@ -379,7 +379,7 @@ def plot_expectation_values(results, theoretical_curves, which_ks,savefile):
     #plt.show()
     
 plot_fidelities(results,'graphsforpaper/%s_qubit_fidelity.png'%num_qubits)
-plot_expectation_values(results, theoretical_curves, [2,3,4],'graphsforpaper/%s_qubit.png'%num_qubits)
+plot_expectation_values(results, theoretical_curves, [4,5],'graphsforpaper/%s_qubit.png'%num_qubits)
 # plot_expectation_values(results, theoretical_curves, [2])
 # plot_expectation_values(results, theoretical_curves, [3])
 # %%
