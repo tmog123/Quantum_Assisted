@@ -17,7 +17,7 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 2
+num_qubits = 5
 uptowhatK = 4
 sdp_tolerance_bound = 0
 
@@ -27,7 +27,7 @@ initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 
 
 random_selection_new = True
 if random_selection_new == True:
-    numberofnewstatestoadd = 3 #Only will be used if 'random_selection_new' is selected
+    numberofnewstatestoadd = 10 #Only will be used if 'random_selection_new' is selected
 
 #%% IBMQ STUFF
 if use_qiskit:
@@ -76,7 +76,7 @@ def generate_fuji_boy_hamiltonian(num_qubits, g):
     return hamiltonian
 
 def generate_fuji_boy_gamma_and_Lterms(num_qubits):
-    gammas_to_append = 0.1
+    gammas_to_append = 1
     gammas = []
     L_terms = []
     if num_qubits == 1:
@@ -102,7 +102,7 @@ def plot_theoretical_expectation_curves(g_min,g_max, observable_obj_list):
         qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops)
         #compute the theoretical observable expectation values
         observable_matrixforms = [observable.to_matrixform() for observable in observable_obj_list]
-        theoretical_expectation_values = [np.trace(qtp_rho_ss @ observable_matform) for observable_matform in observable_matrixforms]
+        theoretical_expectation_values = [np.trace(qtp_rho_ss.full() @ observable_matform) for observable_matform in observable_matrixforms]
         results[g] = theoretical_expectation_values
     keys = list(results.keys())
     values = list(results.values())
@@ -143,8 +143,12 @@ def big_ass_loop(g, observable_obj_list):
 
     #compute the theoretical observable expectation values
     observable_matrixforms = [observable.to_matrixform() for observable in observable_obj_list]
-    theoretical_expectation_values = [np.trace(qtp_rho_ss @ observable_matform) for observable_matform in observable_matrixforms]
-
+    theoretical_expectation_values = [np.trace(qtp_rho_ss.full() @ observable_matform) for observable_matform in observable_matrixforms]
+    # theoretical_expectation_values = []
+    # for observable_matform in observable_matrixforms:
+    #     print(type(qtp_rho_ss.full()))
+    #     print(type(observable_matform))
+    #     theoretical_expectation_values.append(np.trace(qtp_rho_ss.full()@observable_matform))
 
     #%%
     #compute GQAS matrices
@@ -316,7 +320,7 @@ import matplotlib.pyplot as plt
 if random_selection_new:
     num_of_csk_states = lambda k: numberofnewstatestoadd * k + 1
 
-def plot_fidelities(results):
+def plot_fidelities(results,savefile):
     x_vals = list(results.keys())
     y_vals_all_k = [list(i[2].values()) for i in list(results.values())]
     y_vals_all_k_transposed = list(zip(*y_vals_all_k))
@@ -332,11 +336,13 @@ def plot_fidelities(results):
     plt.xlabel("g")
     plt.ylabel("fidelity")
     plt.title(str(num_qubits) + " qubits fidelity graph")
-    plt.legend()
-    plt.show()
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.savefig(savefile,bbox_inches="tight")
+    plt.close()
+    #plt.show()
 
 
-def plot_expectation_values(results, theoretical_curves, which_ks):
+def plot_expectation_values(results, theoretical_curves, which_ks,savefile):
     x_vals = list(results.keys())
     observable_expectation_results = [list(i[0].items()) for i in list(results.values())]
     observable_expectation_results_transposed = list(zip(*observable_expectation_results))
@@ -367,11 +373,13 @@ def plot_expectation_values(results, theoretical_curves, which_ks):
     plt.xlabel("g")
     plt.ylabel("expectation_vals")
     plt.title(str(num_qubits) + " qubits expectation values")
-    plt.legend()
-    plt.show()
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.savefig(savefile,bbox_inches="tight")
+    plt.close()
+    #plt.show()
     
-plot_fidelities(results)
-# plot_expectation_values(results, theoretical_curves, [1])
+plot_fidelities(results,'graphsforpaper/%s_qubit_fidelity.png'%num_qubits)
+plot_expectation_values(results, theoretical_curves, [2,3,4],'graphsforpaper/%s_qubit.png'%num_qubits)
 # plot_expectation_values(results, theoretical_curves, [2])
 # plot_expectation_values(results, theoretical_curves, [3])
 # %%
