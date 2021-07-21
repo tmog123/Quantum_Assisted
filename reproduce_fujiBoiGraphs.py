@@ -260,9 +260,11 @@ def big_ass_loop(g, observable_obj_list):
             print("The fidelity is", fidelity)
             observable_expectation_results[k] = [np.trace(density_mat @ O_mat_eval) for O_mat_eval in O_matrices_evaluated]
             fidelity_results[k] = fidelity
-            if round(fidelity, 6) == 1:
-                print("breaking loop as fidelity = 1 already")
-                break
+            #if round(fidelity, 6) == 1:
+            #    print("breaking loop as fidelity = 1 already")
+            #    #raise(RuntimeError("Fidelity = 1!"))
+            #    break
+    #print('JON: Got %s results'%len(fidelity_results))
     return (observable_expectation_results, theoretical_expectation_values, fidelity_results)
 
 #%% the main chunk
@@ -301,6 +303,7 @@ else:
     # observable_expectation_results, theoretical_expectation_values, fidelity_results = big_ass_loop(g, observables_list)
 
     g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+    #g_vals = [0.5]
     results = {g:big_ass_loop(g, observables_list) for g in g_vals}
     theoretical_curves = plot_theoretical_expectation_curves(min(g_vals), max(g_vals), observables_list)
 

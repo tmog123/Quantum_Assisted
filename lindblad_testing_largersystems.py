@@ -9,15 +9,15 @@ import post_processing as pp
 import scipy as scp
 import scipy.io
 import plotting_package as plotp
-uptowhatK = 3
-num_qubits = 5
+uptowhatK = 1
+num_qubits = 1
 optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 sdp_tolerance_bound = 0
-whatKs = [1,2,3]
+whatKs = [1]
 
-ansatzgenmethod = 'random_selection_new' #'random_selection_new',"no_processing", 'pruning'
+ansatzgenmethod = "no_processing" #'random_selection_new',"no_processing", 'pruning'
 numberofnewstatestoadd = 10 #Only will be used if 'random_selection_new' is selected
 
 degeneracy_tol = 5
@@ -26,7 +26,7 @@ runSDPonpython = True
 
 
 if optimizer == 'feasibility_sdp':
-    num_qubits = 5
+    num_qubits = 1
 
 #Generate initial state
 
