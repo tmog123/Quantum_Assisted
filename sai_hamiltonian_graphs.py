@@ -17,8 +17,8 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 4
-uptowhatK = 3
+num_qubits = 5
+uptowhatK = 4
 sdp_tolerance_bound = 0
 
 Gamma = 0.9
@@ -394,7 +394,7 @@ def plot_expectation_values(results, theoretical_curves, which_ks,savefile):
     #plt.show()
     
 plot_fidelities(results,'graphsforpaper/XXZ_%s_qubit_fidelity.png'%num_qubits)
-plot_expectation_values(results, theoretical_curves, [2,3],'graphsforpaper/XXZ_%s_qubit.png'%num_qubits)
+plot_expectation_values(results, theoretical_curves, [3,4],'graphsforpaper/XXZ_%s_qubit.png'%num_qubits)
 # plot_expectation_values(results, theoretical_curves, [2])
 # plot_expectation_values(results, theoretical_curves, [3])
 # %%
