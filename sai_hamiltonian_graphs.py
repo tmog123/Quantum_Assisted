@@ -113,7 +113,7 @@ def plot_theoretical_expectation_curves(delta_min,delta_max,Gamma,mu, observable
         qtp_hamiltonian = qutip.Qobj(hamiltonian.to_matrixform())
         qtp_Lterms = [qutip.Qobj(i.to_matrixform()) for i in L_terms]
         qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
-        qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops)
+        qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops,method="svd")
         #compute the theoretical observable expectation values
         observable_matrixforms = [observable.to_matrixform() for observable in observable_obj_list]
         theoretical_expectation_values = [np.trace(qtp_rho_ss.full() @ observable_matform) for observable_matform in observable_matrixforms]
@@ -151,7 +151,7 @@ def big_ass_loop(delta,Gamma,mu, observable_obj_list):
     qtp_hamiltonian = qutip.Qobj(hamiltonian.to_matrixform())
     qtp_Lterms = [qutip.Qobj(i.to_matrixform()) for i in L_terms]
     qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
-    qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops,method="eigen")
+    qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops,method="svd")
 
     #compute the theoretical observable expectation values
     observable_matrixforms = [observable.to_matrixform() for observable in observable_obj_list]
