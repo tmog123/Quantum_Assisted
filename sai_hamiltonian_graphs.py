@@ -17,12 +17,15 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 2
-uptowhatK = 2
+num_qubits = 4
+uptowhatK = 3
 sdp_tolerance_bound = 0
 
+Gamma = 0.9
+mu = 0.5
+
 #Generate initial state
-random_generator = np.random.default_rng(123)
+random_generator = np.random.default_rng(497)
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 1)
 
 random_selection_new = True
@@ -67,35 +70,46 @@ if use_qiskit:
 
 #Here, we use fujiboy's hamiltonian, H = epsilon sum_i Z_i Z_{i+1} + g sum_i X_i
 #Here, fujiboy uses epsilon = 1/2
-def generate_fuji_boy_hamiltonian(num_qubits, g):
-    epsilon = 0.5
+def generate_XXZ_hamiltonian(num_qubits, delta):
+    #epsilon = 0.5
     if num_qubits == 1:
-        hamiltonian = hcp.generate_arbitary_hamiltonian(num_qubits,[epsilon,g],['3','1'])
+        raise(RuntimeError('Cannot generate Hamiltonian with 1 qubit'))
     else:
-        hamiltonian = hcp.transverse_ising_model_1d(num_qubits, -0.5, g)
+        hamiltonian = hcp.heisenberg_xyz_model(num_qubits, jx = 1, jy = 1, jz = delta)
     return hamiltonian
 
-def generate_fuji_boy_gamma_and_Lterms(num_qubits):
-    gammas_to_append = 1
+def generate_nonlocaljump_gamma_and_Lterms(num_qubits,Gamma,mu):
+    #gammas_to_append = 1
     gammas = []
     L_terms = []
     if num_qubits == 1:
-        gammas.append(gammas_to_append)
-        L_terms.append(hcp.generate_arbitary_hamiltonian(1, [0.5,0.5j],["1","2"]))
+        raise(RuntimeError('Cannot generate non-local jump terms with 1 qubit'))
     else:
-        for i in range(num_qubits):
-            gammas.append(gammas_to_append)
-            L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[1],['0'*i+'3'+'0'*(num_qubits-1-i)]))
-            gammas.append(gammas_to_append)
-            L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['0'*i+'1'+'0'*(num_qubits-1-i),'0'*i+'2'+'0'*(num_qubits-1-i)]))
+        #for i in range(num_qubits):
+        #    gammas.append(1)
+        #    L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[1],['0'*i+'3'+'0'*(num_qubits-1-i)]))
+        #    gammas.append(1)
+        #    L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['0'*i+'1'+'0'*(num_qubits-1-i),'0'*i+'2'+'0'*(num_qubits-1-i)]))
+    
+        #gammas.append(np.sqrt(Gamma*(1-mu)))
+        #L_terms.append(hcp.multiply_hamiltonians(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,0.5j],['1'+'0'*(num_qubits-1),'2'+'0'*(num_qubits-1)]),hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['0'*(num_qubits-1)+'1','0'*(num_qubits-1)+'2'])))
+        #gammas.append(np.sqrt(Gamma*(1+mu)))
+        #L_terms.append(hcp.multiply_hamiltonians(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['1'+'0'*(num_qubits-1),'2'+'0'*(num_qubits-1)]),hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,0.5j],['0'*(num_qubits-1)+'1','0'*(num_qubits-1)+'2'])))
+
+        gammas.append(1)
+        cof = np.sqrt(Gamma*(1-mu))
+        L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.25*cof,0.25j*cof,-0.25j*cof,0.25*cof],['1'+'0'*(num_qubits-2)+'1','2'+'0'*(num_qubits-2)+'1','1'+'0'*(num_qubits-2)+'2','2'+'0'*(num_qubits-2)+'2']))
+        gammas.append(1)
+        cof = np.sqrt(Gamma*(1+mu))
+        L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.25*cof,-0.25j*cof,0.25j*cof,0.25*cof],['1'+'0'*(num_qubits-2)+'1','2'+'0'*(num_qubits-2)+'1','1'+'0'*(num_qubits-2)+'2','2'+'0'*(num_qubits-2)+'2']))
     return (gammas, L_terms)
 
-def plot_theoretical_expectation_curves(g_min,g_max, observable_obj_list):
-    g_vals = np.linspace(g_min, g_max, 50)
+def plot_theoretical_expectation_curves(delta_min,delta_max,Gamma,mu, observable_obj_list):
+    delta_vals = np.linspace(delta_min, delta_max, 50)
     results = dict()
-    for g in g_vals:
-        hamiltonian = generate_fuji_boy_hamiltonian(num_qubits, g)
-        gammas, L_terms = generate_fuji_boy_gamma_and_Lterms(num_qubits)
+    for delta in delta_vals:
+        hamiltonian = generate_XXZ_hamiltonian(num_qubits, delta)
+        gammas, L_terms = generate_nonlocaljump_gamma_and_Lterms(num_qubits,Gamma,mu)
         qtp_hamiltonian = qutip.Qobj(hamiltonian.to_matrixform())
         qtp_Lterms = [qutip.Qobj(i.to_matrixform()) for i in L_terms]
         qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
@@ -103,21 +117,19 @@ def plot_theoretical_expectation_curves(g_min,g_max, observable_obj_list):
         #compute the theoretical observable expectation values
         observable_matrixforms = [observable.to_matrixform() for observable in observable_obj_list]
         theoretical_expectation_values = [np.trace(qtp_rho_ss.full() @ observable_matform) for observable_matform in observable_matrixforms]
-        results[g] = theoretical_expectation_values
+        results[delta] = theoretical_expectation_values
     keys = list(results.keys())
     values = list(results.values())
     values_transposed = list(zip(*values)) 
     return (keys,values_transposed) #this is in a plottable form
     # return results
 
-# g = 1
-# max_k_val = None
-def big_ass_loop(g, observable_obj_list):
+def big_ass_loop(delta,Gamma,mu, observable_obj_list):
     """
     Here, observable_obj_list refers to a list of observable objects
     """
-    hamiltonian = generate_fuji_boy_hamiltonian(num_qubits, g)
-    gammas, L_terms = generate_fuji_boy_gamma_and_Lterms(num_qubits)
+    hamiltonian = generate_XXZ_hamiltonian(num_qubits, delta)
+    gammas, L_terms = generate_nonlocaljump_gamma_and_Lterms(num_qubits,Gamma,mu)
     ansatz = acp.initial_ansatz(num_qubits)
 
     #function to evaluate the rho_dot in the linblad master eqn
@@ -231,7 +243,7 @@ def big_ass_loop(g, observable_obj_list):
                 denmat_values,denmat_vects = scp.linalg.eigh(density_mat)
             else:
                 denmat_values,denmat_vects = scp.linalg.eig(density_mat)
-            denmat_values = np.real(np.round(denmat_values,6))
+            denmat_values = np.real(np.round(denmat_values,10))
             #print(np.imag(denmat_values))
             print("the sorted density matrix (beta matrix) eigenvalues are\n",np.sort(denmat_values))
 
@@ -302,10 +314,10 @@ else:
 
     # observable_expectation_results, theoretical_expectation_values, fidelity_results = big_ass_loop(g, observables_list)
 
-    g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+    delta_vals = [0,0.125,0.25,0.375, 0.5,0.625,0.75,0.875, 1.0, 1.5, 2.0]
     #g_vals = [0.5]
-    results = {g:big_ass_loop(g, observables_list) for g in g_vals}
-    theoretical_curves = plot_theoretical_expectation_curves(min(g_vals), max(g_vals), observables_list)
+    results = {delta:big_ass_loop(delta,Gamma=Gamma,mu=mu,observable_obj_list= observables_list) for delta in delta_vals}
+    theoretical_curves = plot_theoretical_expectation_curves(min(delta_vals), max(delta_vals),Gamma,mu, observables_list)
 
 
     if use_qiskit == True:
@@ -336,7 +348,7 @@ def plot_fidelities(results,savefile):
         else:
             plt.plot(x_vals, fidelities, label="k=" + str(k))
 
-    plt.xlabel("g")
+    plt.xlabel("delta")
     plt.ylabel("fidelity")
     plt.title(str(num_qubits) + " qubits fidelity graph")
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -373,7 +385,7 @@ def plot_expectation_values(results, theoretical_curves, which_ks,savefile):
     plt.plot(theoretical_curves[0], theoretical_curves[1][2],
     label = "theoretical_observable3")
 
-    plt.xlabel("g")
+    plt.xlabel("delta")
     plt.ylabel("expectation_vals")
     plt.title(str(num_qubits) + " qubits expectation values")
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -381,8 +393,8 @@ def plot_expectation_values(results, theoretical_curves, which_ks,savefile):
     plt.close()
     #plt.show()
     
-plot_fidelities(results,'graphsforpaper/%s_qubit_fidelity.png'%num_qubits)
-plot_expectation_values(results, theoretical_curves, [1,2],'graphsforpaper/%s_qubit.png'%num_qubits)
+plot_fidelities(results,'graphsforpaper/XXZ_%s_qubit_fidelity.png'%num_qubits)
+plot_expectation_values(results, theoretical_curves, [2,3],'graphsforpaper/XXZ_%s_qubit.png'%num_qubits)
 # plot_expectation_values(results, theoretical_curves, [2])
 # plot_expectation_values(results, theoretical_curves, [3])
 # %%
