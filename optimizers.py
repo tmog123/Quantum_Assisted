@@ -27,7 +27,7 @@ import importlib
 importlib.reload(qcqp)
 importlib.reload(cvx)'''
 
-def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_matrices,gammas,sdp_tolerance_bound):
+def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_matrices,gammas,sdp_tolerance_bound, verbose = True):
     numstate = len(D_matrix)
     D_matrix_np = np.array(D_matrix)
     #D_matrix_np = 0.5*(D_matrix_np + np.conjugate(np.transpose(D_matrix_np)))
@@ -53,7 +53,8 @@ def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_
     #constraints += [cp.trace(a@(a.H))<=sdp_tolerance_bound]
     #constraints += [cp.trace(a@(a.H))>=-sdp_tolerance_bound]
     if sdp_tolerance_bound == 0:
-        print('Feasibility SDP is set up with hard equality constraints')
+        if verbose:
+            print('Feasibility SDP is set up with hard equality constraints')
         #constraints += [a == 0]
         constraints += [a == 0]
         # constraints += [cp.trace(E_matrix_np @ beta) == 1] #try not enforcing the trace condition
