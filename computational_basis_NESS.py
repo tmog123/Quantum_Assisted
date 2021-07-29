@@ -116,6 +116,11 @@ def load_obj(name):
         return pickle.load(f)
 #%% Start of code
 num_qubits = 5
+sai_or_fuji = "sai"
+
+if sai_or_fuji == "sai":
+    Gamma = 0.9
+    mu = 0.5
 
 def big_loop(num_qubits, num_states, g):
     hilbert_space_dimension = 2**num_qubits
@@ -129,8 +134,12 @@ def big_loop(num_qubits, num_states, g):
     # observable_three = hcp.generate_arbitary_observable(num_qubits, [1], ["3" + "0"*(num_qubits-1)])
     # observables_list = [observable_one, observable_two, observable_three]
 
-    hamiltonian = generate_fuji_boy_hamiltonian(num_qubits,g)
-    gammas,L_terms = generate_fuji_boy_gamma_and_Lterms(num_qubits)
+    if sai_or_fuji == "fuji":
+        hamiltonian = generate_fuji_boy_hamiltonian(num_qubits,g)
+        gammas,L_terms = generate_fuji_boy_gamma_and_Lterms(num_qubits)
+    elif sai_or_fuji == "sai":
+        hamiltonian = generate_XXZ_hamiltonian(num_qubits, g)
+        gammas, L_terms = generate_nonlocaljump_gamma_and_Lterms(num_qubits, Gamma, mu)
 
     hamiltonian_matform = hamiltonian.to_matrixform()
     L_terms_matform = [i.to_matrixform() for i in L_terms]
@@ -138,7 +147,7 @@ def big_loop(num_qubits, num_states, g):
     qtp_hamiltonian = qutip.Qobj(hamiltonian_matform)
     qtp_Lterms = [qutip.Qobj(i) for i in L_terms_matform]
     qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
-    qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops)
+    qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops, method = "svd")
 
     #generate matrices
     E_matrix = generate_submatrix(np.eye(hilbert_space_dimension), random_indices)
@@ -151,23 +160,27 @@ def big_loop(num_qubits, num_states, g):
     rho = submatrix_to_full_matrix(num_qubits, beta, random_indices)
 
     rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
-    # print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
+    print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
     qtp_rho = qutip.Qobj(rho)
     fidelity = qutip.metrics.fidelity(qtp_rho, qtp_rho_ss)
     # print("The fidelity is", fidelity)
     return fidelity
 
 
-num_qubits = 5
-num_runs = 30
 
 hilbert_space_dimension = 2**num_qubits
-g_vals = [0, 0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+
+if sai_or_fuji == "fuji":
+    g_vals = [0, 0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+elif sai_or_fuji == "sai":
+    delta_vals = [0,0.125,0.25,0.375, 0.5,0.625,0.75,0.875, 1.0, 1.5, 2.0]
+    g_vals = delta_vals #renaming stuff for consistency below
 
 num_states_list = [hilbert_space_dimension // i for i in (8,4,2,1)]
 num_states_list.append(26)
+num_states_list.sort()
 
-def inner_loop(num_states):
+def inner_loop(num_states, num_runs = 30):
     big_loop_curried = partial(big_loop, num_qubits, num_states)
     avg_fidelities = np.zeros(len(g_vals))
     for run in tqdm(range(num_runs), leave = False):
@@ -182,9 +195,17 @@ def main():
         avg_fidelities = inner_loop(num_states)
         results = {i:j for (i,j) in zip(g_vals, avg_fidelities)}
         results_all_k[num_states] = results
-    save_obj(results_all_k, "computational_basis_ness_fujiBoy_5_qubits")
+    if sai_or_fuji == "fuji":
+        save_obj(results_all_k, "computational_basis_ness_fujiBoy_5_qubits")
+    elif sai_or_fuji == "sai":
+        save_obj(results_all_k, "computational_basis_ness_sai_5_qubits")
 
-results_all_k = load_obj("computational_basis_ness_fujiBoy_5_qubits")
+if sai_or_fuji == "fuji":
+    # main()
+    results_all_k = load_obj("computational_basis_ness_fujiBoy_5_qubits")
+else:
+    main()
+    results_all_k = load_obj("computational_basis_ness_sai_5_qubits")
 
 # num_states = 26
 # avg_fidelities = inner_loop(num_states)
@@ -195,15 +216,12 @@ results_all_k = load_obj("computational_basis_ness_fujiBoy_5_qubits")
 
 def plot_fidelities(results,savefile = None):
     num_states_list = list(results_all_k.keys())
-    x_vals = list(list(results_all_k.values())[0].keys())
-    y_vals_list = [list(i.values()) for i in list(results_all_k.values())]
-    # y_vals_all_k_transposed = list(zip(*y_vals_all_k))
-    # y_vals_all_k_transposed_dict = {k+1:y_vals_all_k_transposed[k] for k in range(len(y_vals_all_k_transposed))}
+    num_states_list.sort()
     for index in range(len(num_states_list)):
         num_states = num_states_list[index]
-        # print(num_states)
-        y_vals = y_vals_list[index]
-        # print(y_vals)
+        data = results[num_states]
+        x_vals = list(data.keys())
+        y_vals = list(data.values())
         plt.plot(x_vals,y_vals, label="num states="+str(num_states))
 
     plt.xlabel("g")
@@ -217,3 +235,4 @@ def plot_fidelities(results,savefile = None):
         plt.show()
 
 plot_fidelities(results_all_k)
+# %%
