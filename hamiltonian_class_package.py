@@ -164,7 +164,6 @@ def generate_package_of_random_hamiltonians(N,howmanyrandomhamiltonians,uptohowm
         #print(pauliterms)
         paulistringobjects = []
         for term in pauliterms:
-            paulistringobjects.append(pcp.paulistring(N,paulistringobjects,list(rint.random(uptohowmanyterms)*maximumbeta)))
+            paulistringobjects.append(pcp.paulistring(N,term,list(random_generator.random(uptohowmanyterms)*maximumbeta)))
         ham_list.append(Hamiltonian(N,paulistringobjects))
     return ham_list
-
