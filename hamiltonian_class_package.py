@@ -147,3 +147,24 @@ def heisenberg_xyz_model(N, jx = 1, jy = 2, jz = 3): #Sum jx X_i X_{i+1} + ...
             term = pcp.paulistring(N, term, j_couplings[j])
             paulistrings.append(term)
     return Hamiltonian(N, paulistrings)
+
+
+def generate_package_of_random_hamiltonians(N,howmanyrandomhamiltonians,uptohowmanyterms,numpyseed,maximumbeta):#Returns a list of randomly generated hamiltonians
+    random_generator = np.random.default_rng(numpyseed)
+    ham_list = []
+    for i in range(howmanyrandomhamiltonians):
+        pauliterms = []
+        while len(pauliterms)<uptohowmanyterms:
+            rint = random_generator.integers(low=0,high=4,size=N)
+            rstring = ''
+            for j in rint:
+                rstring = rstring+str(j)
+            if rstring not in pauliterms:
+                pauliterms.append(rstring)
+        #print(pauliterms)
+        paulistringobjects = []
+        for term in pauliterms:
+            paulistringobjects.append(pcp.paulistring(N,paulistringobjects,list(rint.random(uptohowmanyterms)*maximumbeta)))
+        ham_list.append(Hamiltonian(N,paulistringobjects))
+    return ham_list
+
