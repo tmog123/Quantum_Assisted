@@ -8,6 +8,7 @@ import post_processing as pp
 import scipy as scp
 import scipy.io
 import qutip 
+import plotting_package as plotp
 
 optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
@@ -124,7 +125,7 @@ def big_ass_loop(delta,Gamma,mu, observable_obj_list):
     qtp_hamiltonian = qutip.Qobj(hamiltonian.to_matrixform())
     qtp_Lterms = [qutip.Qobj(i.to_matrixform()) for i in L_terms]
     qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
-    qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops,method="svd")
+    qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops,method='iterative-gmres')
 
     #compute the theoretical observable expectation values
     observable_matrixforms = [observable.to_matrixform() for observable in observable_obj_list]
@@ -198,7 +199,6 @@ def big_ass_loop(delta,Gamma,mu, observable_obj_list):
         # IQAE_instance.evaluate(kh_test=False)
         #all_energies,all_states = IQAE_instance.get_results_all()
         result_dictionary = pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,O_matrices_evaluated)
-        density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
         observable_expectation_results[k] = result_dictionary['observable_expectation']
         fidelity_results[k] = result_dictionary['fidelity']
             #if round(fidelity, 6) == 1:
@@ -264,66 +264,9 @@ import matplotlib.pyplot as plt
 if random_selection_new:
     num_of_csk_states = lambda k: numberofnewstatestoadd * k + 1
 
-def plot_fidelities(results,savefile):
-    x_vals = list(results.keys())
-    y_vals_all_k = [list(i[2].values()) for i in list(results.values())]
-    y_vals_all_k_transposed = list(zip(*y_vals_all_k))
-    y_vals_all_k_transposed_dict = {k+1:y_vals_all_k_transposed[k] for k in range(len(y_vals_all_k_transposed))}
+plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states)
+plotp.print_plot('graphsforpaper/XXZ_%s_qubit_fidelity.png'%num_qubits,bboxtight="tight")
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [3,4],random_selection_new,num_of_csk_states)
+plotp.print_plot('graphsforpaper/XXZ_%s_qubit.png'%num_qubits,bboxtight="tight")
 
-    for k,fidelities in y_vals_all_k_transposed_dict.items():
-        print(k)
-        if random_selection_new:
-            plt.plot(x_vals, fidelities, label=str(num_of_csk_states(k)) + " csk states")
-        else:
-            plt.plot(x_vals, fidelities, label="k=" + str(k))
-
-    plt.xlabel("delta")
-    plt.ylabel("fidelity")
-    plt.title(str(num_qubits) + " qubits fidelity graph")
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.savefig(savefile,bbox_inches="tight")
-    plt.close()
-    #plt.show()
-
-
-def plot_expectation_values(results, theoretical_curves, which_ks,savefile):
-    x_vals = list(results.keys())
-    observable_expectation_results = [list(i[0].items()) for i in list(results.values())]
-    observable_expectation_results_transposed = list(zip(*observable_expectation_results))
-    # don't need to know the details of what the heck this chunk does, but this
-    # chunk is such that the key is the k value, and for each k, we have
-    # [(observable one results against g), (observable 2 results against g),
-    # (observable 3 results against g)]
-    observable_expectation_results_transposed_dict = {k+1:list(zip(*[j[1] for j in observable_expectation_results_transposed[k]])) for k in range(len(observable_expectation_results_transposed))}
-
-    # which_observables = [0,1,2]
-    for k,observable_results in observable_expectation_results_transposed_dict.items():
-        if k not in which_ks:
-            continue
-        for index in range(len(observable_results)):
-            # if index not in which_observables:
-            #     continue
-            observable_result = observable_results[index]
-            if random_selection_new:
-                plt.plot(x_vals, observable_result, "o", label = str(num_of_csk_states(k)) + " csk states" + " observable" + str(index + 1))
-            else:
-                plt.plot(x_vals, observable_result, "o", label = "k=" + str(k) + " observable" + str(index + 1))
-    plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = "theoretical_observable1")
-    plt.plot(theoretical_curves[0], theoretical_curves[1][1],
-    label = "theoretical_observable2")
-    plt.plot(theoretical_curves[0], theoretical_curves[1][2],
-    label = "theoretical_observable3")
-
-    plt.xlabel("delta")
-    plt.ylabel("expectation_vals")
-    plt.title(str(num_qubits) + " qubits expectation values")
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.savefig(savefile,bbox_inches="tight")
-    plt.close()
-    #plt.show()
-    
-plot_fidelities(results,'graphsforpaper/XXZ_%s_qubit_fidelity.png'%num_qubits)
-plot_expectation_values(results, theoretical_curves, [3,4],'graphsforpaper/XXZ_%s_qubit.png'%num_qubits)
-# plot_expectation_values(results, theoretical_curves, [2])
-# plot_expectation_values(results, theoretical_curves, [3])
 # %%

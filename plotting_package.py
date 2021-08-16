@@ -123,9 +123,12 @@ def show_plot():
     plt.legend()
     plt.show()
 
-def print_plot(location):
+def print_plot(location,bboxtight=False):
     plt.legend()
-    plt.savefig(location)
+    if bboxtight == "tight":
+        plt.savefig(location,bbox_inches="tight")
+    else:
+        plt.savefig(location)
     plt.close()
 
 def QS_plotter_for_fidelity(num_qubits, ansatzlist, times,
@@ -266,3 +269,59 @@ def get_fidelity_results(num_qubits, ansatzlist, times,
                 fidelity_vals[time] = fidelity
             collated_fidelity_vals[i] = fidelity_vals
     return collated_fidelity_vals
+
+def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, which_ks,random_selection_new,num_of_csk_states):
+    x_vals = list(results.keys())
+    observable_expectation_results = [list(i[0].items()) for i in list(results.values())]
+    observable_expectation_results_transposed = list(zip(*observable_expectation_results))
+    # don't need to know the details of what the heck this chunk does, but this
+    # chunk is such that the key is the k value, and for each k, we have
+    # [(observable one results against g), (observable 2 results against g),
+    # (observable 3 results against g)]
+    observable_expectation_results_transposed_dict = {k+1:list(zip(*[j[1] for j in observable_expectation_results_transposed[k]])) for k in range(len(observable_expectation_results_transposed))}
+
+    # which_observables = [0,1,2]
+    for k,observable_results in observable_expectation_results_transposed_dict.items():
+        if k not in which_ks:
+            continue
+        for index in range(len(observable_results)):
+            # if index not in which_observables:
+            #     continue
+            observable_result = observable_results[index]
+            if random_selection_new:
+                plt.plot(x_vals, observable_result, "o", label = str(num_of_csk_states(k)) + " csk states" + " observable" + str(index + 1))
+            else:
+                plt.plot(x_vals, observable_result, "o", label = "k=" + str(k) + " observable" + str(index + 1))
+    plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = "theoretical_observable1")
+    plt.plot(theoretical_curves[0], theoretical_curves[1][1],
+    label = "theoretical_observable2")
+    plt.plot(theoretical_curves[0], theoretical_curves[1][2],
+    label = "theoretical_observable3")
+
+    plt.xlabel("delta")
+    plt.ylabel("expectation_vals")
+    plt.title(str(num_qubits) + " qubits expectation values")
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    #plt.savefig(savefile,bbox_inches="tight")
+    #plt.close()
+    #plt.show()
+def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states):
+    x_vals = list(results.keys())
+    y_vals_all_k = [list(i[2].values()) for i in list(results.values())]
+    y_vals_all_k_transposed = list(zip(*y_vals_all_k))
+    y_vals_all_k_transposed_dict = {k+1:y_vals_all_k_transposed[k] for k in range(len(y_vals_all_k_transposed))}
+
+    for k,fidelities in y_vals_all_k_transposed_dict.items():
+        print(k)
+        if random_selection_new:
+            plt.plot(x_vals, fidelities, label=str(num_of_csk_states(k)) + " csk states")
+        else:
+            plt.plot(x_vals, fidelities, label="k=" + str(k))
+
+    plt.xlabel("delta")
+    plt.ylabel("fidelity")
+    plt.title(str(num_qubits) + " qubits fidelity graph")
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    #plt.savefig(savefile,bbox_inches="tight")
+    #plt.close()
+    #plt.show()
