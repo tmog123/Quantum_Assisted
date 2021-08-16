@@ -9,6 +9,7 @@ import optimizers as opt_package
 from abc import ABC, abstractmethod
 from scipy.integrate import ode 
 import scipy as scp
+import qutip 
 ''' This is not necessary (But dont delete yet : Jonathan)
 #This is stuff to get observables for classicalSimulator
 X = np.array([[0.0, 1.0], [1.0, 0.0]])
@@ -149,7 +150,11 @@ class IQAE_Lindblad(object):
         self.density_matrix = None
         self.evaluated_alpha = False
         self.evaluated_denmat = False
+        self.addbetaconstraints = None
     
+    def define_additional_constraints_for_feasibility_sdp(self,constraints):
+        self.addbetaconstraints = constraints
+
     def define_optimizer(self, optimizer, eigh_invcond = 10**(-12),eig_invcond = 10**(-12),degeneracy_tol = 5,sdp_tolerance_bound = 0):
         """
         Optimiser can either be eigh or qcqp or sdp or...
@@ -182,7 +187,7 @@ class IQAE_Lindblad(object):
         if self.optimizer == None:
             raise(RuntimeError("run the define optimizer_function first"))
         elif self.optimizer == 'feasibility_sdp':
-            densitymat,minvalue = opt_package.cvxpy_density_matrix_feasibility_sdp_routine(self.D,self.E,self.R_matrices,self.F_matrices,self.gammas,self.sdp_tolerance_bound)
+            densitymat,minvalue = opt_package.cvxpy_density_matrix_feasibility_sdp_routine(self.D,self.E,self.R_matrices,self.F_matrices,self.gammas,self.sdp_tolerance_bound,additionalbetaconstraints=self.addbetaconstraints)
             self.density_matrix = densitymat
             self.ground_state_energy = minvalue
             self.evaluated_denmat = True
@@ -521,3 +526,89 @@ class TTQS(quantumSimulators):
 #             print("This has not been evaluated yet")
 #         else:
 #             return self.finishedalphas
+
+def evaluate_rho_dot(rho, hamiltonian_class_object, gammas, L_terms):
+    hamiltonian_mat = hamiltonian_class_object.to_matrixform()
+    coherent_evo = -1j * (hamiltonian_mat @ rho - rho @ hamiltonian_mat)
+    quantum_jumps_total = 0 + 0*1j
+    for i in range(len(gammas)):
+        gamma_i = gammas[i]
+        L_i_mat = L_terms[i].to_matrixform()
+        L_i_dag_L_i = L_i_mat.conj().T @ L_i_mat
+        anti_commutator = L_i_dag_L_i @ rho + rho @ L_i_dag_L_i
+        jump_term = L_i_mat @ rho @ L_i_mat.conj().T
+        quantum_jumps_total += gamma_i * (jump_term - 0.5*anti_commutator)
+    return coherent_evo + quantum_jumps_total
+
+def analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,O_matrices_evaluated):
+    density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
+    if type(density_mat) == type(None):
+        print('SDP failed for this run, probably due to not high enough K')
+    else:
+        result_dictionary = {}
+        IQAE_instance.check_if_valid_density_matrix()
+        #print(all_energies)
+        #print(all_states)
+        print("the trace of the beta matrix is", np.trace(density_mat @ E_mat_evaluated))
+        result_dictionary['trace_beta']=np.trace(density_mat @ E_mat_evaluated)
+        print('The ground state energy is\n',groundstateenergy)
+        result_dictionary['ground_state_energy']=groundstateenergy
+        #print('The density matrix is\n',density_mat)
+        if IQAE_instance.check_if_hermitian() == True:
+            denmat_values,denmat_vects = scp.linalg.eigh(density_mat)
+        else:
+            denmat_values,denmat_vects = scp.linalg.eig(density_mat)
+        denmat_values = np.real(np.round(denmat_values,10))
+        #print(np.imag(denmat_values))
+        print("the sorted density matrix (beta matrix) eigenvalues are\n",np.sort(denmat_values))
+        result_dictionary['sorted_beta_eigenvalues'] = np.sort(denmat_values)
+        p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
+        ini_statevec_vecform = initial_state.get_statevector()
+        csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
+        rho = np.zeros(shape=(2**num_qubits,2**num_qubits), dtype = np.complex128)
+        trace = 0
+        for i in range(len(density_mat)):
+            for j in range(len(density_mat)):
+                i_j_entry = density_mat[(i,j)]
+                i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
+                rho += i_j_entry * i_j_ketbra
+                trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
+
+        rho_eigvals,rho_eigvecs = scipy.linalg.eigh(rho)        
+        print('rho_eigvals is: ' + str(rho_eigvals))
+        result_dictionary['rho_eigvals'] = rho_eigvals
+        print("trace rho is", np.trace(rho))
+        result_dictionary['trace_rho'] = np.trace(rho)
+        #now, we check if rho (the actual denmat) gives 0 for the linblad master equation
+
+        rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
+        # print('rho_dot is: ' + str(rho_dot))
+        print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
+        result_dictionary['max_rho_dot'] = np.max(np.max(rho_dot))
+        qtp_rho = qutip.Qobj(rho)
+        fidelity = qutip.metrics.fidelity(qtp_rho, qtp_rho_ss)
+        print("The fidelity is", fidelity)
+        result_dictionary['fidelity'] = fidelity
+        result_dictionary['observable_expectation'] = [np.trace(density_mat @ O_mat_eval) for O_mat_eval in O_matrices_evaluated]
+        #observable_expectation_results[k] = [np.trace(density_mat @ O_mat_eval) for O_mat_eval in O_matrices_evaluated]
+        #fidelity_results[k] = fidelity
+        #if round(fidelity, 6) == 1:
+        #    print("breaking loop as fidelity = 1 already")
+        #    #raise(RuntimeError("Fidelity = 1!"))
+        #    break
+        return result_dictionary
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

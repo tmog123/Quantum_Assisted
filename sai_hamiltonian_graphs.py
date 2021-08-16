@@ -17,8 +17,8 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 5
-uptowhatK = 4
+num_qubits = 3
+uptowhatK = 3
 sdp_tolerance_bound = 0
 
 Gamma = 0.9
@@ -85,17 +85,6 @@ def generate_nonlocaljump_gamma_and_Lterms(num_qubits,Gamma,mu):
     if num_qubits == 1:
         raise(RuntimeError('Cannot generate non-local jump terms with 1 qubit'))
     else:
-        #for i in range(num_qubits):
-        #    gammas.append(1)
-        #    L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[1],['0'*i+'3'+'0'*(num_qubits-1-i)]))
-        #    gammas.append(1)
-        #    L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['0'*i+'1'+'0'*(num_qubits-1-i),'0'*i+'2'+'0'*(num_qubits-1-i)]))
-    
-        #gammas.append(np.sqrt(Gamma*(1-mu)))
-        #L_terms.append(hcp.multiply_hamiltonians(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,0.5j],['1'+'0'*(num_qubits-1),'2'+'0'*(num_qubits-1)]),hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['0'*(num_qubits-1)+'1','0'*(num_qubits-1)+'2'])))
-        #gammas.append(np.sqrt(Gamma*(1+mu)))
-        #L_terms.append(hcp.multiply_hamiltonians(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['1'+'0'*(num_qubits-1),'2'+'0'*(num_qubits-1)]),hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,0.5j],['0'*(num_qubits-1)+'1','0'*(num_qubits-1)+'2'])))
-
         gammas.append(1)
         cof = np.sqrt(Gamma*(1-mu))
         L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.25*cof,0.25j*cof,-0.25j*cof,0.25*cof],['1'+'0'*(num_qubits-2)+'1','2'+'0'*(num_qubits-2)+'1','1'+'0'*(num_qubits-2)+'2','2'+'0'*(num_qubits-2)+'2']))
@@ -131,22 +120,6 @@ def big_ass_loop(delta,Gamma,mu, observable_obj_list):
     hamiltonian = generate_XXZ_hamiltonian(num_qubits, delta)
     gammas, L_terms = generate_nonlocaljump_gamma_and_Lterms(num_qubits,Gamma,mu)
     ansatz = acp.initial_ansatz(num_qubits)
-
-    #function to evaluate the rho_dot in the linblad master eqn
-    def evaluate_rho_dot(rho, hamiltonian_class_object, gammas, L_terms):
-        hamiltonian_mat = hamiltonian_class_object.to_matrixform()
-        coherent_evo = -1j * (hamiltonian_mat @ rho - rho @ hamiltonian_mat)
-        quantum_jumps_total = 0 + 0*1j
-        for i in range(len(gammas)):
-            gamma_i = gammas[i]
-            L_i_mat = L_terms[i].to_matrixform()
-            L_i_dag_L_i = L_i_mat.conj().T @ L_i_mat
-            anti_commutator = L_i_dag_L_i @ rho + rho @ L_i_dag_L_i
-            jump_term = L_i_mat @ rho @ L_i_mat.conj().T
-            quantum_jumps_total += gamma_i * (jump_term - 0.5*anti_commutator)
-        return coherent_evo + quantum_jumps_total
-
-    #%%
     #get the steady state using qutip(lol)
     qtp_hamiltonian = qutip.Qobj(hamiltonian.to_matrixform())
     qtp_Lterms = [qutip.Qobj(i.to_matrixform()) for i in L_terms]
@@ -156,11 +129,6 @@ def big_ass_loop(delta,Gamma,mu, observable_obj_list):
     #compute the theoretical observable expectation values
     observable_matrixforms = [observable.to_matrixform() for observable in observable_obj_list]
     theoretical_expectation_values = [np.trace(qtp_rho_ss.full() @ observable_matform) for observable_matform in observable_matrixforms]
-    # theoretical_expectation_values = []
-    # for observable_matform in observable_matrixforms:
-    #     print(type(qtp_rho_ss.full()))
-    #     print(type(observable_matform))
-    #     theoretical_expectation_values.append(np.trace(qtp_rho_ss.full()@observable_matform))
 
     #%%
     #compute GQAS matrices
@@ -229,49 +197,10 @@ def big_ass_loop(delta,Gamma,mu, observable_obj_list):
         IQAE_instance.evaluate()
         # IQAE_instance.evaluate(kh_test=False)
         #all_energies,all_states = IQAE_instance.get_results_all()
+        result_dictionary = pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,O_matrices_evaluated)
         density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
-        if type(density_mat) == type(None):
-            print('SDP failed for this run, probably due to not high enough K')
-        else:
-            IQAE_instance.check_if_valid_density_matrix()
-            #print(all_energies)
-            #print(all_states)
-            print("the trace of the beta matrix is", np.trace(density_mat @ E_mat_evaluated))
-            print('The ground state energy is\n',groundstateenergy)
-            #print('The density matrix is\n',density_mat)
-            if IQAE_instance.check_if_hermitian() == True:
-                denmat_values,denmat_vects = scp.linalg.eigh(density_mat)
-            else:
-                denmat_values,denmat_vects = scp.linalg.eig(density_mat)
-            denmat_values = np.real(np.round(denmat_values,10))
-            #print(np.imag(denmat_values))
-            print("the sorted density matrix (beta matrix) eigenvalues are\n",np.sort(denmat_values))
-
-            p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
-            ini_statevec_vecform = initial_state.get_statevector()
-            csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
-            rho = np.zeros(shape=(2**num_qubits,2**num_qubits), dtype = np.complex128)
-            trace = 0
-            for i in range(len(density_mat)):
-                for j in range(len(density_mat)):
-                    i_j_entry = density_mat[(i,j)]
-                    i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
-                    rho += i_j_entry * i_j_ketbra
-                    trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
-
-            rho_eigvals,rho_eigvecs = scipy.linalg.eigh(rho)        
-            print('rho_eigvals is: ' + str(rho_eigvals))
-            print("trace rho is", np.trace(rho))
-            #now, we check if rho (the actual denmat) gives 0 for the linblad master equation
-
-            rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
-            # print('rho_dot is: ' + str(rho_dot))
-            print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
-            qtp_rho = qutip.Qobj(rho)
-            fidelity = qutip.metrics.fidelity(qtp_rho, qtp_rho_ss)
-            print("The fidelity is", fidelity)
-            observable_expectation_results[k] = [np.trace(density_mat @ O_mat_eval) for O_mat_eval in O_matrices_evaluated]
-            fidelity_results[k] = fidelity
+        observable_expectation_results[k] = result_dictionary['observable_expectation']
+        fidelity_results[k] = result_dictionary['fidelity']
             #if round(fidelity, 6) == 1:
             #    print("breaking loop as fidelity = 1 already")
             #    #raise(RuntimeError("Fidelity = 1!"))

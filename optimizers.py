@@ -27,7 +27,7 @@ import importlib
 importlib.reload(qcqp)
 importlib.reload(cvx)'''
 
-def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_matrices,gammas,sdp_tolerance_bound, verbose = True):
+def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_matrices,gammas,sdp_tolerance_bound, verbose = True,additionalbetaconstraints=None):#additional beta constraints comes in list of list , [[matrix,value],[matrix,value]]
     numstate = len(D_matrix)
     D_matrix_np = np.array(D_matrix)
     #D_matrix_np = 0.5*(D_matrix_np + np.conjugate(np.transpose(D_matrix_np)))
@@ -43,6 +43,9 @@ def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_
     constraints = [beta >> 0]
     #constraints += [cp.trace(E_matrix_np @ beta) == 1]
     constraints += [beta.H == beta]
+    if additionalbetaconstraints != None:
+        for con,value in additionalbetaconstraints:
+            constraints += [cp.trace(con@beta)==value]
 
     a = -1j*(D_matrix_np@beta@E_matrix_np-E_matrix_np@beta@D_matrix_np)
     #finalconstraints = []
