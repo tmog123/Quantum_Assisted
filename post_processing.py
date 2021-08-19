@@ -554,6 +554,7 @@ def analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluate
         print('The ground state energy is\n',groundstateenergy)
         result_dictionary['ground_state_energy']=groundstateenergy
         #print('The density matrix is\n',density_mat)
+        result_dictionary["beta"] = density_mat
         if IQAE_instance.check_if_hermitian() == True:
             denmat_values,denmat_vects = scp.linalg.eigh(density_mat)
         else:
@@ -580,7 +581,8 @@ def analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluate
         print("trace rho is", np.trace(rho))
         result_dictionary['trace_rho'] = np.trace(rho)
         #now, we check if rho (the actual denmat) gives 0 for the linblad master equation
-
+        #save the rho for processing
+        result_dictionary["rho"] = rho
         rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
         # print('rho_dot is: ' + str(rho_dot))
         print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
