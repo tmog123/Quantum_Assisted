@@ -114,6 +114,53 @@ def load_obj(name):
     #name is a string
     with open('pickled_objs/' + name + '.pkl', 'rb') as f:
         return pickle.load(f)
+
+#%%
+#Code to play with, for debugging
+def test_method(method, num_qubits = 5):
+    # num_qubits = 5
+    # num_states = 32
+    num_states = 2**num_qubits
+    g = 0.5 
+    sai_or_fuji = "sai"
+
+    if sai_or_fuji == "sai":
+        Gamma = 0.9
+        mu = 0.5
+
+    hilbert_space_dimension = 2**num_qubits
+    # num_states = hilbert_space_dimension // 2
+    random_indices = sorted(random.sample(range(hilbert_space_dimension),num_states))
+
+    # print("The random indices are", random_indices)
+
+    # observable_one = hcp.generate_arbitary_observable(num_qubits, [1], ["1" + "0"*(num_qubits-1)])
+    # observable_two = hcp.generate_arbitary_observable(num_qubits, [1], ["2" + "0"*(num_qubits-1)])
+    # observable_three = hcp.generate_arbitary_observable(num_qubits, [1], ["3" + "0"*(num_qubits-1)])
+    # observables_list = [observable_one, observable_two, observable_three]
+
+    if sai_or_fuji == "fuji":
+        hamiltonian = generate_fuji_boy_hamiltonian(num_qubits,g)
+        gammas,L_terms = generate_fuji_boy_gamma_and_Lterms(num_qubits)
+    elif sai_or_fuji == "sai":
+        hamiltonian = generate_XXZ_hamiltonian(num_qubits, g)
+        gammas, L_terms = generate_nonlocaljump_gamma_and_Lterms(num_qubits, Gamma, mu)
+
+    hamiltonian_matform = hamiltonian.to_matrixform()
+    L_terms_matform = [i.to_matrixform() for i in L_terms]
+
+    qtp_hamiltonian = qutip.Qobj(hamiltonian_matform)
+    qtp_Lterms = [qutip.Qobj(i) for i in L_terms_matform]
+    qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]    
+
+    qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops, method = method)
+    display(pd.DataFrame(qtp_rho_ss.full()))
+    rho_dot = evaluate_rho_dot(qtp_rho_ss.full(), hamiltonian, gammas, L_terms)
+    print("max rhodot matrix elem", np.max(np.max(rho_dot)))
+    print(min(qtp_rho_ss.eigenenergies()))
+    print("trace of rho", qtp_rho_ss.tr())
+
+test_method("iterative-gmres", num_qubits=10)
 #%% Start of code
 num_qubits = 5
 sai_or_fuji = "sai"
@@ -147,7 +194,7 @@ def big_loop(num_qubits, num_states, g):
     qtp_hamiltonian = qutip.Qobj(hamiltonian_matform)
     qtp_Lterms = [qutip.Qobj(i) for i in L_terms_matform]
     qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
-    qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops, method = "svd")
+    qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops, method = "iterative-gmres")
 
     #generate matrices
     E_matrix = generate_submatrix(np.eye(hilbert_space_dimension), random_indices)
@@ -166,8 +213,9 @@ def big_loop(num_qubits, num_states, g):
     # print("The fidelity is", fidelity)
     return fidelity
 
+big_loop(9, 2**9, 0.5)
 
-
+#%%
 hilbert_space_dimension = 2**num_qubits
 
 if sai_or_fuji == "fuji":
