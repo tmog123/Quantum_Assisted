@@ -14,9 +14,10 @@ eig_inv_cond = 10**(-6)
 use_qiskit = False
 degeneracy_tol = 5
 
-uptowhatK = 1
+uptowhatK = 2
 sdp_tolerance_bound = 0
-num_qubits = 4
+num_qubits = 3
+howmanyrandominstances = 3
 
 #Generate initial state
 random_generator = np.random.default_rng(497)
@@ -24,7 +25,7 @@ initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 
 
 random_selection_new = True
 if random_selection_new == True:
-    numberofnewstatestoadd = 32 #Only will be used if 'random_selection_new' is selected
+    numberofnewstatestoadd = 10 #Only will be used if 'random_selection_new' is selected
 
 #%% IBMQ STUFF
 if use_qiskit:
@@ -183,24 +184,37 @@ if optimizer == 'feasibility_sdp':
 ##########################################
 #Start of the classical post-processing. #
 ##########################################
-if optimizer == 'feasibility_sdp':
-    IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
-else:
-    IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated)
 
+randombetainitializations = []
+for i in range(howmanyrandominstances):
+    randombetainitializations.append(random_generator.random((len(D_mat_evaluated),len(D_mat_evaluated))))
+    #print(randombetainitializations[i])
 
-IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
+results_dictionary = []
 
-IQAE_instance.evaluate()
+for betainitialpoint in randombetainitializations:
+
+    if optimizer == 'feasibility_sdp':
+        IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
+    else:
+        IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated)
+
+    IQAE_instance.define_beta_initialpoint(betainitialpoint)
+    IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
+
+    IQAE_instance.evaluate()
 # IQAE_instance.evaluate(kh_test=False)
 #all_energies,all_states = IQAE_instance.get_results_all()
-result_dictionary = pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,[])
+    results_dictionary.append(pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,[]))
 # observable_expectation_results[k] = result_dictionary['observable_expectation']
 # fidelity_results[k] = result_dictionary['fidelity']
 
+'''The results_dictionary is a list of all the result_dictionaries generated for each random beta initial point'''
 
-IQAE_instance_2 = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
-IQAE_instance_2.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
-IQAE_instance_2.define_additional_constraints_for_feasibility_sdp([[result_dictionary["beta"].conj().T,0]])
-IQAE_instance_2.evaluate()
-result_dictionary_2 = pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance_2,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,[])
+'''COMMENTED OUT THE BELOW: JON'''
+
+# IQAE_instance_2 = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
+# IQAE_instance_2.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
+# IQAE_instance_2.define_additional_constraints_for_feasibility_sdp([[result_dictionary["beta"].conj().T,0]])
+# IQAE_instance_2.evaluate()
+# result_dictionary_2 = pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance_2,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,[])

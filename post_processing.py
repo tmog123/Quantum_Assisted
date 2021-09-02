@@ -151,6 +151,9 @@ class IQAE_Lindblad(object):
         self.evaluated_alpha = False
         self.evaluated_denmat = False
         self.addbetaconstraints = None
+        self.betainitialpoint = None
+    def define_beta_initialpoint(self,initialpoint):
+        self.betainitialpoint = initialpoint
     
     def define_additional_constraints_for_feasibility_sdp(self,constraints):
         self.addbetaconstraints = constraints
@@ -187,7 +190,7 @@ class IQAE_Lindblad(object):
         if self.optimizer == None:
             raise(RuntimeError("run the define optimizer_function first"))
         elif self.optimizer == 'feasibility_sdp':
-            densitymat,minvalue = opt_package.cvxpy_density_matrix_feasibility_sdp_routine(self.D,self.E,self.R_matrices,self.F_matrices,self.gammas,self.sdp_tolerance_bound,additionalbetaconstraints=self.addbetaconstraints)
+            densitymat,minvalue = opt_package.cvxpy_density_matrix_feasibility_sdp_routine(self.D,self.E,self.R_matrices,self.F_matrices,self.gammas,self.sdp_tolerance_bound,additionalbetaconstraints=self.addbetaconstraints,betainitialpoint=self.betainitialpoint)
             self.density_matrix = densitymat
             self.ground_state_energy = minvalue
             self.evaluated_denmat = True

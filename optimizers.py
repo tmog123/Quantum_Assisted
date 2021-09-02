@@ -27,7 +27,7 @@ import importlib
 importlib.reload(qcqp)
 importlib.reload(cvx)'''
 
-def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_matrices,gammas,sdp_tolerance_bound, verbose = True,additionalbetaconstraints=None):#additional beta constraints comes in list of list , [[matrix,value],[matrix,value]]
+def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_matrices,gammas,sdp_tolerance_bound, verbose = True,additionalbetaconstraints=None,betainitialpoint=None):#additional beta constraints comes in list of list , [[matrix,value],[matrix,value]]
     numstate = len(D_matrix)
     D_matrix_np = np.array(D_matrix)
     #D_matrix_np = 0.5*(D_matrix_np + np.conjugate(np.transpose(D_matrix_np)))
@@ -69,6 +69,8 @@ def cvxpy_density_matrix_feasibility_sdp_routine(D_matrix,E_matrix,R_matrices,F_
         # constraints += [cp.real(cp.trace(E_matrix_np @ beta)) <= 1+sdp_tolerance_bound]
         # constraints += [cp.real(cp.trace(E_matrix_np @ beta)) >= 1-sdp_tolerance_bound]
     prob = cp.Problem(cp.Minimize(0),constraints)
+    if type(betainitialpoint)!=type(None):
+        beta.value = betainitialpoint
     prob.solve(solver=cp.MOSEK,verbose=False)
     denmat = beta.value
     denmat = denmat / np.trace(E_matrix_np @ denmat) 
