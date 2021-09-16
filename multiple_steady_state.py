@@ -17,7 +17,7 @@ degeneracy_tol = 5
 uptowhatK = 3
 sdp_tolerance_bound = 0
 num_qubits = 4
-howmanyrandominstances = 5
+howmanyrandominstances = 1
 
 #Generate initial state
 random_generator = np.random.default_rng(497)
@@ -218,3 +218,18 @@ for betainitialpoint in randombetainitializations:
 # IQAE_instance_2.define_additional_constraints_for_feasibility_sdp([[result_dictionary["beta"].conj().T,0]])
 # IQAE_instance_2.evaluate()
 # result_dictionary_2 = pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance_2,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,[])
+
+#Trying what Sai said
+# Something fishy is going on here...
+result = results_dictionary[0] #since all the results are the same, just take the first one
+rho = result['rho']
+rho_prime = S @ rho @ S.conjugate().transpose()
+rho1 = rho + rho_prime
+rho2 = rho - rho_prime 
+
+#trace normalise
+# rho1 = rho1/np.trace(rho1) 
+# rho2 = rho2/np.trace(rho2) 
+
+# print(scp.linalg.eigvalsh(rho1))
+# print(scp.linalg.eigvalsh(rho2))
