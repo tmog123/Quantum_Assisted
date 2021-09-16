@@ -14,10 +14,10 @@ eig_inv_cond = 10**(-6)
 use_qiskit = False
 degeneracy_tol = 5
 
-uptowhatK = 2
+uptowhatK = 3
 sdp_tolerance_bound = 0
-num_qubits = 3
-howmanyrandominstances = 3
+num_qubits = 4
+howmanyrandominstances = 5
 
 #Generate initial state
 random_generator = np.random.default_rng(497)
@@ -107,9 +107,9 @@ def generate_parity_operator_matform(num_qubits):
 
 #%%
 
-Gamma = 0.9
-mu = 0.5
-delta = 0.5
+Gamma = 0.5
+mu = 0.4
+delta = 0.3
 # num_qubits = 4
 
 
@@ -188,7 +188,7 @@ if optimizer == 'feasibility_sdp':
 randombetainitializations = []
 for i in range(howmanyrandominstances):
     randombetainitializations.append(random_generator.random((len(D_mat_evaluated),len(D_mat_evaluated))))
-    #print(randombetainitializations[i])
+    print(randombetainitializations[i])
 
 results_dictionary = []
 
