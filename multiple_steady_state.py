@@ -224,8 +224,8 @@ for betainitialpoint in randombetainitializations:
 result = results_dictionary[0] #since all the results are the same, just take the first one
 rho = result['rho']
 rho_prime = S @ rho @ S.conjugate().transpose()
-rho1 = 0.5*(rho + rho_prime)
-rho2 = 0.5*(rho - rho_prime)
+rho1 = 0.5*(rho + rho_prime) #works
+rho2 = 0.5*(rho - rho_prime) #doesn't work
 
 #trace normalise
 # rho1 = rho1/np.trace(rho1) 
