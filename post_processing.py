@@ -603,7 +603,21 @@ def analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluate
         #    break
         return result_dictionary
 
+def gram_schmidt_density_matrices(denmats):
+    result = []
+    def projection(d1,d2):
+        return (np.trace(d1@d2)/np.trace(d1@d1))*d1
 
+    for d in denmats:
+        if len(result)==0:
+            result.append(d)
+        else:
+            dtoappend = np.copy(d)
+            for i in result:
+                dtoappend = dtoappend - projection(i,d)
+            result.append(dtoappend)
+    return result
+    
 
 
 

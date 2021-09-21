@@ -227,6 +227,9 @@ rho_prime = S @ rho @ S.conjugate().transpose()
 rho1 = 0.5*(rho + rho_prime) #works
 rho2 = 0.5*(rho - rho_prime) #doesn't work
 
+rhos = [rho,rho1]
+gram_schmidt_results = pp.gram_schmidt_density_matrices(rhos)
+
 #trace normalise
 # rho1 = rho1/np.trace(rho1) 
 # rho2 = rho2/np.trace(rho2) 
