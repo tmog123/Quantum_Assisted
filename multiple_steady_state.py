@@ -231,8 +231,8 @@ print('Checking norm')
 print(np.trace(rho@rho))
 print(np.trace(rho1@rho1))
 
-#rhos = [rho,rho1]
-#gram_schmidt_results = pp.gram_schmidt_density_matrices(rhos)
+rhos = [rho,rho1]
+gram_schmidt_results = pp.gram_schmidt_density_matrices(rhos)
 
 #trace normalise
 # rho1 = rho1/np.trace(rho1) 

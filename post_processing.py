@@ -619,7 +619,7 @@ def gram_schmidt_density_matrices(denmats):
                 dtoappend = dtoappend - projection(i,d)
             result.append(dtoappend)
     #Normalization
-    for i in len(result):
+    for i in range(len(result)):
         result[i] = result[i]/np.trace(result[i])
     return result
     
