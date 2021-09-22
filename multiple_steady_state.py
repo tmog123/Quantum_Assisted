@@ -226,7 +226,7 @@ rho = result['rho']
 rho_prime = S @ rho @ S.conjugate().transpose()
 rho_phys = 0.5*(rho + rho_prime) #works
 
-rho1 = S@rho_phys 
+rho1 = S@rho_phys #not really a density matrix
 
 rhopp = (rho_phys + rho1)/2 
 rhomm = (rho_phys - rho1)/2
