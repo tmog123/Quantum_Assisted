@@ -227,21 +227,23 @@ rho_prime = S @ rho @ S.conjugate().transpose()
 rho1 = 0.5*(rho + rho_prime) #works
 rho2 = 0.5*(rho - rho_prime) #doesn't work
 
+#print(pp.evaluate_rho_dot(rho_prime,hamiltonian,gammas,L_terms))
+
 #print(scp.linalg.eigvalsh(rho))
-#print(scp.linalg.eigvalsh(rho_prime))
+print(scp.linalg.eigvalsh(rho_prime))
 #print('Checking norm')
 #print(np.trace(rho@rho))
 #print(np.trace(rho1@rho1))
-print(np.trace(rho@rho_prime))
-rhos = [rho,rho_prime]
-gram_schmidt_results = pp.gram_schmidt_density_matrices(rhos)
+# print(np.trace(rho@rho_prime))
+# rhos = [rho,rho_prime]
+# gram_schmidt_results = pp.gram_schmidt_density_matrices(rhos)
 
-rho1 = gram_schmidt_results[0]
-rho2 = gram_schmidt_results[1]
-#trace normalise
-print(np.trace(rho1@rho2))
-rho1 = rho1/np.trace(rho1) 
-rho2 = rho2/np.trace(rho2) 
+# rho1 = gram_schmidt_results[0]
+# rho2 = gram_schmidt_results[1]
+# #trace normalise
+# print(np.trace(rho1@rho2))
+# rho1 = rho1/np.trace(rho1) 
+# rho2 = rho2/np.trace(rho2) 
 
-print(scp.linalg.eigvalsh(rho1))
-print(scp.linalg.eigvalsh(rho2))
+# print(scp.linalg.eigvalsh(rho1))
+# print(scp.linalg.eigvalsh(rho2))
