@@ -224,13 +224,18 @@ for betainitialpoint in randombetainitializations:
 result = results_dictionary[0] #since all the results are the same, just take the first one
 rho = result['rho']
 rho_prime = S @ rho @ S.conjugate().transpose()
-rho1 = 0.5*(rho + rho_prime) #works
-rho2 = 0.5*(rho - rho_prime) #doesn't work
+rho_phys = 0.5*(rho + rho_prime) #works
+
+rho1 = S@rho_phys 
+
+rhopp = (rho_phys + rho1)/2 
+rhomm = (rho_phys - rho1)/2
+# rho2 = 0.5*(rho - rho_prime) #doesn't work
 
 #print(pp.evaluate_rho_dot(rho_prime,hamiltonian,gammas,L_terms))
 
 #print(scp.linalg.eigvalsh(rho))
-print(scp.linalg.eigvalsh(rho_prime))
+# print(scp.linalg.eigvalsh(rho_prime))
 #print('Checking norm')
 #print(np.trace(rho@rho))
 #print(np.trace(rho1@rho1))
