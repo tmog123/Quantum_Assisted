@@ -213,42 +213,20 @@ for betainitialpoint in randombetainitializations:
 
 '''COMMENTED OUT THE BELOW: JON'''
 
-# IQAE_instance_2 = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
-# IQAE_instance_2.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
-# IQAE_instance_2.define_additional_constraints_for_feasibility_sdp([[result_dictionary["beta"].conj().T,0]])
-# IQAE_instance_2.evaluate()
-# result_dictionary_2 = pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance_2,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,[])
+IQAE_instance_2 = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
+IQAE_instance_2.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
+IQAE_instance_2.define_additional_constraints_for_feasibility_sdp([[results_dictionary[0]["beta"].conj().T,0]])
+IQAE_instance_2.evaluate()
+result_dictionary_2 = pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance_2,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,[])
 
 #Trying what Sai said
-# Something fishy is going on here...
-result = results_dictionary[0] #since all the results are the same, just take the first one
-rho = result['rho']
-rho_prime = S @ rho @ S.conjugate().transpose()
-rho_phys = 0.5*(rho + rho_prime) #works
+# result = results_dictionary[0] #since all the results are the same, just take the first one
+# rho = result['rho']
+# rho_prime = S @ rho @ S.conjugate().transpose()
+# rho_phys = 0.5*(rho + rho_prime) #works
 
-rho1 = S@rho_phys #not really a density matrix
+# rho1 = S@rho_phys #not really a density matrix
 
-rhopp = (rho_phys + rho1)/2 
-rhomm = (rho_phys - rho1)/2
-# rho2 = 0.5*(rho - rho_prime) #doesn't work
+# rhopp = (rho_phys + rho1)/2 
+# rhomm = (rho_phys - rho1)/2
 
-#print(pp.evaluate_rho_dot(rho_prime,hamiltonian,gammas,L_terms))
-
-#print(scp.linalg.eigvalsh(rho))
-# print(scp.linalg.eigvalsh(rho_prime))
-#print('Checking norm')
-#print(np.trace(rho@rho))
-#print(np.trace(rho1@rho1))
-# print(np.trace(rho@rho_prime))
-# rhos = [rho,rho_prime]
-# gram_schmidt_results = pp.gram_schmidt_density_matrices(rhos)
-
-# rho1 = gram_schmidt_results[0]
-# rho2 = gram_schmidt_results[1]
-# #trace normalise
-# print(np.trace(rho1@rho2))
-# rho1 = rho1/np.trace(rho1) 
-# rho2 = rho2/np.trace(rho2) 
-
-# print(scp.linalg.eigvalsh(rho1))
-# print(scp.linalg.eigvalsh(rho2))
