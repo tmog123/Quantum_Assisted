@@ -18,15 +18,15 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 5
-uptowhatK = 5
+num_qubits = 2
+uptowhatK = 2
 sdp_tolerance_bound = 0
 
 #Generate initial state
 random_generator = np.random.default_rng(123)
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 1)
 
-random_selection_new = True
+random_selection_new = False
 if random_selection_new == True:
     numberofnewstatestoadd = 10 #Only will be used if 'random_selection_new' is selected
 
@@ -265,9 +265,11 @@ import matplotlib.pyplot as plt
 
 if random_selection_new:
     num_of_csk_states = lambda k: numberofnewstatestoadd * k + 1
+else:
+    num_of_csk_states = None
 observable_names = [r'$<X_1>$',r'$<Y_1>$',r'$<Z_1>$']
 plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states)
 plotp.print_plot('graphsforpaper/new_%s_qubit_fidelity.png'%num_qubits,bboxtight="tight")
-plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [4,5],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names)
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1,2],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names)
 plotp.print_plot('graphsforpaper/new_%s_qubit.png'%num_qubits,bboxtight="tight")    
 # %%

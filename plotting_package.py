@@ -315,19 +315,19 @@ def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoreti
                 if random_selection_new:
                     plt.plot(x_vals, observable_result, "o", label = str(num_of_csk_states(k)) + " csk states" + observable_names[index])
                 else:
-                    plt.plot(x_vals, observable_result, "o", label = "k=" + str(k) + observable_names[index])
-        plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = observable_names[0])
+                    plt.plot(x_vals, observable_result, "o", label = "k=" + str(k)+',' + observable_names[index])
+        plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = 'Theoretical'+ observable_names[0])
         plt.plot(theoretical_curves[0], theoretical_curves[1][1],
-        label = observable_names[1])
+        label ='Theoretical'+ observable_names[1])
         plt.plot(theoretical_curves[0], theoretical_curves[1][2],
-        label = observable_names[2])
+        label ='Theoretical'+ observable_names[2])
 
         plt.xlabel("delta")
         plt.ylabel("expectation_vals")
         plt.title(str(num_qubits) + " qubits expectation values")
         #plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.legend()        
-def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states):
+def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states=None):
     x_vals = list(results.keys())
     y_vals_all_k = [list(i[2].values()) for i in list(results.values())]
     y_vals_all_k_transposed = list(zip(*y_vals_all_k))
