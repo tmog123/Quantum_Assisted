@@ -270,7 +270,7 @@ def get_fidelity_results(num_qubits, ansatzlist, times,
             collated_fidelity_vals[i] = fidelity_vals
     return collated_fidelity_vals
 
-def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, which_ks,random_selection_new,num_of_csk_states):
+def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, which_ks,random_selection_new,num_of_csk_states,specify_names=False,observable_names=None):
     x_vals = list(results.keys())
     observable_expectation_results = [list(i[0].items()) for i in list(results.values())]
     observable_expectation_results_transposed = list(zip(*observable_expectation_results))
@@ -280,31 +280,53 @@ def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoreti
     # (observable 3 results against g)]
     observable_expectation_results_transposed_dict = {k+1:list(zip(*[j[1] for j in observable_expectation_results_transposed[k]])) for k in range(len(observable_expectation_results_transposed))}
 
+    if specify_names==False:
     # which_observables = [0,1,2]
-    for k,observable_results in observable_expectation_results_transposed_dict.items():
-        if k not in which_ks:
-            continue
-        for index in range(len(observable_results)):
-            # if index not in which_observables:
-            #     continue
-            observable_result = observable_results[index]
-            if random_selection_new:
-                plt.plot(x_vals, observable_result, "o", label = str(num_of_csk_states(k)) + " csk states" + " observable" + str(index + 1))
-            else:
-                plt.plot(x_vals, observable_result, "o", label = "k=" + str(k) + " observable" + str(index + 1))
-    plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = "theoretical_observable1")
-    plt.plot(theoretical_curves[0], theoretical_curves[1][1],
-    label = "theoretical_observable2")
-    plt.plot(theoretical_curves[0], theoretical_curves[1][2],
-    label = "theoretical_observable3")
+        for k,observable_results in observable_expectation_results_transposed_dict.items():
+            if k not in which_ks:
+                continue
+            for index in range(len(observable_results)):
+                # if index not in which_observables:
+                #     continue
+                observable_result = observable_results[index]
+                if random_selection_new:
+                    plt.plot(x_vals, observable_result, "o", label = str(num_of_csk_states(k)) + " csk states" + " observable" + str(index + 1))
+                else:
+                    plt.plot(x_vals, observable_result, "o", label = "k=" + str(k) + " observable" + str(index + 1))
+        plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = "theoretical_observable1")
+        plt.plot(theoretical_curves[0], theoretical_curves[1][1],
+        label = "theoretical_observable2")
+        plt.plot(theoretical_curves[0], theoretical_curves[1][2],
+        label = "theoretical_observable3")
 
-    plt.xlabel("delta")
-    plt.ylabel("expectation_vals")
-    plt.title(str(num_qubits) + " qubits expectation values")
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    #plt.savefig(savefile,bbox_inches="tight")
-    #plt.close()
-    #plt.show()
+        plt.xlabel("delta")
+        plt.ylabel("expectation_vals")
+        plt.title(str(num_qubits) + " qubits expectation values")
+        plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    elif specify_names==True:
+    # which_observables = [0,1,2]
+        for k,observable_results in observable_expectation_results_transposed_dict.items():
+            if k not in which_ks:
+                continue
+            for index in range(len(observable_results)):
+                # if index not in which_observables:
+                #     continue
+                observable_result = observable_results[index]
+                if random_selection_new:
+                    plt.plot(x_vals, observable_result, "o", label = str(num_of_csk_states(k)) + " csk states" + observable_names[index])
+                else:
+                    plt.plot(x_vals, observable_result, "o", label = "k=" + str(k) + observable_names[index])
+        plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = observable_names[0])
+        plt.plot(theoretical_curves[0], theoretical_curves[1][1],
+        label = observable_names[1])
+        plt.plot(theoretical_curves[0], theoretical_curves[1][2],
+        label = observable_names[2])
+
+        plt.xlabel("delta")
+        plt.ylabel("expectation_vals")
+        plt.title(str(num_qubits) + " qubits expectation values")
+        #plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.legend()        
 def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states):
     x_vals = list(results.keys())
     y_vals_all_k = [list(i[2].values()) for i in list(results.values())]
