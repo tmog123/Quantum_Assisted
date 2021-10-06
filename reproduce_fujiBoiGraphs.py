@@ -14,12 +14,12 @@ optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
-use_qiskit = False
+use_qiskit = True
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 5
-uptowhatK = 5
+num_qubits = 2
+uptowhatK = 2
 sdp_tolerance_bound = 0
 
 #Generate initial state
@@ -47,7 +47,7 @@ if use_qiskit:
     num_shots = 8192 #max is 8192
 
     # sim = "real"
-    # quantum_com = "ibmq_rome" #which quantum computer to actually run on
+    # quantum_com = "ibmq_bogota" #which quantum computer to actually run on
     # num_shots = 8192 #max is 8192
 
     quantum_computer_choice_results = qhf.choose_quantum_computer(hub, group, project, quantum_com)
@@ -270,6 +270,6 @@ else:
 observable_names = [r'$<X_1>$',r'$<Y_1>$',r'$<Z_1>$']
 plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states)
 plotp.print_plot('graphsforpaper/new_%s_qubit_fidelity.png'%num_qubits,bboxtight="tight")
-plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [4,5],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names)
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1,2],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names)
 plotp.print_plot('graphsforpaper/new_%s_qubit.png'%num_qubits,bboxtight="tight")    
 # %%
