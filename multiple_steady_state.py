@@ -36,12 +36,13 @@ if use_qiskit:
     #load IBMQ account. This step is needed if you want to run on the actual quantum computer
 
     #Other parameters for running on the quantum computer. Choose 1 to uncomment.
-    # sim = "noiseless_qasm"
-    # num_shots = 30000 #max is 1000000
-
-    sim = "noisy_qasm"
+    sim = "noiseless_qasm"
     quantum_com = "ibmq_bogota" #which quantum computer to take the noise profile from
-    num_shots = 8192 #max is 8192
+    num_shots = 30000 #max is 1000000
+
+    # sim = "noisy_qasm"
+    # quantum_com = "ibmq_bogota" #which quantum computer to take the noise profile from
+    # num_shots = 8192 #max is 8192
 
     # sim = "real"
     # quantum_com = "ibmq_rome" #which quantum computer to actually run on
@@ -213,20 +214,24 @@ for betainitialpoint in randombetainitializations:
 
 '''COMMENTED OUT THE BELOW: JON'''
 
-IQAE_instance_2 = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
-IQAE_instance_2.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
-IQAE_instance_2.define_additional_constraints_for_feasibility_sdp([[results_dictionary[0]["beta"].conj().T,0]])
-IQAE_instance_2.evaluate()
-result_dictionary_2 = pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance_2,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,[])
+# IQAE_instance_2 = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
+# IQAE_instance_2.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
+# IQAE_instance_2.define_additional_constraints_for_feasibility_sdp([[results_dictionary[0]["beta"].conj().T,0]])
+# IQAE_instance_2.evaluate()
+# result_dictionary_2 = pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance_2,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,[])
 
 #Trying what Sai said
-# result = results_dictionary[0] #since all the results are the same, just take the first one
-# rho = result['rho']
-# rho_prime = S @ rho @ S.conjugate().transpose()
-# rho_phys = 0.5*(rho + rho_prime) #works
+result = results_dictionary[0] #since all the results are the same, just take the first one
+rho = result['rho']
+rho_prime = S @ rho @ S.conjugate().transpose()
+rho_phys = 0.5*(rho + rho_prime) #works
 
-# rho1 = S@rho_phys #not really a density matrix
+rho1 = S@rho_phys #not really a density matrix
 
-# rhopp = (rho_phys + rho1)/2 
-# rhomm = (rho_phys - rho1)/2
+rhopp = (rho_phys + rho1)/2 
+rhomm = (rho_phys - rho1)/2
 
+rhopp_eigvals,rhopp_eigvecs = scp.linalg.eigh(rhopp)
+print(rhopp_eigvals)
+rhomm_eigvals,rhomm_eigvecs = scp.linalg.eigh(rhomm)
+print(rhomm_eigvals)
