@@ -7,6 +7,8 @@ import matrix_class_package as mcp
 import post_processing as pp
 import scipy as scp
 import qutip
+import math
+import pandas as pd 
 
 optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
@@ -88,6 +90,17 @@ def generate_nonlocaljump_gamma_and_Lterms(num_qubits,Gamma,mu):
         L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.25*cof,-0.25j*cof,0.25j*cof,0.25*cof],['1'+'0'*(num_qubits-2)+'1','2'+'0'*(num_qubits-2)+'1','1'+'0'*(num_qubits-2)+'2','2'+'0'*(num_qubits-2)+'2']))
     return (gammas, L_terms)
 
+def generate_total_magnetisation_matform(num_qubits):
+    def make_sigma_z_string(i):
+        pauli_string_deconstructed = ["0"]*num_qubits
+        pauli_string_deconstructed[i] = "3"
+        pauli_string_str = "".join(pauli_string_deconstructed)
+        return pauli_string_str
+    p_strings = [make_sigma_z_string(i) for i in range(num_qubits)]
+    betas = [1 for i in range(num_qubits)]
+    M = hcp.generate_arbitary_hamiltonian(num_qubits, betas, p_strings)
+    return M.to_matrixform()
+
 def generate_parity_operator_matform(num_qubits):
     dim = 2**num_qubits
     P_mat = np.zeros((dim,dim))
@@ -129,12 +142,13 @@ qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops,method='iterative-gmre
 qtp_rho_ss_matform = qtp_rho_ss.full()
 
 S = generate_parity_operator_matform(num_qubits)
-
+M = generate_total_magnetisation_matform(num_qubits)
+S_m = scp.linalg.expm(1j*M*np.pi/(num_qubits*2))
 # %%
 
 fidelity_results = dict()
 
-uptowhatK = 1
+uptowhatK = 2
 for k in range(uptowhatK):
     #Generate Ansatz for this round
     if random_selection_new:
@@ -210,37 +224,132 @@ for betainitialpoint in randombetainitializations:
 
 '''COMMENTED OUT THE BELOW: JON'''
 
-#Trying what Sai said
 result = results_dictionary[0] #since all the results are the same, just take the first one
 rho = result['rho']
-rho_prime = S @ rho @ S.conjugate().transpose()
-rho_phys = 0.5*(rho + rho_prime) #works
 
-rho1 = S@rho_phys #not really a density matrix
+#%%
+# Here we apply the algorithm for multiple NESS for the case of S_m, since there is a degeneracy due to S_m
+#For this case, we are considering the case of even N in order to get the eigenvalue corresponding to M = 0 (i.e, S_m = 1). In this subspace, we expect rho_pp and rho_mm. 
+# For our case, for even N, the number of eigenvalues of S_m is N+1. We can take this into consideration in our algorithm. 
+# Hence, for N = 4, we have 5*5 possible NESS, 5 of which are legit. Hence in general, for the front part of our algo, we need to run it 5*5 - 5 times to eliminate the 20 non-physical NESS
+#First we handle the S_m degeneracy to get the steady state with zero magnetisation, then we handle the S degeneracy to get rho_pp and rho_ss in the zero magnetisation subspace
 
-rhopp = (rho_phys + rho1)/2 
-rhopp = rhopp / np.trace(rhopp)
+S_m_eigvals = np.array(list(set(scp.linalg.eigvals(S_m)))) #set because unique eigvals only
 
-rhomm = (rho_phys - rho1)/2
-rhomm = rhomm / np.trace(rhomm)
+def handle_S_m_degeneracy(rhoStart):
+    # rhoStart = rhopp
+    """
+    returns the steady state such that tr(rho S_m) = 1, i.e returns the steady state with 0 magnetisation
+    """
+    rhoTemp = rhoStart
+    for i in range(num_qubits):
+        for j in range(num_qubits):
+            if i == j:
+                continue 
+            else:
+                rhoTempTemp = rhoTemp - S_m @ rhoStart @ S_m.conj().T 
+                factor = 1 - np.exp(1j*(S_m_eigvals[i] - S_m_eigvals[j]))
+                rhoTemp = rhoTemp - (1/factor) * rhoTempTemp
+
+    rhoPhys = rhoTemp
+    vanderMat = np.vander(S_m_eigvals, increasing = True).T
+    vanderMatInv = scp.linalg.inv(vanderMat)
+
+    matrices = []
+    for i in range(len(S_m_eigvals)):
+        factor = np.linalg.matrix_power(S_m, i)
+        matrices.append(factor @ rhoPhys)
+    matrices = np.array(matrices) 
+
+    index = 1 #index corresponding to M = 0
+    vanderMatVec = vanderMatInv[index]
+    last = vanderMatVec[-1] * matrices[-1]
+    for j in range(len(matrices) - 1):
+        last += vanderMatVec[j] * matrices[j] 
+
+    last = last / np.trace(last)
+
+    last_dot = pp.evaluate_rho_dot(last, hamiltonian, gammas, L_terms)
+    print(np.max(np.max(last_dot)))
+
+    return last 
+
+def handle_S_degeneracy(rho):
+    rho_prime = S @ rho @ S.conjugate().transpose()
+    rho_phys = 0.5*(rho + rho_prime) #works
+    rho_phys = rho_phys / np.trace(rho_phys)
+
+    rhopp = (rho_phys + S @ rho_phys)
+    rhopp = rhopp / np.trace(rhopp)
+
+    rhomm = (rho_phys - S @ rho_phys)
+    rhomm = rhomm / np.trace(rhomm)
+
+    results = dict()
+    results["rho_phys"] = rho_phys 
+    results["rhopp"] = rhopp 
+    results["rhomm"] = rhomm 
+    return results 
+
+def fidelity_checker(rho1, rho2):
+    rho1 = rho1 / np.trace(rho1)
+    rho2 = rho2 / np.trace(rho2)
+    qtp_rho1 = qutip.Qobj(rho1)
+    qtp_rho2 = qutip.Qobj(rho2)
+    fidelity = qutip.metrics.fidelity(qtp_rho1, qtp_rho2)
+    return fidelity
+
+rhotst = handle_S_m_degeneracy(rho)
+rhoResults = handle_S_degeneracy(rhotst)
+rhopp = rhoResults["rhopp"]
+rhomm = rhoResults["rhomm"]
 
 
-rhopp_eigvals,rhopp_eigvecs = scp.linalg.eigh(rhopp)
-# print(rhopp_eigvals)
-rhomm_eigvals,rhomm_eigvecs = scp.linalg.eigh(rhomm)
-# print(rhomm_eigvals)
+# qtp_rhotst = handle_S_m_degeneracy(qtp_rho_ss_matform) #this does nothing!
+# since qtp_rho_ss_matform is already in the 4 magnetisation subspace
+qtp_rhoResults = handle_S_degeneracy(qtp_rho_ss_matform)
+# qtp_rhoResults = handle_S_degeneracy(qtp_rhotst)
+qtp_rhopp = qtp_rhoResults["rhopp"]
+qtp_rhomm = qtp_rhoResults["rhomm"]
+qtp_rhophys = qtp_rhoResults["rho_phys"]
 
-qtp_rho_prime = S @ qtp_rho_ss_matform @ S.conjugate().transpose()
-qtp_rho_phys = 0.5*(qtp_rho_ss_matform + qtp_rho_prime)
 
-qtp_rho1 = S @ qtp_rho_phys 
+#%% test
+rhoStart = qtp_rhomm
+rhoTemp = rhoStart
+for i in range(num_qubits):
+    for j in range(num_qubits):
+        if i == j:
+            continue 
+        else:
+            rhoTempTemp = rhoTemp - S_m @ rhoStart @ S_m.conj().T 
+            factor = 1 - np.exp(1j*(S_m_eigvals[i] - S_m_eigvals[j]))
+            rhoTemp = rhoTemp - (1/factor) * rhoTempTemp
 
-qtp_rhopp = (qtp_rho_phys + qtp_rho1)/2
-qtp_rhopp = qtp_rhopp / np.trace(qtp_rhopp)
+rhoPhys = rhoTemp
+vanderMat = np.vander(S_m_eigvals, increasing = True).T
+vanderMatInv = scp.linalg.inv(vanderMat)
 
-qtp_rhomm = (qtp_rho_phys - qtp_rho1)/2
-qtp_rhomm = qtp_rhomm / np.trace(qtp_rhomm)
+matrices = []
+for i in range(len(S_m_eigvals)):
+    factor = np.linalg.matrix_power(S_m, i)
+    matrices.append(factor @ rhoPhys)
+matrices = np.array(matrices) 
 
+index = 3 
+vanderMatVec = vanderMatInv[index]
+last = vanderMatVec[-1] * matrices[-1]
+for j in range(len(matrices) - 1):
+    last += vanderMatVec[j] * matrices[j] 
+
+display(pd.DataFrame(last))
+print(np.trace(last))
+last = last / np.trace(last)
+
+# last_dot = pp.evaluate_rho_dot(last, hamiltonian, gammas, L_terms)
+# print(np.max(np.max(last_dot)))
+
+#%%
 rho_dot_pp = pp.evaluate_rho_dot(rhopp, hamiltonian,gammas, L_terms)
 print('Max value rho_dot_pp is: ' + str(np.max(np.max(rho_dot_pp))))
 
@@ -253,14 +362,7 @@ print('Max value qtp_rho_dot_pp is: ' + str(np.max(np.max(qtp_rho_dot_pp))))
 qtp_rho_dot_mm = pp.evaluate_rho_dot(qtp_rhomm, hamiltonian,gammas, L_terms)
 print('Max value qtp_rho_dot_mm is: ' + str(np.max(np.max(qtp_rho_dot_pp))))
 
-def fidelity_checker(rho1, rho2):
-    qtp_rho1 = qutip.Qobj(rho1)
-    qtp_rho2 = qutip.Qobj(rho2)
-    fidelity = qutip.metrics.fidelity(qtp_rho1, qtp_rho2)
-    return fidelity
-
 rhopp_fidelity = fidelity_checker(qtp_rhopp, rhopp) 
 rhomm_fidelity = fidelity_checker(qtp_rhomm, rhomm) 
 
 print("rhopp_fidelity, rhomm_fidelity is", rhopp_fidelity,rhomm_fidelity)
-# %%
