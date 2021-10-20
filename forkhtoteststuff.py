@@ -307,47 +307,12 @@ rhomm = rhoResults["rhomm"]
 
 # qtp_rhotst = handle_S_m_degeneracy(qtp_rho_ss_matform) #this does nothing!
 # since qtp_rho_ss_matform is already in the 4 magnetisation subspace
-qtp_rhoResults = handle_S_degeneracy(qtp_rho_ss_matform)
-# qtp_rhoResults = handle_S_degeneracy(qtp_rhotst)
-qtp_rhopp = qtp_rhoResults["rhopp"]
-qtp_rhomm = qtp_rhoResults["rhomm"]
-qtp_rhophys = qtp_rhoResults["rho_phys"]
+# qtp_rhoResults = handle_S_degeneracy(qtp_rho_ss_matform)
+# # qtp_rhoResults = handle_S_degeneracy(qtp_rhotst)
+# qtp_rhopp = qtp_rhoResults["rhopp"]
+# qtp_rhomm = qtp_rhoResults["rhomm"]
+# qtp_rhophys = qtp_rhoResults["rho_phys"]
 
-
-#%% test
-rhoStart = qtp_rhomm
-rhoTemp = rhoStart
-for i in range(num_qubits):
-    for j in range(num_qubits):
-        if i == j:
-            continue 
-        else:
-            rhoTempTemp = rhoTemp - S_m @ rhoStart @ S_m.conj().T 
-            factor = 1 - np.exp(1j*(S_m_eigvals[i] - S_m_eigvals[j]))
-            rhoTemp = rhoTemp - (1/factor) * rhoTempTemp
-
-rhoPhys = rhoTemp
-vanderMat = np.vander(S_m_eigvals, increasing = True).T
-vanderMatInv = scp.linalg.inv(vanderMat)
-
-matrices = []
-for i in range(len(S_m_eigvals)):
-    factor = np.linalg.matrix_power(S_m, i)
-    matrices.append(factor @ rhoPhys)
-matrices = np.array(matrices) 
-
-index = 3 
-vanderMatVec = vanderMatInv[index]
-last = vanderMatVec[-1] * matrices[-1]
-for j in range(len(matrices) - 1):
-    last += vanderMatVec[j] * matrices[j] 
-
-display(pd.DataFrame(last))
-print(np.trace(last))
-last = last / np.trace(last)
-
-# last_dot = pp.evaluate_rho_dot(last, hamiltonian, gammas, L_terms)
-# print(np.max(np.max(last_dot)))
 
 #%%
 rho_dot_pp = pp.evaluate_rho_dot(rhopp, hamiltonian,gammas, L_terms)
@@ -356,13 +321,29 @@ print('Max value rho_dot_pp is: ' + str(np.max(np.max(rho_dot_pp))))
 rho_dot_mm = pp.evaluate_rho_dot(rhomm, hamiltonian,gammas, L_terms)
 print('Max value rho_dot_mm is: ' + str(np.max(np.max(rho_dot_mm))))
 
-qtp_rho_dot_pp = pp.evaluate_rho_dot(qtp_rhopp, hamiltonian,gammas, L_terms)
-print('Max value qtp_rho_dot_pp is: ' + str(np.max(np.max(qtp_rho_dot_pp))))
+print("tr(rhopp@S), tr(rhopp@M)")
+print("Supposed to get S = 1, M = 0")
+print(np.trace(rhopp@S), np.trace(rhopp@M))
+print("tr(rhomm@S), tr(rhomm@M)")
+print("Supposed to get S = -1, M = 0")
+print(np.trace(rhomm@S), np.trace(rhomm@M))
+# qtp_rho_dot_pp = pp.evaluate_rho_dot(qtp_rhopp, hamiltonian,gammas, L_terms)
+# print('Max value qtp_rho_dot_pp is: ' + str(np.max(np.max(qtp_rho_dot_pp))))
 
-qtp_rho_dot_mm = pp.evaluate_rho_dot(qtp_rhomm, hamiltonian,gammas, L_terms)
-print('Max value qtp_rho_dot_mm is: ' + str(np.max(np.max(qtp_rho_dot_pp))))
+# qtp_rho_dot_mm = pp.evaluate_rho_dot(qtp_rhomm, hamiltonian,gammas, L_terms)
+# print('Max value qtp_rho_dot_mm is: ' + str(np.max(np.max(qtp_rho_dot_pp))))
 
-rhopp_fidelity = fidelity_checker(qtp_rhopp, rhopp) 
-rhomm_fidelity = fidelity_checker(qtp_rhomm, rhomm) 
+# rhopp_fidelity = fidelity_checker(qtp_rhopp, rhopp) 
+# rhomm_fidelity = fidelity_checker(qtp_rhomm, rhomm) 
 
-print("rhopp_fidelity, rhomm_fidelity is", rhopp_fidelity,rhomm_fidelity)
+# print("rhopp_fidelity, rhomm_fidelity is", rhopp_fidelity,rhomm_fidelity)
+
+
+#Progress so far:
+# I think my general method works as long as the coefficients in front of the obtained density matrix do not vanish. If they do, we just get 0 lol.
+# This happened for the qutip result because the qutip solver is so powerful
+# that it directly gives a steady state that is already solely in one of the
+# symmetry sectors of the M operator (M = 4).  When we try to find the plus or
+# the minus NESS corresponding to the symmetry sectors of the S operator, we
+# don't get anywhere.
+# I think we bobian have to screw the qutip solver
