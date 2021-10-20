@@ -543,7 +543,10 @@ def evaluate_rho_dot(rho, hamiltonian_class_object, gammas, L_terms):
         quantum_jumps_total += gamma_i * (jump_term - 0.5*anti_commutator)
     return coherent_evo + quantum_jumps_total
 
-def analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,O_matrices_evaluated):
+def analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,O_matrices_evaluated, verbose = True):
+    """
+    hamiltonian, L_terms[i] are class objects, not matrices
+    """
     density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
     if type(density_mat) == type(None):
         print('SDP failed for this run, probably due to not high enough K')
@@ -552,10 +555,11 @@ def analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluate
         IQAE_instance.check_if_valid_density_matrix()
         #print(all_energies)
         #print(all_states)
-        print("the trace of the beta matrix is", np.trace(density_mat @ E_mat_evaluated))
         result_dictionary['trace_beta']=np.trace(density_mat @ E_mat_evaluated)
-        print('The ground state energy is\n',groundstateenergy)
         result_dictionary['ground_state_energy']=groundstateenergy
+        if verbose:
+            print("the trace of the beta matrix is", np.trace(density_mat @ E_mat_evaluated))
+            print('The ground state energy is\n',groundstateenergy)
         #print('The density matrix is\n',density_mat)
         result_dictionary["beta"] = density_mat
         if IQAE_instance.check_if_hermitian() == True:
@@ -564,7 +568,8 @@ def analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluate
             denmat_values,denmat_vects = scp.linalg.eig(density_mat)
         denmat_values = np.real(np.round(denmat_values,10))
         #print(np.imag(denmat_values))
-        print("the sorted density matrix (beta matrix) eigenvalues are\n",np.sort(denmat_values))
+        if verbose:
+            print("the sorted density matrix (beta matrix) eigenvalues are\n",np.sort(denmat_values))
         result_dictionary['sorted_beta_eigenvalues'] = np.sort(denmat_values)
         p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
         ini_statevec_vecform = initial_state.get_statevector()
@@ -579,20 +584,22 @@ def analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluate
                 trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
 
         rho_eigvals,rho_eigvecs = scipy.linalg.eigh(rho)        
-        print('rho_eigvals is: ' + str(rho_eigvals))
         result_dictionary['rho_eigvals'] = rho_eigvals
-        print("trace rho is", np.trace(rho))
         result_dictionary['trace_rho'] = np.trace(rho)
         #now, we check if rho (the actual denmat) gives 0 for the linblad master equation
         #save the rho for processing
         result_dictionary["rho"] = rho
         rho_dot = evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
         # print('rho_dot is: ' + str(rho_dot))
-        print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
+        if verbose:
+            print('rho_eigvals is: ' + str(rho_eigvals))
+            print("trace rho is", np.trace(rho))
+            print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
         result_dictionary['max_rho_dot'] = np.max(np.max(rho_dot))
         qtp_rho = qutip.Qobj(rho)
         fidelity = qutip.metrics.fidelity(qtp_rho, qtp_rho_ss)
-        print("The fidelity is", fidelity)
+        if verbose:
+            print("The fidelity is", fidelity)
         result_dictionary['fidelity'] = fidelity
         result_dictionary['observable_expectation'] = [np.trace(density_mat @ O_mat_eval) for O_mat_eval in O_matrices_evaluated]
         #observable_expectation_results[k] = [np.trace(density_mat @ O_mat_eval) for O_mat_eval in O_matrices_evaluated]
