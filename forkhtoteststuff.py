@@ -28,6 +28,7 @@ initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 
 random_selection_new = True
 if random_selection_new == True:
     numberofnewstatestoadd = 10 #Only will be used if 'random_selection_new' is selected
+    # numberofnewstatestoadd = 6 #Only will be used if 'random_selection_new' is selected
 
 #%% IBMQ STUFF
 if use_qiskit:
@@ -90,6 +91,22 @@ def generate_nonlocaljump_gamma_and_Lterms(num_qubits,Gamma,mu):
         L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.25*cof,-0.25j*cof,0.25j*cof,0.25*cof],['1'+'0'*(num_qubits-2)+'1','2'+'0'*(num_qubits-2)+'1','1'+'0'*(num_qubits-2)+'2','2'+'0'*(num_qubits-2)+'2']))
     return (gammas, L_terms)
 
+def generate_bulk_dephasing(num_qubits):
+    gammas = []
+    L_terms = []
+    if num_qubits == 1:
+        raise(RuntimeError("One qubit case not considered"))
+    else:
+        for i in range(num_qubits):
+            pauli_string_deconstructed = ["0"]*num_qubits
+            pauli_string_deconstructed[i] = "3"
+            pauli_string_str = "".join(pauli_string_deconstructed)
+            L_i = hcp.generate_arbitary_hamiltonian(num_qubits, [1], [pauli_string_str])
+            # print(L_i.to_matrixform())
+            gammas.append(1)
+            L_terms.append(L_i)
+    return (gammas, L_terms)
+
 def generate_total_magnetisation_matform(num_qubits):
     def make_sigma_z_string(i):
         pauli_string_deconstructed = ["0"]*num_qubits
@@ -120,17 +137,25 @@ def generate_parity_operator_matform(num_qubits):
     return P_mat @ spinflips
 
 #%%
+# which_hamiltonian = "sai_ring"
+which_hamiltonian = "bulk_dephasing"
 
-Gamma = 0.5
-mu = 0.4
-delta = 0.3
+if which_hamiltonian == "sai_ring":
+#Gamma and mu is for Sai ring model
+    Gamma = 0.5
+    mu = 0.4
+    delta = 0.3
 
+    #Sai ring hamiltonian
+    hamiltonian = generate_XXZ_hamiltonian(num_qubits, delta)
+    gammas, L_terms = generate_nonlocaljump_gamma_and_Lterms(num_qubits,Gamma,mu)
+elif which_hamiltonian == "bulk_dephasing":
+    delta = 0.3
+    hamiltonian = generate_XXZ_hamiltonian(num_qubits, delta)
+    gammas, L_terms = generate_bulk_dephasing(num_qubits)
 
-hamiltonian = generate_XXZ_hamiltonian(num_qubits, delta)
-gammas, L_terms = generate_nonlocaljump_gamma_and_Lterms(num_qubits,Gamma,mu)
 ansatz = acp.initial_ansatz(num_qubits)
 
-# ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits,method='random_selection_new',num_new_to_add=numberofnewstatestoadd)
 
 #%%
 #get the steady state using qutip(lol)
@@ -141,14 +166,14 @@ qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
 qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops,method='iterative-gmres')
 qtp_rho_ss_matform = qtp_rho_ss.full()
 
-S = generate_parity_operator_matform(num_qubits)
+S = generate_parity_operator_matform(num_qubits) #only used for Sai ring Hamiltonian
 M = generate_total_magnetisation_matform(num_qubits)
 S_m = scp.linalg.expm(1j*M*np.pi/(num_qubits*2))
 # %%
 
 fidelity_results = dict()
 
-uptowhatK = 2
+uptowhatK = 1
 for k in range(uptowhatK):
     #Generate Ansatz for this round
     if random_selection_new:
@@ -222,24 +247,22 @@ for betainitialpoint in randombetainitializations:
 
 '''The results_dictionary is a list of all the result_dictionaries generated for each random beta initial point'''
 
-'''COMMENTED OUT THE BELOW: JON'''
 
+# Useful functions
 result = results_dictionary[0] #since all the results are the same, just take the first one
 rho = result['rho']
 
-#%%
-# Here we apply the algorithm for multiple NESS for the case of S_m, since there is a degeneracy due to S_m
-#For this case, we are considering the case of even N in order to get the eigenvalue corresponding to M = 0 (i.e, S_m = 1). In this subspace, we expect rho_pp and rho_mm. 
-# For our case, for even N, the number of eigenvalues of S_m is N+1. We can take this into consideration in our algorithm. 
-# Hence, for N = 4, we have 5*5 possible NESS, 5 of which are legit. Hence in general, for the front part of our algo, we need to run it 5*5 - 5 times to eliminate the 20 non-physical NESS
-#First we handle the S_m degeneracy to get the steady state with zero magnetisation, then we handle the S degeneracy to get rho_pp and rho_ss in the zero magnetisation subspace
-
 S_m_eigvals = np.array(list(set(scp.linalg.eigvals(S_m)))) #set because unique eigvals only
 
-def handle_S_m_degeneracy(rhoStart):
-    # rhoStart = rhopp
+def handle_S_m_degeneracy(rhoStart, which_index=1):
     """
-    returns the steady state such that tr(rho S_m) = 1, i.e returns the steady state with 0 magnetisation
+    here, which_index is such that:
+    which_index = 0 returns NESS corresponding to M = 2
+    which_index = 1 returns NESS corresponding to M = 0
+    which_index = 2 returns NESS corresponding to M = -2
+    which_index = 3 returns NESS corresponding to M = 4
+    which_index = 4 returns NESS corresponding to M = -4
+
     """
     rhoTemp = rhoStart
     for i in range(num_qubits):
@@ -261,7 +284,7 @@ def handle_S_m_degeneracy(rhoStart):
         matrices.append(factor @ rhoPhys)
     matrices = np.array(matrices) 
 
-    index = 1 #index corresponding to M = 0
+    index = which_index 
     vanderMatVec = vanderMatInv[index]
     last = vanderMatVec[-1] * matrices[-1]
     for j in range(len(matrices) - 1):
@@ -298,8 +321,42 @@ def fidelity_checker(rho1, rho2):
     qtp_rho2 = qutip.Qobj(rho2)
     fidelity = qutip.metrics.fidelity(qtp_rho1, qtp_rho2)
     return fidelity
+#%%
+# RUN THIS CELL IF USING BULK DEPHASING HAMILTONIAN
+# Here we apply the algorithm for multiple NESS for the case of S_m, since there is a degeneracy due to S_m
+rhotst = handle_S_m_degeneracy(rho, which_index=1) 
+for i in range(len(rhotst)):
+    for j in range(len(rhotst)):
+        rhotst[i,j] = np.round(rhotst[i,j],10)
 
-rhotst = handle_S_m_degeneracy(rho)
+display(pd.DataFrame(rhotst))
+rhotst_dot = pp.evaluate_rho_dot(rhotst, hamiltonian, gammas, L_terms)
+print('Max value rho_dot is: ' + str(np.max(np.max(rhotst_dot))))
+
+
+eigvals,eigvecs = scp.linalg.eigh(M)
+projector = np.zeros((2**num_qubits, 2**num_qubits)) + 1j* np.zeros((2**num_qubits, 2**num_qubits))
+for j in range(len(eigvals)):
+    eigval = eigvals[j]
+    if eigval == 0:
+        eigvec = eigvecs[:,j]
+        eigvec = eigvec / np.sqrt(np.vdot(eigvec, eigvec)) 
+        projector += np.outer(eigvec, eigvec)
+
+subspace_size = np.count_nonzero(eigvals == 0)
+theoretical_ss = (1/subspace_size) * projector @ np.eye(2**num_qubits)@ projector.conj().T
+
+print(fidelity_checker(rhotst, theoretical_ss))
+
+#%%
+# RUN THIS CELL IF USING RING HAMILTONIAN
+# Here we apply the algorithm for multiple NESS for the case of S_m, since there is a degeneracy due to S_m
+#For this case, we are considering the case of even N in order to get the eigenvalue corresponding to M = 0 (i.e, S_m = 1). In this subspace, we expect rho_pp and rho_mm. 
+# For our case, for even N, the number of eigenvalues of S_m is N+1. We can take this into consideration in our algorithm. 
+# Hence, for N = 4, we have 5*5 possible NESS, 5 of which are legit. Hence in general, for the front part of our algo, we need to run it 5*5 - 5 times to eliminate the 20 non-physical NESS
+#First we handle the S_m degeneracy to get the steady state with zero magnetisation, then we handle the S degeneracy to get rho_pp and rho_ss in the zero magnetisation subspace
+
+rhotst = handle_S_m_degeneracy(rho, which_index=1)
 rhoResults = handle_S_degeneracy(rhotst)
 rhopp = rhoResults["rhopp"]
 rhomm = rhoResults["rhomm"]
@@ -313,8 +370,6 @@ rhomm = rhoResults["rhomm"]
 # qtp_rhomm = qtp_rhoResults["rhomm"]
 # qtp_rhophys = qtp_rhoResults["rho_phys"]
 
-
-#%%
 rho_dot_pp = pp.evaluate_rho_dot(rhopp, hamiltonian,gammas, L_terms)
 print('Max value rho_dot_pp is: ' + str(np.max(np.max(rho_dot_pp))))
 
