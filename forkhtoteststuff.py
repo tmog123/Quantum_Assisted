@@ -16,16 +16,19 @@ eig_inv_cond = 10**(-6)
 use_qiskit = False
 degeneracy_tol = 5
 
-uptowhatK = 3
 sdp_tolerance_bound = 0
-num_qubits = 4
 howmanyrandominstances = 1
+
+num_qubits = 4
+uptowhatK = 2
+which_hamiltonian = "sai_ring"
+# which_hamiltonian = "bulk_dephasing"
 
 #Generate initial state
 random_generator = np.random.default_rng(497)
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 1)
 
-random_selection_new = True
+random_selection_new = False
 if random_selection_new == True:
     numberofnewstatestoadd = 10 #Only will be used if 'random_selection_new' is selected
     # numberofnewstatestoadd = 6 #Only will be used if 'random_selection_new' is selected
@@ -39,13 +42,13 @@ if use_qiskit:
     #load IBMQ account. This step is needed if you want to run on the actual quantum computer
 
     #Other parameters for running on the quantum computer. Choose 1 to uncomment.
-    sim = "noiseless_qasm"
-    quantum_com = "ibmq_bogota" #which quantum computer to take the noise profile from
-    num_shots = 30000 #max is 1000000
-
-    # sim = "noisy_qasm"
+    # sim = "noiseless_qasm"
     # quantum_com = "ibmq_bogota" #which quantum computer to take the noise profile from
-    # num_shots = 8192 #max is 8192
+    # num_shots = 30000 #max is 1000000
+
+    sim = "noisy_qasm"
+    quantum_com = "ibmq_bogota" #which quantum computer to take the noise profile from
+    num_shots = 8192 #max is 8192
 
     # sim = "real"
     # quantum_com = "ibmq_rome" #which quantum computer to actually run on
@@ -137,8 +140,6 @@ def generate_parity_operator_matform(num_qubits):
     return P_mat @ spinflips
 
 #%%
-# which_hamiltonian = "sai_ring"
-which_hamiltonian = "bulk_dephasing"
 
 if which_hamiltonian == "sai_ring":
 #Gamma and mu is for Sai ring model
@@ -173,7 +174,6 @@ S_m = scp.linalg.expm(1j*M*np.pi/(num_qubits*2))
 
 fidelity_results = dict()
 
-uptowhatK = 1
 for k in range(uptowhatK):
     #Generate Ansatz for this round
     if random_selection_new:
@@ -297,11 +297,19 @@ def handle_S_m_degeneracy(rhoStart, which_index=1):
 
     return last 
 
+def fidelity_checker(rho1, rho2):
+    rho1 = rho1 / np.trace(rho1)
+    rho2 = rho2 / np.trace(rho2)
+    qtp_rho1 = qutip.Qobj(rho1)
+    qtp_rho2 = qutip.Qobj(rho2)
+    fidelity = qutip.metrics.fidelity(qtp_rho1, qtp_rho2)
+    return fidelity
+
 def handle_S_degeneracy(rho):
     rho_prime = S @ rho @ S.conjugate().transpose()
     rho_phys = 0.5*(rho + rho_prime) #works
     rho_phys = rho_phys / np.trace(rho_phys)
-
+    print("fidelity between rho and rho phys is", fidelity_checker(rho, rho_phys))
     rhopp = (rho_phys + S @ rho_phys)
     rhopp = rhopp / np.trace(rhopp)
 
@@ -314,91 +322,86 @@ def handle_S_degeneracy(rho):
     results["rhomm"] = rhomm 
     return results 
 
-def fidelity_checker(rho1, rho2):
-    rho1 = rho1 / np.trace(rho1)
-    rho2 = rho2 / np.trace(rho2)
-    qtp_rho1 = qutip.Qobj(rho1)
-    qtp_rho2 = qutip.Qobj(rho2)
-    fidelity = qutip.metrics.fidelity(qtp_rho1, qtp_rho2)
-    return fidelity
 #%%
-# RUN THIS CELL IF USING BULK DEPHASING HAMILTONIAN
-# Here we apply the algorithm for multiple NESS for the case of S_m, since there is a degeneracy due to S_m
-rhotst = handle_S_m_degeneracy(rho, which_index=1) 
-for i in range(len(rhotst)):
-    for j in range(len(rhotst)):
-        rhotst[i,j] = np.round(rhotst[i,j],10)
+if which_hamiltonian == "bulk_dephasing":
+    # IF USING BULK DEPHASING HAMILTONIAN
+    # Here we apply the algorithm for multiple NESS for the case of S_m, since there is a degeneracy due to S_m
+    rhotst = handle_S_m_degeneracy(rho, which_index=1) 
+    for i in range(len(rhotst)):
+        for j in range(len(rhotst)):
+            rhotst[i,j] = np.round(rhotst[i,j],10)
 
-display(pd.DataFrame(rhotst))
-rhotst_dot = pp.evaluate_rho_dot(rhotst, hamiltonian, gammas, L_terms)
-print('Max value rho_dot is: ' + str(np.max(np.max(rhotst_dot))))
-
-
-eigvals,eigvecs = scp.linalg.eigh(M)
-projector = np.zeros((2**num_qubits, 2**num_qubits)) + 1j* np.zeros((2**num_qubits, 2**num_qubits))
-for j in range(len(eigvals)):
-    eigval = eigvals[j]
-    if eigval == 0:
-        eigvec = eigvecs[:,j]
-        eigvec = eigvec / np.sqrt(np.vdot(eigvec, eigvec)) 
-        projector += np.outer(eigvec, eigvec)
-
-subspace_size = np.count_nonzero(eigvals == 0)
-theoretical_ss = (1/subspace_size) * projector @ np.eye(2**num_qubits)@ projector.conj().T
-
-print(fidelity_checker(rhotst, theoretical_ss))
-
-#%%
-# RUN THIS CELL IF USING RING HAMILTONIAN
-# Here we apply the algorithm for multiple NESS for the case of S_m, since there is a degeneracy due to S_m
-#For this case, we are considering the case of even N in order to get the eigenvalue corresponding to M = 0 (i.e, S_m = 1). In this subspace, we expect rho_pp and rho_mm. 
-# For our case, for even N, the number of eigenvalues of S_m is N+1. We can take this into consideration in our algorithm. 
-# Hence, for N = 4, we have 5*5 possible NESS, 5 of which are legit. Hence in general, for the front part of our algo, we need to run it 5*5 - 5 times to eliminate the 20 non-physical NESS
-#First we handle the S_m degeneracy to get the steady state with zero magnetisation, then we handle the S degeneracy to get rho_pp and rho_ss in the zero magnetisation subspace
-
-rhotst = handle_S_m_degeneracy(rho, which_index=1)
-rhoResults = handle_S_degeneracy(rhotst)
-rhopp = rhoResults["rhopp"]
-rhomm = rhoResults["rhomm"]
+    display(pd.DataFrame(rhotst))
+    rhotst_dot = pp.evaluate_rho_dot(rhotst, hamiltonian, gammas, L_terms)
+    print('Max value rho_dot is: ' + str(np.max(np.max(rhotst_dot))))
 
 
-# qtp_rhotst = handle_S_m_degeneracy(qtp_rho_ss_matform) #this does nothing!
-# since qtp_rho_ss_matform is already in the 4 magnetisation subspace
-# qtp_rhoResults = handle_S_degeneracy(qtp_rho_ss_matform)
-# # qtp_rhoResults = handle_S_degeneracy(qtp_rhotst)
-# qtp_rhopp = qtp_rhoResults["rhopp"]
-# qtp_rhomm = qtp_rhoResults["rhomm"]
-# qtp_rhophys = qtp_rhoResults["rho_phys"]
+    eigvals,eigvecs = scp.linalg.eigh(M)
+    projector = np.zeros((2**num_qubits, 2**num_qubits)) + 1j* np.zeros((2**num_qubits, 2**num_qubits))
+    for j in range(len(eigvals)):
+        eigval = eigvals[j]
+        if eigval == 0:
+            eigvec = eigvecs[:,j]
+            eigvec = eigvec / np.sqrt(np.vdot(eigvec, eigvec)) 
+            projector += np.outer(eigvec, eigvec)
 
-rho_dot_pp = pp.evaluate_rho_dot(rhopp, hamiltonian,gammas, L_terms)
-print('Max value rho_dot_pp is: ' + str(np.max(np.max(rho_dot_pp))))
+    subspace_size = np.count_nonzero(eigvals == 0)
+    theoretical_ss = (1/subspace_size) * projector @ np.eye(2**num_qubits)@ projector.conj().T
 
-rho_dot_mm = pp.evaluate_rho_dot(rhomm, hamiltonian,gammas, L_terms)
-print('Max value rho_dot_mm is: ' + str(np.max(np.max(rho_dot_mm))))
-
-print("tr(rhopp@S), tr(rhopp@M)")
-print("Supposed to get S = 1, M = 0")
-print(np.trace(rhopp@S), np.trace(rhopp@M))
-print("tr(rhomm@S), tr(rhomm@M)")
-print("Supposed to get S = -1, M = 0")
-print(np.trace(rhomm@S), np.trace(rhomm@M))
-# qtp_rho_dot_pp = pp.evaluate_rho_dot(qtp_rhopp, hamiltonian,gammas, L_terms)
-# print('Max value qtp_rho_dot_pp is: ' + str(np.max(np.max(qtp_rho_dot_pp))))
-
-# qtp_rho_dot_mm = pp.evaluate_rho_dot(qtp_rhomm, hamiltonian,gammas, L_terms)
-# print('Max value qtp_rho_dot_mm is: ' + str(np.max(np.max(qtp_rho_dot_pp))))
-
-# rhopp_fidelity = fidelity_checker(qtp_rhopp, rhopp) 
-# rhomm_fidelity = fidelity_checker(qtp_rhomm, rhomm) 
-
-# print("rhopp_fidelity, rhomm_fidelity is", rhopp_fidelity,rhomm_fidelity)
+    print(fidelity_checker(rhotst, theoretical_ss))
 
 
-#Progress so far:
-# I think my general method works as long as the coefficients in front of the obtained density matrix do not vanish. If they do, we just get 0 lol.
-# This happened for the qutip result because the qutip solver is so powerful
-# that it directly gives a steady state that is already solely in one of the
-# symmetry sectors of the M operator (M = 4).  When we try to find the plus or
-# the minus NESS corresponding to the symmetry sectors of the S operator, we
-# don't get anywhere.
-# I think we bobian have to screw the qutip solver
+elif which_hamiltonian == "sai_ring":
+    # IF USING RING HAMILTONIAN
+    # Here we apply the algorithm for multiple NESS for the case of S_m, since there is a degeneracy due to S_m
+    #For this case, we are considering the case of even N in order to get the eigenvalue corresponding to M = 0 (i.e, S_m = 1). In this subspace, we expect rho_pp and rho_mm. 
+    # For our case, for even N, the number of eigenvalues of S_m is N+1. We can take this into consideration in our algorithm. 
+    # Hence, for N = 4, we have 5*5 possible NESS, 5 of which are legit. Hence in general, for the front part of our algo, we need to run it 5*5 - 5 times to eliminate the 20 non-physical NESS
+    #First we handle the S_m degeneracy to get the steady state with zero magnetisation, then we handle the S degeneracy to get rho_pp and rho_ss in the zero magnetisation subspace
+
+    rhotst = handle_S_m_degeneracy(rho, which_index=1)
+    rhoResults = handle_S_degeneracy(rhotst)
+    rhopp = rhoResults["rhopp"]
+    rhomm = rhoResults["rhomm"]
+
+
+    # qtp_rhotst = handle_S_m_degeneracy(qtp_rho_ss_matform) #this does nothing!
+    # since qtp_rho_ss_matform is already in the 4 magnetisation subspace
+    # qtp_rhoResults = handle_S_degeneracy(qtp_rho_ss_matform)
+    # # qtp_rhoResults = handle_S_degeneracy(qtp_rhotst)
+    # qtp_rhopp = qtp_rhoResults["rhopp"]
+    # qtp_rhomm = qtp_rhoResults["rhomm"]
+    # qtp_rhophys = qtp_rhoResults["rho_phys"]
+
+    rho_dot_pp = pp.evaluate_rho_dot(rhopp, hamiltonian,gammas, L_terms)
+    print('Max value rho_dot_pp is: ' + str(np.max(np.max(rho_dot_pp))))
+
+    rho_dot_mm = pp.evaluate_rho_dot(rhomm, hamiltonian,gammas, L_terms)
+    print('Max value rho_dot_mm is: ' + str(np.max(np.max(rho_dot_mm))))
+
+    print("tr(rhopp@S), tr(rhopp@M)")
+    print("Supposed to get S = 1, M = 0")
+    print(np.trace(rhopp@S), np.trace(rhopp@M))
+    print("tr(rhomm@S), tr(rhomm@M)")
+    print("Supposed to get S = -1, M = 0")
+    print(np.trace(rhomm@S), np.trace(rhomm@M))
+    # qtp_rho_dot_pp = pp.evaluate_rho_dot(qtp_rhopp, hamiltonian,gammas, L_terms)
+    # print('Max value qtp_rho_dot_pp is: ' + str(np.max(np.max(qtp_rho_dot_pp))))
+
+    # qtp_rho_dot_mm = pp.evaluate_rho_dot(qtp_rhomm, hamiltonian,gammas, L_terms)
+    # print('Max value qtp_rho_dot_mm is: ' + str(np.max(np.max(qtp_rho_dot_pp))))
+
+    # rhopp_fidelity = fidelity_checker(qtp_rhopp, rhopp) 
+    # rhomm_fidelity = fidelity_checker(qtp_rhomm, rhomm) 
+
+    # print("rhopp_fidelity, rhomm_fidelity is", rhopp_fidelity,rhomm_fidelity)
+
+
+    #Progress so far:
+    # I think my general method works as long as the coefficients in front of the obtained density matrix do not vanish. If they do, we just get 0 lol.
+    # This happened for the qutip result because the qutip solver is so powerful
+    # that it directly gives a steady state that is already solely in one of the
+    # symmetry sectors of the M operator (M = 4).  When we try to find the plus or
+    # the minus NESS corresponding to the symmetry sectors of the S operator, we
+    # don't get anywhere.
+    # I think we bobian have to screw the qutip solver
