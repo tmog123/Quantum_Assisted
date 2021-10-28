@@ -16,7 +16,7 @@ degeneracy_tol = 5
 
 uptowhatK = 3
 sdp_tolerance_bound = 0
-num_qubits = 4
+num_qubits = 6
 howmanyrandominstances = 1
 
 #Generate initial state
@@ -223,6 +223,7 @@ for betainitialpoint in randombetainitializations:
 #Trying what Sai said
 result = results_dictionary[0] #since all the results are the same, just take the first one
 rho = result['rho']
+print('Max Rho Dot is = '+ str(result['max_rho_dot']))
 rho_prime = S @ rho @ S.conjugate().transpose()
 rho_phys = 0.5*(rho + rho_prime) #works
 
