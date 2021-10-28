@@ -14,9 +14,9 @@ eig_inv_cond = 10**(-6)
 use_qiskit = False
 degeneracy_tol = 5
 
-uptowhatK = 3
+uptowhatK = 4
 sdp_tolerance_bound = 0
-num_qubits = 6
+num_qubits = 8
 howmanyrandominstances = 1
 
 #Generate initial state
@@ -233,6 +233,6 @@ rhopp = (rho_phys + rho1)/2
 rhomm = (rho_phys - rho1)/2
 
 rhopp_eigvals,rhopp_eigvecs = scp.linalg.eigh(rhopp)
-print(rhopp_eigvals)
+#print(rhopp_eigvals)
 rhomm_eigvals,rhomm_eigvecs = scp.linalg.eigh(rhomm)
-print(rhomm_eigvals)
+#print(rhomm_eigvals)
