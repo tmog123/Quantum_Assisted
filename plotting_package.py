@@ -270,7 +270,7 @@ def get_fidelity_results(num_qubits, ansatzlist, times,
             collated_fidelity_vals[i] = fidelity_vals
     return collated_fidelity_vals
 
-def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, which_ks,random_selection_new,num_of_csk_states,specify_names=False,observable_names=None):
+def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, which_ks,random_selection_new,num_of_csk_states,specify_names=False,observable_names=None,plot_title=None,x_axis=None,y_axis=None):
     x_vals = list(results.keys())
     observable_expectation_results = [list(i[0].items()) for i in list(results.values())]
     observable_expectation_results_transposed = list(zip(*observable_expectation_results))
@@ -298,10 +298,14 @@ def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoreti
         label = "theoretical_observable2")
         plt.plot(theoretical_curves[0], theoretical_curves[1][2],
         label = "theoretical_observable3")
-
-        plt.xlabel("delta")
-        plt.ylabel("expectation_vals")
-        plt.title(str(num_qubits) + " qubits expectation values")
+        
+        if x_axis!=None:
+            plt.xlabel(x_axis)
+        if y_axis!=None:
+            plt.ylabel(y_axis)
+        plt.tick_params(which='both', direction='in', top=True, right=True, labelsize=16)
+        if plot_title!=None:
+            plt.title(plot_title)
         plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     elif specify_names==True:
     # which_observables = [0,1,2]
@@ -322,12 +326,16 @@ def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoreti
         plt.plot(theoretical_curves[0], theoretical_curves[1][2],
         label ='Theoretical'+ observable_names[2])
 
-        plt.xlabel("delta")
-        plt.ylabel("expectation_vals")
-        plt.title(str(num_qubits) + " qubits expectation values")
+        if x_axis!=None:
+            plt.xlabel(x_axis)
+        if y_axis!=None:
+            plt.ylabel(y_axis)
+        plt.tick_params(which='both', direction='in', top=True, right=True, labelsize=16)
+        if plot_title!=None:
+            plt.title(plot_title)
         #plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.legend()        
-def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states=None):
+def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states=None,plot_title=None,x_axis=None,y_axis=None):
     x_vals = list(results.keys())
     y_vals_all_k = [list(i[2].values()) for i in list(results.values())]
     y_vals_all_k_transposed = list(zip(*y_vals_all_k))
@@ -340,10 +348,118 @@ def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states=No
         else:
             plt.plot(x_vals, fidelities, label="k=" + str(k))
 
-    plt.xlabel("delta")
-    plt.ylabel("fidelity")
-    plt.title(str(num_qubits) + " qubits fidelity graph")
+    if x_axis!=None:
+        plt.xlabel(x_axis)
+    if y_axis!=None:
+        plt.ylabel(y_axis)
+    plt.tick_params(which='both', direction='in', top=True, right=True, labelsize=16)
+    if plot_title!=None:
+        plt.title(plot_title)
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     #plt.savefig(savefile,bbox_inches="tight")
     #plt.close()
     #plt.show()
+
+# def plotter_for_paper():#For reference, not in use
+#     fig = plt.figure(figsize=(14,8), constrained_layout=False)
+#     gs = GridSpec(2, 2, figure=fig, height_ratios=[1.5, 2], hspace=0.25, wspace=0.25)
+#     ax1 = fig.add_subplot(gs[0,0])
+#     ax2 = fig.add_subplot(gs[0,1])
+#     ax3 = fig.add_subplot(gs[1,0])
+#     ax4 = fig.add_subplot(gs[1,1])
+#     # --------------
+#     # SUBLOT c)
+#     # --------------
+#     ax1.plot(time[0:399],jz_expA[1][0:399]/(N_list[1]/2), lw=2, ls='--', alpha=0.75, label=r'$N_{A/B}=20$')
+#     ax1.plot(time[0:399],jz_expA[4][0:399]/(N_list[4]/2), lw=2, ls='--', alpha=0.75, label=r'$N_{A/B}=50$')
+#     ax1.plot(time[0:399],jz_expA[6][0:399]/(N_list[6]/2), lw=2, ls='--', alpha=0.75, label=r'$N_{A/B}=100$')
+#     ax1.plot(time[0:399], msol1[:,2][0:399], 'k', lw=2, alpha=0.75, label=r'$N_{A/B}\rightarrow\infty$')
+#     ax1.set_xlabel(r'Time $\kappa t$', fontsize=20)
+#     ax1.set_ylabel(r'$\langle \hat{m}^z_A \rangle$', fontsize=20)
+#     ax1.set_ylim([-1.1, 1.8])
+#     ax1.set_xticks([0, 10, 20, 30, 40])
+#     ax1.set_yticks([-1, -0.5, 0, 0.5, 1])
+#     ax1.tick_params(which='both', direction='in', top=True, right=True, labelsize=16)
+#     ax1.legend(loc='best', fontsize=14, ncol=2)
+#     ax1.text(-1, 1.4, '(c)', fontsize=20)
+#     # --------------
+#     # SUBLOT d)
+#     # --------------
+#     ax2.plot(time[0:399],jz_expB[1][0:399]/(N_list[1]/2), lw=2, ls='--', alpha=0.75)
+#     ax2.plot(time[0:399],jz_expB[4][0:399]/(N_list[4]/2), lw=2, ls='--', alpha=0.75)
+#     ax2.plot(time[0:399],jz_expB[6][0:399]/(N_list[6]/2), lw=2, ls='--', alpha=0.75)
+#     ax2.plot(time[0:399], msol1[:,5][0:399], 'k', lw=2, alpha=0.75)
+#     ax2.set_xlabel(r'Time $\kappa t$', fontsize=20)
+#     ax2.set_ylabel(r'$\langle \hat{m}^z_B \rangle$', fontsize=20)
+#     ax2.set_ylim([-1.1, 1.5])
+#     ax2.set_xticks([0, 10, 20, 30, 40])
+#     ax2.set_yticks([-1, -0.5, 0, 0.5, 1])
+#     ax2.tick_params(which='both', direction='in', top=True, right=True, labelsize=16)
+#     ax2.text(-1, 1.15, '(d)', fontsize=20)
+#     ax2ins = ax2.inset_axes([0.25, 0.4, 0.7, 0.55])
+#     ax2ins.plot(time[59:399],jz_expB[1][59:399]/(N_list[1]/2), lw=2, ls='--', alpha=0.75)
+#     ax2ins.plot(time[59:399],jz_expB[4][59:399]/(N_list[4]/2), lw=2, ls='--', alpha=0.75)
+#     ax2ins.plot(time[59:399],jz_expB[6][59:399]/(N_list[6]/2), lw=2, ls='--', alpha=0.75)
+#     ax2ins.plot(time[59:399], msol1[:,5][59:399], 'k', lw=2, alpha=0.75)
+#     ax2ins.set_xticklabels([])
+#     ax2ins.set_yticklabels([])
+#     ax2ins.tick_params(which='both', direction='in')
+#     ax2.indicate_inset_zoom(ax2ins, edgecolor="black")
+#     # --------------
+#     # SUBLOT e)
+#     # --------------
+#     ax3.plot([0.905, 0.905], [1e-4, 1] , '--k', alpha=0.75)
+#     # ax[0].semilogy(-0.905*a,b,'--k')
+#     ax3.semilogy(freqs, mz_A_fft_full, lw=3, alpha=0.75, label='A')
+#     ax3.semilogy(freqs, mz_B_fft_full, lw=3, alpha=0.75, label='B')
+#     # ax[0].semilogy(fftshift(2*np.pi*freq), fftshift(np.abs(signalA)/np.amax(np.abs(signalA))), label='A', lw=3, alpha=0.75)
+#     # ax[0].semilogy(fftshift(2*np.pi*freq), fftshift(np.abs(signalB)/np.amax(np.abs(signalB))), label='B', lw=3, alpha=0.75)
+#     ax3.set_ylabel(r'$\mathcal{F}$ $\left[\langle \hat{m}^z_{\alpha} \rangle\right]$', fontsize=20)
+#     ax3.set_xlabel(r'Frequency $ω$', fontsize=20)
+#     ax3.set_xlim([-2, 2])
+#     ax3.set_ylim([1e-4, 2])
+#     ax3.set_xticks([-1.8, -0.9, 0, 0.9, 1.8])
+#     ax3.legend(fontsize=14, ncol=2)
+#     ax3.tick_params(which='both', direction='in', top=True, right=True, labelsize=16)
+#     ax3.text(-1.9, 0.7, '(e)', fontsize=20)
+#     # --------------
+#     # SUBLOT f)
+#     # --------------
+#     ax4.plot(np.real(eig_few[0]), np.imag(eig_few[0]), 'd', color='C0', alpha=0.2, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few[1]), np.imag(eig_few[1]), 'd', color='C0', alpha=0.3, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few[2]), np.imag(eig_few[2]), 'd', color='C0', alpha=0.4, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few[3]), np.imag(eig_few[3]), 'd', color='C0', alpha=0.5, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few[4]), np.imag(eig_few[4]), 'd', color='C0', alpha=0.6, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few[5]), np.imag(eig_few[5]), 'd', color='C0', alpha=0.7, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few[6]), np.imag(eig_few[6]), 'd', color='C0', alpha=0.8, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few[7]), np.imag(eig_few[7]), 'd', color='C0', alpha=0.9, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few[8]), np.imag(eig_few[8]), 'd', color='C0', markersize=10, markeredgecolor='black', label=rf'$\Gamma/\kappa=0.1$')
+#     ax4.plot(np.real(eig_few_crit[0]), np.imag(eig_few_crit[0]), 'o', color='C1', alpha=0.2, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few_crit[1]), np.imag(eig_few_crit[1]), 'o', color='C1', alpha=0.3, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few_crit[2]), np.imag(eig_few_crit[2]), 'o', color='C1', alpha=0.4, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few_crit[3]), np.imag(eig_few_crit[3]), 'o', color='C1', alpha=0.5, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few_crit[4]), np.imag(eig_few_crit[4]), 'o', color='C1', alpha=0.6, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few_crit[5]), np.imag(eig_few_crit[5]), 'o', color='C1', alpha=0.7, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few_crit[6]), np.imag(eig_few_crit[6]), 'o', color='C1', alpha=0.8, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few_crit[7]), np.imag(eig_few_crit[7]), 'o', color='C1', alpha=0.9, markersize=10, markeredgecolor='black')
+#     ax4.plot(np.real(eig_few_crit[8]), np.imag(eig_few_crit[8]), 'o', color='C1', markersize=10, markeredgecolor='black', label=r'$\Gamma=\Gamma_{\mathrm{crit}}$')
+#     ax4.arrow(-0.07, 0.89, 0.04, 0, head_width=0.02, head_length=0.02, color='black', fc='grey', lw=1.5)
+#     ax4.text(-0.075, 0.92, '0.89', fontsize=14)
+#     ax4.set_ylim(0.35, 1.1)
+#     ax4.set_xlim(-0.73, 0)
+#     ax4.set_xlabel(r'Re($\lambda$)', fontsize=20)
+#     ax4.set_ylabel(r'Im($\lambda$)', fontsize=20)
+#     ax4.tick_params(which='both', direction='in', top=True, right=True, labelsize=16)
+#     ax4.legend(loc='center left', bbox_to_anchor=(0.01, 0.65), ncol=1, fontsize=14)
+#     ax4.text(-0.71, 1.01, '(f)', fontsize=20)
+#     ax4ins = ax4.inset_axes([0.5, 0.2, 0.45, 0.45])
+#     ax4ins.plot(new_inv, i1_fit,'--', color='black', alpha=0.75, label='Fitted')
+#     ax4ins.plot(N_list_spec, i1_ev, 'd', color='grey', markeredgecolor='black', label='From data')
+#     ax4ins.set_xlabel(r'$N$', fontsize=14)
+#     ax4ins.set_ylabel(r'Im($\lambda$)', fontsize=14)
+#     ax4ins.legend(loc='upper right', fontsize=12)
+#     ax4ins.set_ylim(0.87, 1)
+#     ax4ins.set_xticks([10, 30, 50])
+#     ax4ins.tick_params(which='both', direction='in', labelsize=14)
+#     plt.savefig('figure1_c-f.pdf', transparent=True, bbox_inches='tight')
+#     plt.show()

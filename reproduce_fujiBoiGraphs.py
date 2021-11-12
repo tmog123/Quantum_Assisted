@@ -14,7 +14,7 @@ optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
-use_qiskit = True
+use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
@@ -39,13 +39,13 @@ if use_qiskit:
     #load IBMQ account. This step is needed if you want to run on the actual quantum computer
 
     #Other parameters for running on the quantum computer. Choose 1 to uncomment.
-    # sim = "noiseless_qasm"
-    # quantum_com = "ibmq_bogota" #which quantum computer to take the noise profile from
-    # num_shots = 30000 #max is 1000000
+    sim = "noiseless_qasm"
+    quantum_com = "ibmq_bogota" #which quantum computer to take the noise profile from
+    num_shots = 30000 #max is 1000000
 
-    sim = "noisy_qasm"
-    quantum_com = "ibmq_jakarta" #which quantum computer to take the noise profile from
-    num_shots = 32000 #max is 32000
+    # sim = "noisy_qasm"
+    # quantum_com = "ibmq_jakarta" #which quantum computer to take the noise profile from
+    # num_shots = 32000 #max is 32000
 
     # sim = "real"
     # quantum_com = "ibmq_bogota" #which quantum computer to actually run on
@@ -269,8 +269,8 @@ if random_selection_new:
 else:
     num_of_csk_states = None
 observable_names = [r'$<X_1>$',r'$<Y_1>$',r'$<Z_1>$']
-plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states)
-plotp.print_plot('graphsforpaper/new_%s_qubit_noisy_fidelity.png'%num_qubits,bboxtight="tight")
-plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1,2],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names)
-plotp.print_plot('graphsforpaper/new_%s_qubit_noisy.png'%num_qubits,bboxtight="tight")    
+plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states,x_axis=r'$g$',y_axis='fidelity')
+plotp.print_plot('graphsforpaper/new_%s_qubit_noiseless_fidelity.png'%num_qubits,bboxtight="tight")
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1,2],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values')
+plotp.print_plot('graphsforpaper/new_%s_qubit_noiseless.png'%num_qubits,bboxtight="tight")    
 # %%
