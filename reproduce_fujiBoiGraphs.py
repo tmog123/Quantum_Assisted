@@ -33,7 +33,7 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 5
+num_qubits = 2
 uptowhatK = 5
 sdp_tolerance_bound = 0
 
@@ -41,7 +41,7 @@ sdp_tolerance_bound = 0
 random_generator = np.random.default_rng(123)
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 1)
 
-random_selection_new = True
+random_selection_new = False
 if random_selection_new == True:
     numberofnewstatestoadd = 10 #Only will be used if 'random_selection_new' is selected
 
@@ -283,6 +283,6 @@ plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states,
 
 expectation_plot_loc = 'graphsforpaper/new_%s_qubit_noiseless.pdf'%num_qubits
 # expectation_plot_loc = None
-plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [4,5],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight")
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [2],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight")
 
 # %%
