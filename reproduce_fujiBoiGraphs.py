@@ -283,6 +283,6 @@ plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states,
 
 expectation_plot_loc = 'graphsforpaper/new_%s_qubit_noiseless.pdf'%num_qubits
 # expectation_plot_loc = None
-plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [2],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight")
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight")
 
 # %%
