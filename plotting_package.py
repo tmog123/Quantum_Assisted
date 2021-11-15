@@ -364,7 +364,8 @@ def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states=No
     plt.tick_params(which='both', direction='in', top=True, right=True, labelsize=16)
     if plot_title!=None:
         plt.title(plot_title)
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    # plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.legend()
     #plt.savefig(savefile,bbox_inches="tight")
     #plt.close()
     #plt.show()
