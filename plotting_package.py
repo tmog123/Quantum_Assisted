@@ -270,7 +270,7 @@ def get_fidelity_results(num_qubits, ansatzlist, times,
             collated_fidelity_vals[i] = fidelity_vals
     return collated_fidelity_vals
 
-def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, which_ks,random_selection_new,num_of_csk_states,specify_names=False,observable_names=None,plot_title=None,x_axis=None,y_axis=None):
+def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, which_ks,random_selection_new,num_of_csk_states,specify_names=False,observable_names=None,plot_title=None,x_axis=None,y_axis=None, location=None, bboxtight=None):
     x_vals = list(results.keys())
     observable_expectation_results = [list(i[0].items()) for i in list(results.values())]
     observable_expectation_results_transposed = list(zip(*observable_expectation_results))
@@ -327,15 +327,24 @@ def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoreti
         label ='Theoretical'+ observable_names[2])
 
         if x_axis!=None:
-            plt.xlabel(x_axis)
+            plt.xlabel(x_axis, fontsize=16)
         if y_axis!=None:
-            plt.ylabel(y_axis)
+            plt.ylabel(y_axis, fontsize = 16)
         plt.tick_params(which='both', direction='in', top=True, right=True, labelsize=16)
         if plot_title!=None:
             plt.title(plot_title)
         #plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.legend()        
-def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states=None,plot_title=None,x_axis=None,y_axis=None):
+        if location:
+            if bboxtight == "tight":
+                plt.savefig(location,bbox_inches="tight")
+            else:
+                plt.savefig(location)
+        else:
+            plt.show()
+        plt.close()
+
+def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states=None,plot_title=None,x_axis=None,y_axis=None, location=None, bboxtight=None):
     x_vals = list(results.keys())
     y_vals_all_k = [list(i[2].values()) for i in list(results.values())]
     y_vals_all_k_transposed = list(zip(*y_vals_all_k))
@@ -349,9 +358,9 @@ def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states=No
             plt.plot(x_vals, fidelities, label="k=" + str(k))
 
     if x_axis!=None:
-        plt.xlabel(x_axis)
+        plt.xlabel(x_axis, fontsize=16)
     if y_axis!=None:
-        plt.ylabel(y_axis)
+        plt.ylabel(y_axis, fontsize=16)
     plt.tick_params(which='both', direction='in', top=True, right=True, labelsize=16)
     if plot_title!=None:
         plt.title(plot_title)
@@ -359,6 +368,16 @@ def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states=No
     #plt.savefig(savefile,bbox_inches="tight")
     #plt.close()
     #plt.show()
+    if location:
+        if bboxtight == "tight":
+            plt.savefig(location,bbox_inches="tight")
+        else:
+            plt.savefig(location)
+    else:
+        plt.show()
+    plt.close()
+
+
 
 # def plotter_for_paper():#For reference, not in use
 #     fig = plt.figure(figsize=(14,8), constrained_layout=False)

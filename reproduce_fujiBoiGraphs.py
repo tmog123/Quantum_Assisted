@@ -1,4 +1,4 @@
-#%%
+#%% 
 import numpy as np
 import ansatz_class_package as acp 
 import pauli_class_package as pcp 
@@ -10,6 +10,21 @@ import scipy.io
 import qutip 
 import plotting_package as plotp
 
+import pickle
+import os
+if not os.path.exists('pickled_objs'):
+    os.mkdir('pickled_objs')
+
+def save_obj(obj, name):
+    #name is a string
+    with open('pickled_objs/'+ name + '.pkl', 'wb') as f:
+        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+
+def load_obj(name):
+    #name is a string
+    with open('pickled_objs/' + name + '.pkl', 'rb') as f:
+        return pickle.load(f)
+
 optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
@@ -18,15 +33,15 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 2
-uptowhatK = 2
+num_qubits = 5
+uptowhatK = 5
 sdp_tolerance_bound = 0
 
 #Generate initial state
 random_generator = np.random.default_rng(123)
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 1)
 
-random_selection_new = False
+random_selection_new = True
 if random_selection_new == True:
     numberofnewstatestoadd = 10 #Only will be used if 'random_selection_new' is selected
 
@@ -212,20 +227,6 @@ def big_ass_loop(g, observable_obj_list):
     return (observable_expectation_results, theoretical_expectation_values, fidelity_results)
 
 #%% the main chunk
-import pickle
-import os
-if not os.path.exists('pickled_objs'):
-    os.mkdir('pickled_objs')
-
-def save_obj(obj, name):
-    #name is a string
-    with open('pickled_objs/'+ name + '.pkl', 'wb') as f:
-        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
-
-def load_obj(name):
-    #name is a string
-    with open('pickled_objs/' + name + '.pkl', 'rb') as f:
-        return pickle.load(f)
 
 load_prev = False
 
@@ -261,7 +262,12 @@ else:
     save_obj(theoretical_curves, fname_append + "theoretical_curves")
 
 #%% plot stuff
-#theres' a small bug here lol. hmm
+result_fname = str(num_qubits)+"_qubits_results"
+theoretical_curves_fname = str(num_qubits)+"_qubits_theoretical_curves"
+# observable_expectation_results, theoretical_expectation_values, fidelity_results = load_obj(result_fname) 
+results = load_obj(result_fname)
+theoretical_curves = load_obj(theoretical_curves_fname)
+
 import matplotlib.pyplot as plt 
 
 if random_selection_new:
@@ -269,8 +275,13 @@ if random_selection_new:
 else:
     num_of_csk_states = None
 observable_names = [r'$<X_1>$',r'$<Y_1>$',r'$<Z_1>$']
-plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states,x_axis=r'$g$',y_axis='fidelity')
-plotp.print_plot('graphsforpaper/new_%s_qubit_noiseless_fidelity.png'%num_qubits,bboxtight="tight")
-plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1,2],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values')
-plotp.print_plot('graphsforpaper/new_%s_qubit_noiseless.png'%num_qubits,bboxtight="tight")    
+
+# fidelity_plot_loc = 'graphsforpaper/new_%s_qubit_noiseless_fidelity.pdf'%num_qubits
+fidelity_plot_loc = None
+plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states,x_axis=r'$g$',y_axis='fidelity', location=fidelity_plot_loc,bboxtight="tight")
+
+# expectation_plot_loc = 'graphsforpaper/new_%s_qubit_noiseless.pdf'%num_qubits
+expectation_plot_loc = None
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [4,5],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc ,bboxtight="tight")
+
 # %%
