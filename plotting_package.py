@@ -12,8 +12,8 @@ def QS_plotter_foralpha(ansatz,times):
     for mom in ansatz.get_moments():
         plt.plot(times, np.abs(mom.alphas[:-1]),label=str(mom.paulistring.string))
 
-def plotter_fortrotter(trotvalues,times):
-    plt.plot(times,trotvalues,label='Trotter')
+def plotter_fortrotter(trotvalues,times,linewidths=2):
+    plt.plot(times,trotvalues,label='Trotter',linewidth=linewidths)
 
 def getdata_forbetamatrix_observable(num_qubits,ansatzlist,whatKs,observable,initial_state,betamatrixlist,evalmethod='matrix_multiplication',expectation_calculator=None):
     if evalmethod == "qiskit_circuits" and expectation_calculator == None:
@@ -41,7 +41,7 @@ def getdata_forbetamatrix_observable(num_qubits,ansatzlist,whatKs,observable,ini
     return allresultlist
     
 
-def QS_plotter_forobservable(num_qubits,ansatzlist,times,whatKs,qstype,observable,initial_state, evalmethod='matrix_multiplication', expectation_calculator = None):
+def QS_plotter_forobservable(num_qubits,ansatzlist,times,whatKs,qstype,observable,initial_state, evalmethod='matrix_multiplication', expectation_calculator = None,line_styles=[],linewidths=2):
     """
     evalmethod can either be "qiskit_circuits" or "matrix_multiplication"
     """
@@ -53,6 +53,7 @@ def QS_plotter_forobservable(num_qubits,ansatzlist,times,whatKs,qstype,observabl
         name = 'QAS'
     if qstype == 'CQFF':
         name = 'CQFF'
+    lscount=0
     for i in range(len(ansatzlist)):
         if i in whatKs:
             print('Preparing observable for plotting for K = ' + str(i))
@@ -75,7 +76,11 @@ def QS_plotter_forobservable(num_qubits,ansatzlist,times,whatKs,qstype,observabl
                 observable_value = observable_value.real 
                 observable_vals.append(observable_value)
             lab = name + ' K=' + str(i)
-            plt.plot(times, observable_vals,label=lab)
+            if len(line_styles)!=0:
+                plt.plot(times, observable_vals,label=lab,linestyle=line_styles[lscount],linewidth=linewidths)
+                lscount=lscount+1
+            else:
+                plt.plot(times, observable_vals,label=lab,linewidth=linewidths)
 def get_data_forobservable(num_qubits,ansatzlist,times,whatKs,qstype,observable,initial_state, evalmethod='matrix_multiplication', expectation_calculator = None):
     """
     evalmethod can either be "qiskit_circuits" or "matrix_multiplication"
@@ -116,8 +121,11 @@ def get_data_forobservable(num_qubits,ansatzlist,times,whatKs,qstype,observable,
             #plt.plot(times, observable_vals,label=lab)
     return finaldict
 
-def CS_plotter_forobservable(times,classicalresult):
-    plt.plot(times,classicalresult,label='Classical')
+def CS_plotter_forobservable(times,classicalresult,line_style=None,linewidths=2):
+    if line_style==None:
+        plt.plot(times,classicalresult,label='Classical',linewidth=linewidths)
+    else:
+        plt.plot(times,classicalresult,label='Classical',linestyle=line_style,linewidth=linewidths)
 
 def show_plot():
     plt.legend()

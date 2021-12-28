@@ -24,7 +24,7 @@ num_steps = 2001
 optimizer ='eigh' #'eigh','qcqp'
 inv_cond = 10**(-3)
 numberoflayers = 3
-
+setlinewidth=2
 trotter_num_steps = 101
 trotter_timestep = endtime/(trotter_num_steps-1)
 
@@ -135,7 +135,7 @@ whatK = [1,2,3]
 whatK_alpha_plot = [1]
 
 #Plotting results for observable
-plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
+plotp.QS_plotter_forobservable(num_qubits,finalresults,times,whatK,'TQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator,line_styles=['dotted','dashed','dashdot'],linewidths=setlinewidth)
 
 #get data for printing
 ttqsdata = plotp.get_data_forobservable(num_qubits,finalresults,times,whatK,'TQS',observable,initial_state,evalmethod = "qiskit_circuits", expectation_calculator = expectation_calculator)
@@ -149,7 +149,7 @@ ttqsdata = plotp.get_data_forobservable(num_qubits,finalresults,times,whatK,'TQS
 #Plotting classical result
 observablematrix = observable.to_matrixform()
 classicalresult = cS_instance.get_expectations_observables(observablematrix)
-plotp.CS_plotter_forobservable(times,classicalresult)
+plotp.CS_plotter_forobservable(times,classicalresult,line_style=(0, (1, 10)),linewidths=setlinewidth)
 
 #get data for printing
 
@@ -218,7 +218,7 @@ for i in range(trotter_num_steps):
     trottertimes.append(trotter_timestep*i)
     trottervalues.append(trotp.do_trotter_decomposition_observable(initial_state,trotdecomp_function,observable,sim,quantum_computer_choice_results,trotter_timestep,i,num_shots))
 
-plotp.plotter_fortrotter(trottervalues,trottertimes)
+plotp.plotter_fortrotter(trottervalues,trottertimes,linewidths=setlinewidth)
 plotp.set_axis_labels("time","$\\langle Z_1 \\rangle$",13)
 plotp.print_plot("Jonstufftesting/plottqstrot.png")
 #scipy.io.savemat("Jonstufftesting/trotterdata.mat",{'Trotter_observable':np.array(trottervalues),'Trotter_times':np.array(trottertimes)})
