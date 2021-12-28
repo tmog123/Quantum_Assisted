@@ -131,8 +131,8 @@ def show_plot():
     plt.legend()
     plt.show()
 
-def print_plot(location,bboxtight=False):
-    plt.legend()
+def print_plot(location,bboxtight=False,legendsize=10):
+    plt.legend(prop={'size': legendsize})
     if bboxtight == "tight":
         plt.savefig(location,bbox_inches="tight")
     else:

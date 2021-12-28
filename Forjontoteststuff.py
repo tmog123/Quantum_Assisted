@@ -25,6 +25,7 @@ optimizer ='eigh' #'eigh','qcqp'
 inv_cond = 10**(-3)
 numberoflayers = 3
 setlinewidth=2
+setlegendsize=13
 trotter_num_steps = 101
 trotter_timestep = endtime/(trotter_num_steps-1)
 
@@ -149,7 +150,7 @@ ttqsdata = plotp.get_data_forobservable(num_qubits,finalresults,times,whatK,'TQS
 #Plotting classical result
 observablematrix = observable.to_matrixform()
 classicalresult = cS_instance.get_expectations_observables(observablematrix)
-plotp.CS_plotter_forobservable(times,classicalresult,line_style=(0, (1, 10)),linewidths=setlinewidth)
+plotp.CS_plotter_forobservable(times,classicalresult,line_style=(0, (3, 1, 1, 1, 1, 1)),linewidths=setlinewidth)
 
 #get data for printing
 
@@ -220,7 +221,7 @@ for i in range(trotter_num_steps):
 
 plotp.plotter_fortrotter(trottervalues,trottertimes,linewidths=setlinewidth)
 plotp.set_axis_labels("time","$\\langle Z_1 \\rangle$",13)
-plotp.print_plot("Jonstufftesting/plottqstrot.png")
+plotp.print_plot("Jonstufftesting/plottqstrot.png",legendsize=setlegendsize)
 #scipy.io.savemat("Jonstufftesting/trotterdata.mat",{'Trotter_observable':np.array(trottervalues),'Trotter_times':np.array(trottertimes)})
 '''
 #Show plot
