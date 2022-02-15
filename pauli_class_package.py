@@ -144,7 +144,7 @@ def paulinomial_decomposition(matrix):
 
     Returns a dictionary, where the keys are the pauli_strings IN STRING FORM, and the values are the coefficients. E.g:
 
-    {"101":3, "231":1", etc etc}
+    {"101":3, "231":1, etc etc}
     """
     n = int(math.log(len(matrix),2))
     coeffs_dict = dict()
