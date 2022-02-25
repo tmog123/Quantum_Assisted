@@ -5,7 +5,8 @@ import pauli_class_package as pcp
 import hamiltonian_class_package as hcp 
 import matrix_class_package as mcp 
 import post_processing as pp
-import scipy as scp
+import scipy as scp 
+import scipy.io
 import qutip
 import math
 import pandas as pd 
@@ -18,6 +19,8 @@ degeneracy_tol = 5
 
 sdp_tolerance_bound = 0
 howmanyrandominstances = 1
+
+loadmatlabmatrix = True
 
 num_qubits = 4
 uptowhatK = 2
@@ -102,6 +105,30 @@ def generate_parity_operator_matform(num_qubits):
     spinflips = pcp.paulistring(num_qubits,[1]*num_qubits,1).get_matrixform()
     return P_mat @ spinflips
 
+def fidelity_checker(rho1, rho2):
+    rho1 = rho1 / np.trace(rho1)
+    rho2 = rho2 / np.trace(rho2)
+    qtp_rho1 = qutip.Qobj(rho1)
+    qtp_rho2 = qutip.Qobj(rho2)
+    fidelity = qutip.metrics.fidelity(qtp_rho1, qtp_rho2)
+    return fidelity
+
+def handle_S_degeneracy(rho):
+    rho_prime = S_matform @ rho @ S_matform.conjugate().transpose()
+    rho_phys = 0.5*(rho + rho_prime) #works
+    rho_phys = rho_phys / np.trace(rho_phys)
+    print("fidelity between rho and rho phys is", fidelity_checker(rho, rho_phys))
+    rhopp = (rho_phys + S_matform @ rho_phys)
+    rhopp = rhopp / np.trace(rhopp)
+
+    rhomm = (rho_phys - S_matform @ rho_phys)
+    rhomm = rhomm / np.trace(rhomm)
+
+    results = dict()
+    results["rho_phys"] = rho_phys 
+    results["rhopp"] = rhopp 
+    results["rhomm"] = rhomm 
+    return results 
 #%%
 
 if which_hamiltonian == "sai_ring":
@@ -184,66 +211,75 @@ if optimizer == 'feasibility_sdp':
         else:
             F_mats_evaluated.append(f.evaluate_matrix_by_matrix_multiplicaton(initial_state))
 
-
+if loadmatlabmatrix == True:
+    scipy.io.savemat("KHstufftesting/Emat" +str(k) +".mat",{"E": E_mat_evaluated,"D":D_mat_evaluated,"R":R_mats_evaluated,"F":F_mats_evaluated})
+    print('Matrices have been generated, saved in KHstufftestingfolder.')
+#%% 
 ##########################################
 #Start of the classical post-processing. #
 ##########################################
 
-randombetainitializations = []
-for i in range(howmanyrandominstances):
-    randombetainitializations.append(random_generator.random((len(D_mat_evaluated),len(D_mat_evaluated))))
-    # print(randombetainitializations[i])
+if loadmatlabmatrix == True:
+    print('LOADING MATRICES THAT SHOULD HAVE BEEN GENERATED FROM MATLAB. ENSURE THIS IS DONE.')
+    density_mat = scipy.io.loadmat('KHstufftesting/'+'savedmatrixfrommatlab.mat')['betarho']
+    print("LOADING DONE")
 
-results_dictionary = []
+    p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
+    ini_statevec_vecform = initial_state.get_statevector()
+    csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
+    rho = np.zeros(shape=(2**num_qubits,2**num_qubits), dtype = np.complex128)
+    trace = 0
+    for i in range(len(density_mat)):
+        for j in range(len(density_mat)):
+            i_j_entry = density_mat[(i,j)]
+            i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
+            rho += i_j_entry * i_j_ketbra
+            trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
 
-for betainitialpoint in randombetainitializations:
+    # rho_eigvals,rho_eigvecs = scp.linalg.eigh(rho)        
+    # print('rho_eigvals is: ' + str(rho_eigvals))
+    #now, we check if rho (the actual denmat) gives 0 for the linblad master equation
+    rho_dot = pp.evaluate_rho_dot(rho, hamiltonian, gammas, L_terms) #should be 0
+    # print('rho_dot is: ' + str(rho_dot))
+    max_rho_dot = np.max(np.max(rho_dot))
+    # print('Max value rho_dot is: ' + str(np.max(np.max(rho_dot))))
 
-    if optimizer == 'feasibility_sdp':
-        IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
+else:
+    randombetainitializations = []
+    for i in range(howmanyrandominstances):
+        randombetainitializations.append(random_generator.random((len(D_mat_evaluated),len(D_mat_evaluated))))
+        # print(randombetainitializations[i])
 
-    IQAE_instance.define_beta_initialpoint(betainitialpoint)
-    IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
-    IQAE_instance.define_additional_constraints_for_feasibility_sdp([[M_tilde,0], [S_tilde,0]])
-    # IQAE_instance.define_additional_constraints_for_feasibility_sdp([[M_tilde,0]])
-    IQAE_instance.evaluate()
-# IQAE_instance.evaluate(kh_test=False)
-#all_energies,all_states = IQAE_instance.get_results_all()
-    results_dictionary.append(pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,[], verbose=False))
-# observable_expectation_results[k] = result_dictionary['observable_expectation']
-# fidelity_results[k] = result_dictionary['fidelity']
+    results_dictionary = []
 
-'''The results_dictionary is a list of all the result_dictionaries generated for each random beta initial point'''
-def fidelity_checker(rho1, rho2):
-    rho1 = rho1 / np.trace(rho1)
-    rho2 = rho2 / np.trace(rho2)
-    qtp_rho1 = qutip.Qobj(rho1)
-    qtp_rho2 = qutip.Qobj(rho2)
-    fidelity = qutip.metrics.fidelity(qtp_rho1, qtp_rho2)
-    return fidelity
+    for betainitialpoint in randombetainitializations:
 
-def handle_S_degeneracy(rho):
-    rho_prime = S_matform @ rho @ S_matform.conjugate().transpose()
-    rho_phys = 0.5*(rho + rho_prime) #works
-    rho_phys = rho_phys / np.trace(rho_phys)
-    print("fidelity between rho and rho phys is", fidelity_checker(rho, rho_phys))
-    rhopp = (rho_phys + S_matform @ rho_phys)
-    rhopp = rhopp / np.trace(rhopp)
+        if optimizer == 'feasibility_sdp':
+            IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
 
-    rhomm = (rho_phys - S_matform @ rho_phys)
-    rhomm = rhomm / np.trace(rhomm)
+        IQAE_instance.define_beta_initialpoint(betainitialpoint)
+        IQAE_instance.define_optimizer(optimizer, eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
+        IQAE_instance.define_additional_constraints_for_feasibility_sdp([[M_tilde,0], [S_tilde,0]])
+        # IQAE_instance.define_additional_constraints_for_feasibility_sdp([[M_tilde,0]])
+        IQAE_instance.evaluate()
+    # IQAE_instance.evaluate(kh_test=False)
+    #all_energies,all_states = IQAE_instance.get_results_all()
+        results_dictionary.append(pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,[], verbose=False))
+    # observable_expectation_results[k] = result_dictionary['observable_expectation']
+    # fidelity_results[k] = result_dictionary['fidelity']
 
-    results = dict()
-    results["rho_phys"] = rho_phys 
-    results["rhopp"] = rhopp 
-    results["rhomm"] = rhomm 
-    return results 
-#%%
-result = results_dictionary[0] #since all the results are the same, just take the first one
-rho = result['rho'] #should have tr(M_matform@rho) = 0 already
-print(result["max_rho_dot"])
-print(result["sorted_beta_eigenvalues"])
-print(np.trace(rho@M_matform_real))
-print(np.trace(rho@S_matform_real))
+    '''The results_dictionary is a list of all the result_dictionaries generated for each random beta initial point'''
+    result = results_dictionary[0] #since all the results are the same, just take the first one
+    rho = result['rho'] #should have tr(M_matform@rho) = 0 already
+    max_rho_dot = result["max_rho_dot"]
+    print(result["max_rho_dot"])
+    print(result["sorted_beta_eigenvalues"])
+
+print("rho_eigvals", scp.linalg.eigvalsh(rho))
+print("max_rho_dot", max_rho_dot)
+
+# print(np.trace(rho@M_matform_real))
+# print(np.trace(rho@S_matform_real))
 
 # rhoResults = handle_S_degeneracy(rho)
 # rhopp = rhoResults["rhopp"]
@@ -263,3 +299,5 @@ print(np.trace(rho@S_matform_real))
 # print("Supposed to get S = -1, M = 0")
 # print(np.trace(rhomm@S_matform), np.trace(rhomm@M_matform))
 # # %%
+
+# %%

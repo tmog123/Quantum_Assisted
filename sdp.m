@@ -3,7 +3,7 @@
 D = 0.5*(D + D');
 E = 0.5*(E + E');
 gammas = 0.1;
-interval = 10^(-4)
+interval = 10^(-4);
 numberstate = length(D);
 
 
@@ -27,7 +27,7 @@ cvx_begin sdp
     trace(betarho*E)==1;
     betarho>=0;
 cvx_end
-save('Jonstufftesting/savedmatrixfrommatlab.mat','betarho')
+save('KHstufftesting/savedmatrixfrommatlab.mat','betarho')
 eigenvalues = eig(betarho);
 disp(eigenvalues)
 
