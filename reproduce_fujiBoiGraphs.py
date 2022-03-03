@@ -34,7 +34,7 @@ loadmatlabmatrix = False
 runSDPonpython = True
 
 num_qubits = 2
-uptowhatK = 5
+uptowhatK = 1
 sdp_tolerance_bound = 0
 
 #Generate initial state
@@ -247,8 +247,8 @@ else:
 
     # observable_expectation_results, theoretical_expectation_values, fidelity_results = big_ass_loop(g, observables_list)
 
-    g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
-    #g_vals = [0.5]
+    #g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+    g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
     results = {g:big_ass_loop(g, observables_list) for g in g_vals}
     theoretical_curves = plot_theoretical_expectation_curves(min(g_vals), max(g_vals), observables_list)
 
@@ -277,12 +277,12 @@ else:
 observable_names = [r'$<X_1>$',r'$<Y_1>$',r'$<Z_1>$']
 
 plt.rcParams["figure.figsize"] = (7,5)
-fidelity_plot_loc = 'graphsforpaper/new_%s_qubit_noiseless_fidelity.pdf'%num_qubits
+fidelity_plot_loc = 'graphsforpaper/newgraph_%s_qubit_noiseless_fidelity.pdf'%num_qubits
 # fidelity_plot_loc = None
-plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states,x_axis=r'$g$',y_axis='fidelity', location=fidelity_plot_loc, bboxtight="tight")
+plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states,x_axis=r'$g$',y_axis='Log(fidelity)', location=fidelity_plot_loc, bboxtight="tight",plotlog=True)
 
-expectation_plot_loc = 'graphsforpaper/new_%s_qubit_noiseless.pdf'%num_qubits
+expectation_plot_loc = 'graphsforpaper/newgraph_%s_qubit_noiseless.pdf'%num_qubits
 # expectation_plot_loc = None
-plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight")
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+"])
 
 # %%
