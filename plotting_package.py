@@ -286,7 +286,8 @@ def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoreti
     # chunk is such that the key is the k value, and for each k, we have
     # [(observable one results against g), (observable 2 results against g),
     # (observable 3 results against g)]
-    observable_expectation_results_transposed_dict = {k+1:list(zip(*[j[1] for j in observable_expectation_results_transposed[k]])) for k in range(len(observable_expectation_results_transposed))}
+    observable_expectation_results_transposed_diqutip_comparison_with_k_plot_expectation_valuesct = {k+1:list(zip(*[j[1] for j in observable_expectation_results_transposed[k]])) for k in range(len(observable_expectation_results_transposed))}
+    observable_expectation_results_transposed_dict = observable_expectation_results_transposed_diqutip_comparison_with_k_plot_expectation_valuesct
     k_dot_style_counter=0
     if specify_names==False:
     # which_observables = [0,1,2]
@@ -332,7 +333,7 @@ def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoreti
                 if random_selection_new:
                     plt.plot(x_vals, observable_result, k_dot_styles[k_dot_style_counter], label = str(num_of_csk_states(k)) + " csk states" + observable_names[index])
                 else:
-                    plt.plot(x_vals, observable_result, k_dot_styles[k_dot_style_counter], label = "k=" + str(k)+',' + observable_names[index])
+                    plt.plot(x_vals, observable_result, k_dot_styles[k_dot_style_counter], label = "CsK=" + str(k)+',' + observable_names[index])
             if k_dot_style_counter+1<len(k_dot_styles):
                 k_dot_style_counter = k_dot_style_counter+1
         # plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = 'Theoretical'+ observable_names[0])
