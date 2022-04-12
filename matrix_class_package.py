@@ -2,7 +2,7 @@ import numpy as np
 from ansatz_class_package import Ansatz
 from ansatz_class_package import Initialstate
 import pauli_class_package as pcp
-import Qiskit_helperfunctions as Qhf
+# import Qiskit_helperfunctions as Qhf
 
 class unevaluatedmatrix(object):
     def __init__(self,N,ansatz,H_or_O,matrixtype):
