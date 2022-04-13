@@ -7,6 +7,8 @@ from qiskit.circuit import Parameter
 import qiskit.quantum_info as qi
 from qiskit import Aer
 import post_processing as pp
+import qutip as qtp
+import random as random
 
 identity = np.array([(1,0),(0,1)],dtype=np.complex128)
 sigma_x = np.array([(0,1),(1,0)],dtype=np.complex128)
@@ -87,7 +89,11 @@ def create_combined_N_circuit(numQubits,params):
 def circuitToSampleFrom(numQubits, sz, params):
     qc = QuantumCircuit(numQubits)
     numOnes = int(0.5*(numQubits-sz))
-    for i in range(numOnes):
+    # for i in range(numOnes):
+    #     qc.x(i)
+
+    #everytime this is run, choose diff starting state
+    for i in random.sample(range(numQubits), numOnes):
         qc.x(i)
     qc.barrier()
     toAppend = create_combined_N_circuit(numQubits, params)
@@ -98,7 +104,7 @@ def circuitToSampleFrom(numQubits, sz, params):
 def generate_n_random_states(numQubits, sz, numStates):
     rng = np.random.default_rng(seed=100) 
     states = []
-    for i in range(10):
+    for i in range(numStates):
         params = rng.uniform(0,2*np.pi,2*numQubits-1)
         circuit = circuitToSampleFrom(numQubits, sz, params)
         backend = Aer.get_backend("statevector_simulator")
@@ -151,111 +157,110 @@ def generate_total_magnetisation_matform(num_qubits):
     M = hcp.generate_arbitary_hamiltonian(num_qubits, betas, p_strings)
     return M.to_matrixform()
 
+def evaluate_rho_dot(rho, hamiltonian_mat, gammas, L_terms, L_dag_L_terms):
+    coherent_evo = -1j * (hamiltonian_mat @ rho - rho @ hamiltonian_mat)
+    quantum_jumps_total = 0 + 0*1j
+    for i in range(len(gammas)):
+        gamma_i = gammas[i]
+        L_i_mat = L_terms[i]
+        L_i_dag_L_i = L_dag_L_terms[i]
+        anti_commutator = L_i_dag_L_i @ rho + rho @ L_i_dag_L_i
+        jump_term = L_i_mat @ rho @ L_i_mat.conj().T
+        quantum_jumps_total += gamma_i * (jump_term - 0.5*anti_commutator)
+    return coherent_evo + quantum_jumps_total
 #%%
 ###################################
 # Generating the E,D,R,F matrices #
 ###################################
 
-numQubits = 10
-numAnsatzStates = 10
-sz = 4
+def main(numQubits, numAnsatzStates, sz):
+    ansatz = generate_n_random_states(numQubits, sz, numAnsatzStates)
 
-ansatz = generate_n_random_states(numQubits, sz, numAnsatzStates)
+    H = generate_XXZ_hamiltonian(numQubits, 1).to_matrixform() #xxx hamiltonian
+    gammas,L_terms_uneval = generate_bulk_dephasing(numQubits)
+    L_terms = [L.to_matrixform() for L in L_terms_uneval]
+    L_dag_L_terms = []
+    for Li in L_terms:
+        L_dag_L = Li.conj().T @ Li
+        L_dag_L_terms.append(L_dag_L)
 
-H = generate_XXZ_hamiltonian(numQubits, 1).to_matrixform() #xxx hamiltonian
-gammas,L_terms_uneval = generate_bulk_dephasing(numQubits)
-L_terms = [L.to_matrixform() for L in L_terms_uneval]
-L_dag_L_terms = []
-for Li in L_terms:
-    L_dag_L = Li.conj().T @ Li
-    L_dag_L_terms.append(L_dag_L)
+    E_matrix = np.zeros(shape=[numAnsatzStates,
+    numAnsatzStates],dtype=np.complex128)
 
-E_matrix = np.zeros(shape=[numAnsatzStates,
-numAnsatzStates],dtype=np.complex128)
+    D_matrix = np.zeros(shape=[numAnsatzStates,
+    numAnsatzStates],dtype=np.complex128)
 
-D_matrix = np.zeros(shape=[numAnsatzStates,
-numAnsatzStates],dtype=np.complex128)
+    R_mats = [np.zeros(shape=[numAnsatzStates,
+    numAnsatzStates],dtype=np.complex128) for i in L_terms]
 
-R_mats = [np.zeros(shape=[numAnsatzStates,
-numAnsatzStates],dtype=np.complex128) for i in L_terms]
+    F_mats = [np.zeros(shape=[numAnsatzStates,
+    numAnsatzStates],dtype=np.complex128) for i in L_dag_L_terms]
 
-F_mats = [np.zeros(shape=[numAnsatzStates,
-numAnsatzStates],dtype=np.complex128) for i in L_dag_L_terms]
+    for i in range(len(ansatz)):
+        for j in range(len(ansatz)):
+            bra = ansatz[i].conj().T
+            ket = ansatz[j]
+            E_matrix[(i,j)] = bra@ket
+            D_matrix[(i,j)] = bra @ H @ ket 
+            for k in range(len(R_mats)):
+                R_k_mat = R_mats[k]
+                F_k_mat = F_mats[k]
 
-for i in range(len(ansatz)):
-    for j in range(len(ansatz)):
-        bra = ansatz[i].conj().T
-        ket = ansatz[j]
-        E_matrix[(i,j)] = bra@ket
-        D_matrix[(i,j)] = bra @ H @ ket 
-        for k in range(len(R_mats)):
-            R_k_mat = R_mats[k]
-            F_k_mat = F_mats[k]
-
-            R_k_mat[(i,j)] = bra@L_terms[k]@ket
-            F_k_mat[(i,j)] = bra @ L_dag_L_terms[k] @ ket
+                R_k_mat[(i,j)] = bra@L_terms[k]@ket
+                F_k_mat[(i,j)] = bra @ L_dag_L_terms[k] @ ket
 
 
-######################################
-# Start of classical post-processing #
-######################################
-ness_problem_instance = pp.IQAE_Lindblad(numQubits, D_matrix, E_matrix, R_matrices=R_mats, F_matrices=F_mats, gammas = gammas)
+    ######################################
+    # Start of classical post-processing #
+    ######################################
+    ness_problem_instance = pp.IQAE_Lindblad(numQubits, D_matrix, E_matrix, R_matrices=R_mats, F_matrices=F_mats, gammas = gammas)
 
-eigh_inv_cond = 10**(-6)
-eig_inv_cond = 10**(-6)
-use_qiskit = False
-degeneracy_tol = 5
-sdp_tolerance_bound = 0
+    M_matform = generate_total_magnetisation_matform(numQubits)
+    M_eigvals, M_eigvecs = scipy.linalg.eigh(M_matform)
 
-ness_problem_instance.define_optimizer('feasibility_sdp',eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
+    projector_indices = np.where(M_eigvals==sz)[0]
+    projector = M_eigvecs[:,projector_indices] #fancy indexing
 
-ness_problem_instance.evaluate()
+    eigh_inv_cond = 10**(-6)
+    eig_inv_cond = 10**(-6)
+    use_qiskit = False
+    degeneracy_tol = 5
+    sdp_tolerance_bound = 0
 
-beta_mat = ness_problem_instance.get_density_matrix_results()[0]
+    ness_problem_instance.define_optimizer('feasibility_sdp',eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
 
-rho = np.zeros(shape=(2**numQubits, 2**numQubits),dtype=np.complex128) 
-for i in range(len(ansatz)):
-    for j in range(len(ansatz)):
-        ket_i = ansatz[i].reshape(len(ansatz[i]),1)
-        bra_j = (ansatz[j].reshape(len(ansatz[i]),1)).conj().T
-        rho += beta_mat[(i,j)] * ket_i @ bra_j
+    ness_problem_instance.evaluate()
 
-print(scipy.linalg.eigvalsh(rho))
-print(np.trace(rho))
-display(pd.DataFrame(rho))
+    beta_mat = ness_problem_instance.get_density_matrix_results()[0]
 
-M_matform = generate_total_magnetisation_matform(numQubits)
-print(np.trace(M_matform@rho))
-# qc.draw("mpl")
+    rho = np.zeros(shape=(2**numQubits, 2**numQubits),dtype=np.complex128) 
+    for i in range(len(ansatz)):
+        for j in range(len(ansatz)):
+            ket_i = ansatz[i].reshape(len(ansatz[i]),1)
+            bra_j = (ansatz[j].reshape(len(ansatz[i]),1)).conj().T
+            rho += beta_mat[(i,j)] * ket_i @ bra_j
 
-# n_circ = QuantumCircuit(3)
-# n_circ.append(twoQubitNGate(np.pi/3),[0,1])
-# n_circ.append(twoQubitNGate(np.pi/4),[1,2])
-# # print(Operator(n_circ))
+    rho_reduced = projector.conj().T @ rho @ projector 
+    maximally_mixed_state = np.eye(len(projector_indices)) * 1/len(projector_indices)
+    print("dimension of symmetry subspace is", len(projector_indices))
 
-# n_circ_2 = QuantumCircuit(3)
-# n_circ_2.unitary(generate_two_qubit_N_operator(np.pi/3),[0,1], label="n(pi/3)")
-# n_circ_2.unitary(generate_two_qubit_N_operator(np.pi/4),[1,2],label="n(pi/4)")
-# # print(Operator(n_circ_2))
+    # print("eigvals of M are", M_matform)
+    # print("eigvals of rho are", scipy.linalg.eigvalsh(rho))
+    # print("trace of rho is", np.trace(rho))
 
+    print("tr(M*rho)=", np.trace(M_matform@rho))
+    # rho_dot = evaluate_rho_dot(rho, H, gammas, L_terms, L_dag_L_terms)
 
-# qi.average_gate_fidelity(Operator(n_circ),Operator(n_circ_2))
-# n_circ.unitary(generate_two_qubit_N_operator(np.pi/5),[2,3],label="n(pi/5)")
-# print(n_circ)
+    # print("Max value of rho_dot is", np.max(np.max(rho_dot)))
+    #fidelity computation
 
-# def twoQubitNGate(theta):
-#     '''
-#     somehow there is something wrong with this lol oh well
-#     '''
-#     qc = QuantumCircuit(2, name = "N({theta})".format(theta = theta))
-#     qc.rz(np.pi/2,1)
-#     qc.cx(1,0)
-#     qc.rz(2*theta - np.pi/2, 0)
-#     qc.ry(np.pi/2 - 2*theta, 1)
-#     qc.cx(0,1)
-#     qc.ry(2*theta - np.pi/2, 1)
-#     qc.cx(1,0)
-#     qc.rz(-np.pi/2,0)
+    qtp_rho_reduced = qtp.Qobj(rho_reduced)
+    qtp_maximally_mixed_state = qtp.Qobj(maximally_mixed_state)
+    fidelity = qtp.metrics.fidelity(qtp_rho_reduced, qtp_maximally_mixed_state)
+    print("fidelity to the theoretical steady state is", fidelity)
+    return fidelity
 
-#     custom_gate = qc.to_instruction()
-#     return custom_gate
+numQubits = 8
+target_sz = 4
+
+main(numQubits, 30, target_sz)
