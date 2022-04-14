@@ -98,6 +98,7 @@ def circuitToSampleFrom(numQubits, sz, params):
     qc.barrier()
     toAppend = create_combined_N_circuit(numQubits, params)
     to_return = qc.compose(toAppend)
+    qc.draw()
     return to_return
 
 
@@ -176,7 +177,7 @@ def evaluate_rho_dot(rho, hamiltonian_mat, gammas, L_terms, L_dag_L_terms):
 def main(numQubits, numAnsatzStates, sz):
     ansatz = generate_n_random_states(numQubits, sz, numAnsatzStates)
 
-    H = generate_XXZ_hamiltonian(numQubits, 1).to_matrixform() #xxx hamiltonian
+    H = generate_XXZ_hamiltonian(numQubits, 0.3).to_matrixform() #xxx hamiltonian
     gammas,L_terms_uneval = generate_bulk_dephasing(numQubits)
     L_terms = [L.to_matrixform() for L in L_terms_uneval]
     L_dag_L_terms = []
