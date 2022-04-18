@@ -174,6 +174,18 @@ def evaluate_rho_dot(rho, hamiltonian_mat, gammas, L_terms, L_dag_L_terms):
 # Generating the E,D,R,F matrices #
 ###################################
 
+def symmetrySubspaceDim(numQubits, sz):
+    M_matform = generate_total_magnetisation_matform(numQubits)
+    M_eigvals, M_eigvecs = scipy.linalg.eigh(M_matform)
+
+    projector_indices = np.where(M_eigvals==sz)[0]
+    projector = M_eigvecs[:,projector_indices] #fancy indexing
+
+    maximally_mixed_state = np.eye(len(projector_indices)) * 1/len(projector_indices)
+    print("dimension of symmetry subspace is", len(projector_indices))
+
+    return 
+
 def main(numQubits, numAnsatzStates, sz):
     ansatz = generate_n_random_states(numQubits, sz, numAnsatzStates)
 
@@ -261,7 +273,31 @@ def main(numQubits, numAnsatzStates, sz):
     print("fidelity to the theoretical steady state is", fidelity)
     return fidelity
 
-numQubits = 8
-target_sz = 4
 
-main(numQubits, 30, target_sz)
+
+numQubitsStatesDict = {4:4, 6:6, 8:28, 10:120}
+target_sz = 4
+# main(numQubits, 30, target_sz)
+fidelity_dict = dict()
+
+for numQubits in range(4,9,2):
+    numStates = numQubitsStatesDict[numQubits]
+    fidelity_dict[numStates] = []
+    # fidelity = 0
+    # while fidelity < 0.95:
+    for rep in range(20):
+        fidelity = main(numQubits, numStates, target_sz)
+        fidelity_dict[numStates].append(fidelity)
+        # if fidelity < 0.95:
+        #     print("re-running code to get fidelity > 0.95")
+    print("")
+    # print(i)
+    # symmetrySubspaceDim(i, target_sz)
+
+#%%
+start = timer()
+main(10,numQubitsStatesDict[10],target_sz)
+end = timer()
+print(end - start) # Time in seconds, e.g. 5.38091952400282
+
+# %%
