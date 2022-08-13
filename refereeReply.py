@@ -18,7 +18,7 @@ degeneracy_tol = 5
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 8
+num_qubits = 7
 # uptowhatK = 1
 sdp_tolerance_bound = 0
 
@@ -66,7 +66,7 @@ L_dag_L_terms = [i.conj().T @ i for i in L_terms]
 qtp_hamiltonian = qutip.Qobj(hamiltonian)
 qtp_Lterms = [qutip.Qobj(i) for i in L_terms]
 qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
-qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops)
+qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops, method="iterative-gmres")
 
 #compute the theoretical observable expectation values
 observable_matrixforms = [observable.to_matrixform() for observable in observable_obj_list]
