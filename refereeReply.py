@@ -15,10 +15,10 @@ import plotting_package as plotp
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
-loadmatlabmatrix = False
-runSDPonpython = True
+loadmatlabmatrix = True
+runSDPonpython = False
 
-num_qubits = 7
+num_qubits = 8
 # uptowhatK = 1
 sdp_tolerance_bound = 0
 
@@ -80,14 +80,22 @@ D_mat_evaluated = hamiltonian
 R_mats_evaluated = L_terms
 F_mats_evaluated = L_dag_L_terms
 
-print("I'm here 1!")
-IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
-IQAE_instance.define_optimizer("feasibility_sdp", eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
+if loadmatlabmatrix == True:
+    scipy.io.savemat("khstufftesting/Emat" +".mat",{"E": E_mat_evaluated,"D":D_mat_evaluated,"R":R_mats_evaluated,"F":F_mats_evaluated})
+    print('Matrices have been generated, saved in khstufftestingfolder.')
 
-print("I'm here 2!")
-IQAE_instance.evaluate()
-density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
+#%%
+if runSDPonpython == True:
+    print("I'm here 1!")
+    IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
+    IQAE_instance.define_optimizer("feasibility_sdp", eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
 
+    print("I'm here 2!")
+    IQAE_instance.evaluate()
+    density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
+
+elif loadmatlabmatrix == True:
+    density_mat = scipy.io.loadmat('khstufftesting/'+'savedmatrixfrommatlab.mat')['betarho']
 #%%
 print(np.allclose(density_mat,qtp_rho_ss.full()))
 # %%
