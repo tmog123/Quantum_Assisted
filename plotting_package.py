@@ -302,8 +302,8 @@ def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoreti
                     plt.plot(x_vals, observable_result, k_dot_styles[k_dot_style_counter], label = str(num_of_csk_states(k)) + " csk states" + " observable" + str(index + 1))
                 else:
                     plt.plot(x_vals, observable_result, k_dot_styles[k_dot_style_counter], label = "k=" + str(k) + " observable" + str(index + 1))
-            if k_dot_style_counter+1<len(k_dot_styles):
-                k_dot_style_counter = k_dot_style_counter+1
+                if k_dot_style_counter+1<len(k_dot_styles):
+                    k_dot_style_counter = k_dot_style_counter+1
         plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = "theoretical_observable1")
         plt.plot(theoretical_curves[0], theoretical_curves[1][1],label = "theoretical_observable2")
         plt.plot(theoretical_curves[0], theoretical_curves[1][2],label = "theoretical_observable3")
@@ -334,8 +334,8 @@ def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoreti
                     plt.plot(x_vals, observable_result, k_dot_styles[k_dot_style_counter], label = str(num_of_csk_states(k)) + " csk states" + observable_names[index])
                 else:
                     plt.plot(x_vals, observable_result, k_dot_styles[k_dot_style_counter], label = "CsK=" + str(k)+',' + observable_names[index])
-            if k_dot_style_counter+1<len(k_dot_styles):
-                k_dot_style_counter = k_dot_style_counter+1
+                if k_dot_style_counter+1<len(k_dot_styles):
+                    k_dot_style_counter = k_dot_style_counter+1
         # plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = 'Theoretical'+ observable_names[0])
         # plt.plot(theoretical_curves[0], theoretical_curves[1][1],
         # label ='Theoretical'+ observable_names[1])
@@ -360,21 +360,24 @@ def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoreti
             plt.show()
         plt.close()
 
-def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states=None,plot_title=None,x_axis=None,y_axis=None, location=None, bboxtight=None,plotlog=False):
+def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states=None,plot_title=None,x_axis=None,y_axis=None, location=None, bboxtight=None,plotlog=False,k_dot_styles=None):
     x_vals = list(results.keys())
     y_vals_all_k = [list(i[2].values()) for i in list(results.values())]
     y_vals_all_k_transposed = list(zip(*y_vals_all_k))
     y_vals_all_k_transposed_dict = {k+1:y_vals_all_k_transposed[k] for k in range(len(y_vals_all_k_transposed))}
 
+    k_dot_style_counter=0
     for k,fidelities in y_vals_all_k_transposed_dict.items():
         print(k)
         if plotlog==True:
             fidelities = np.log(np.array(fidelities))
         if random_selection_new:
-            plt.plot(x_vals, fidelities, label=str(num_of_csk_states(k)) + " csk states")
+            plt.plot(x_vals, fidelities, k_dot_styles[k_dot_style_counter], label=str(num_of_csk_states(k)) + " csk states")
         else:
-            plt.plot(x_vals, fidelities, label="k=" + str(k))
-
+            plt.plot(x_vals, fidelities, k_dot_styles[k_dot_style_counter], label="k=" + str(k))
+        if k_dot_styles!=None:
+            if k_dot_style_counter+1<len(k_dot_styles):
+                k_dot_style_counter = k_dot_style_counter+1
     if x_axis!=None:
         plt.xlabel(x_axis, fontsize=16)
     if y_axis!=None:
