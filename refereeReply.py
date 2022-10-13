@@ -135,9 +135,9 @@ def plot_theoretical_expectation_curves(g_min,g_max, observable_obj_list):
 
 theoretical_curves = plot_theoretical_expectation_curves(min(g_vals), max(g_vals), observable_obj_list)
 
-plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = 'Theoretical'+r'$<X_1>$')
-plt.plot(theoretical_curves[0], theoretical_curves[1][1],label = 'Theoretical'+r'$<Y_1>$')
-plt.plot(theoretical_curves[0], theoretical_curves[1][2],label = 'Theoretical'+r'$<Z_1>$')
+plt.plot(theoretical_curves[0], theoretical_curves[1][0],linestyle='-', label = 'Theoretical'+r'$<X_1>$')
+plt.plot(theoretical_curves[0], theoretical_curves[1][1],linestyle='--',label = 'Theoretical'+r'$<Y_1>$')
+plt.plot(theoretical_curves[0], theoretical_curves[1][2],linestyle='-.',label = 'Theoretical'+r'$<Z_1>$')
 
 # plt.plot(g_vals,np.real(dataforplot[0]),label='Theoretical'+r'$<X_1>$')
 # plt.plot(g_vals,np.real(dataforplot[1]),label='Theoretical'+r'$<Y_1>$')

@@ -33,15 +33,15 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 2
-uptowhatK = 1
+num_qubits = 5
+uptowhatK = 5
 sdp_tolerance_bound = 0
 
 #Generate initial state
 random_generator = np.random.default_rng(123)
 initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 1)
 
-random_selection_new = False
+random_selection_new = True
 if random_selection_new == True:
     numberofnewstatestoadd = 10 #Only will be used if 'random_selection_new' is selected
 
@@ -283,6 +283,6 @@ plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states,
 
 expectation_plot_loc = 'graphsforpaper/newstyle_newgraph_%s_qubit_noiseless.pdf'%num_qubits
 # expectation_plot_loc = None
-plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"])
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [4,5],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"],line_styles=['-','--','-.'])
 
 # %%

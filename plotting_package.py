@@ -278,7 +278,7 @@ def get_fidelity_results(num_qubits, ansatzlist, times,
             collated_fidelity_vals[i] = fidelity_vals
     return collated_fidelity_vals
 
-def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, which_ks,random_selection_new,num_of_csk_states,specify_names=False,observable_names=None,plot_title=None,x_axis=None,y_axis=None, location=None, bboxtight=None,k_dot_styles=['o']):
+def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, which_ks,random_selection_new,num_of_csk_states,specify_names=False,observable_names=None,plot_title=None,x_axis=None,y_axis=None, location=None, bboxtight=None,k_dot_styles=['o'],line_styles=['-','--','-.']):
     x_vals = list(results.keys())
     observable_expectation_results = [list(i[0].items()) for i in list(results.values())]
     observable_expectation_results_transposed = list(zip(*observable_expectation_results))
@@ -304,9 +304,9 @@ def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoreti
                     plt.plot(x_vals, observable_result, k_dot_styles[k_dot_style_counter], label = "k=" + str(k) + " observable" + str(index + 1))
                 if k_dot_style_counter+1<len(k_dot_styles):
                     k_dot_style_counter = k_dot_style_counter+1
-        plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = "theoretical_observable1")
-        plt.plot(theoretical_curves[0], theoretical_curves[1][1],label = "theoretical_observable2")
-        plt.plot(theoretical_curves[0], theoretical_curves[1][2],label = "theoretical_observable3")
+        plt.plot(theoretical_curves[0], theoretical_curves[1][0],linestyle=line_styles[0], label = "theoretical_observable1")
+        plt.plot(theoretical_curves[0], theoretical_curves[1][1],linestyle=line_styles[1],label = "theoretical_observable2")
+        plt.plot(theoretical_curves[0], theoretical_curves[1][2],linestyle=line_styles[2],label = "theoretical_observable3")
         
         if x_axis!=None:
             plt.xlabel(x_axis)
@@ -318,10 +318,10 @@ def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoreti
         plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     elif specify_names==True:
     # which_observables = [0,1,2]
-        plt.plot(theoretical_curves[0], theoretical_curves[1][0], label = 'Theoretical'+ observable_names[0])
-        plt.plot(theoretical_curves[0], theoretical_curves[1][1],
+        plt.plot(theoretical_curves[0], theoretical_curves[1][0],linestyle=line_styles[0], label = 'Theoretical'+ observable_names[0])
+        plt.plot(theoretical_curves[0], theoretical_curves[1][1],linestyle=line_styles[1],
         label ='Theoretical'+ observable_names[1])
-        plt.plot(theoretical_curves[0], theoretical_curves[1][2],
+        plt.plot(theoretical_curves[0], theoretical_curves[1][2],linestyle=line_styles[2],
         label ='Theoretical'+ observable_names[2])
         for k,observable_results in observable_expectation_results_transposed_dict.items():
             if k not in which_ks:
