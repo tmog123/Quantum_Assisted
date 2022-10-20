@@ -66,7 +66,7 @@ class Ansatz(object):#moments is a list
         
 
 class Initialstate(object):
-    def __init__(self,N, method, rand_generator, numberoflayers = 2, qiskit_qc = None):
+    def __init__(self,N, method, rand_generator, numberoflayers = 2, qiskit_qc = None, startingstatevector = None):
         """
         method can be either efficient_SU2, or random_numbers, or...
         """
@@ -81,6 +81,14 @@ class Initialstate(object):
 
         if self.method == "own_qiskit_circuit" and qiskit_qc == None:
             raise(RuntimeError("You need to include a qiskit circuit to use this method"))
+
+        if self.method == "starting_statevector":
+            qc = QuantumCircuit(self.N)
+            qc.set_statevector(startingstatevector)
+            qc.save_state()
+            self.qiskit_circuit = qc
+            self.statevector_evaluatedbefore = True
+            self.statevector = startingstatevector
 
         if self.method == "efficient_SU2":
             qc = EfficientSU2(self.N, reps = self.numberoflayers, entanglement="full", skip_final_rotation_layer=False)
@@ -129,6 +137,8 @@ class Initialstate(object):
             statevector_backend = Aer.get_backend('statevector_simulator')
             state = execute(self.qiskit_circuit, statevector_backend).result().get_statevector()
             return state
+        elif self.method == "starting_statevector":
+            return self.statevector
     
     def get_qiskit_circuit(self):
         if self.qiskit_circuit == None:

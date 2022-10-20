@@ -9,6 +9,7 @@ import scipy as scp
 import scipy.io
 import qutip 
 import plotting_package as plotp
+import qiskit.quantum_info as qi
 
 import pickle
 import os
@@ -33,13 +34,16 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 5
+num_qubits = 8
 uptowhatK = 5
 sdp_tolerance_bound = 0
 
 #Generate initial state
-random_generator = np.random.default_rng(123)
-initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 1)
+what_starting_state = 'Random_statevector'# 'Random', 'Ground_state', 'Random_statevector'
+
+if what_starting_state == 'Random':
+    random_generator = np.random.default_rng(123)
+    initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 1)
 
 random_selection_new = True
 if random_selection_new == True:
@@ -143,6 +147,19 @@ def big_ass_loop(g, observable_obj_list):
     qtp_Lterms = [qutip.Qobj(i.to_matrixform()) for i in L_terms]
     qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
     qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops)
+
+    #Set starting statevector if needed
+    if what_starting_state == 'Ground_state':
+        print('Using Ground state of TFI as initial state')
+        start_state = qi.Statevector(np.array(qtp_hamiltonian.groundstate()[1]))
+        # print(start_state)
+        initial_state = acp.Initialstate(num_qubits, "starting_statevector", rand_generator=None,startingstatevector = start_state)
+
+    elif what_starting_state == 'Random_statevector':
+        print('Using Random Haar-random statevector as initial state')
+        start_state = qi.random_statevector(2**num_qubits)
+        # print(start_state)
+        initial_state = acp.Initialstate(num_qubits, "starting_statevector", rand_generator=None,startingstatevector = start_state)
 
     #compute the theoretical observable expectation values
     observable_matrixforms = [observable.to_matrixform() for observable in observable_obj_list]
@@ -277,12 +294,12 @@ else:
 observable_names = [r'$<X_1>$',r'$<Y_1>$',r'$<Z_1>$']
 
 plt.rcParams["figure.figsize"] = (7,5)
-fidelity_plot_loc = 'graphsforpaper/newstyle_newgraph_%s_qubit_noiseless_fidelity.pdf'%num_qubits
+fidelity_plot_loc = 'graphsforpaper/inigroundstate_newgraph_%s_qubit_noiseless_fidelity.pdf'%num_qubits
 # fidelity_plot_loc = None
 plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states,x_axis=r'$g$',y_axis='Log(fidelity)', location=fidelity_plot_loc, bboxtight="tight",plotlog=True,k_dot_styles=["o","+","x","D","*","H"])
 
-expectation_plot_loc = 'graphsforpaper/newstyle_newgraph_%s_qubit_noiseless.pdf'%num_qubits
+expectation_plot_loc = 'graphsforpaper/inigroundstate_newgraph_%s_qubit_noiseless.pdf'%num_qubits
 # expectation_plot_loc = None
-plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [4,5],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"],line_styles=['-','--','-.'])
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1,2,3,4,5],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"],line_styles=['-','--','-.'])
 
 # %%
