@@ -61,6 +61,7 @@ class paulistring(object):
         matrix = first_matrix
         for j in index_string[1:]:
             matrix = np.kron(matrix, sigmas[int(j)])
+        # print(coeff*matrix)
         return coeff * matrix
     def get_N(self):
         return self.N

@@ -9,9 +9,27 @@ import scipy.io
 import qutip 
 import plotting_package as plotp
 import matplotlib.pyplot as plt
+import qiskit.quantum_info as qi
 
 g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
-num_qubits = 8
+num_qubits = 5
+optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
+eigh_inv_cond = 10**(-6)
+eig_inv_cond = 10**(-6)
+degeneracy_tol = 5
+use_qiskit = False
+loadmatlabmatrix = False
+runSDPonpython = True
+num_qubits = 5
+uptowhatK = 5
+sdp_tolerance_bound = 0
+what_starting_state = 'Random'# 'Random', 'Ground_state', 'Random_statevector'
+if what_starting_state == 'Random':
+    random_generator = np.random.default_rng(123)
+    initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 1)
+random_selection_new = True
+if random_selection_new == True:
+    numberofnewstatestoadd = 10 #Only will be used if 'random_selection_new' is selected
 
 def generate_fuji_boy_hamiltonian(num_qubits, g):
     epsilon = 0.5
@@ -36,58 +54,9 @@ def generate_fuji_boy_gamma_and_Lterms(num_qubits):
             L_terms.append(hcp.generate_arbitary_hamiltonian(num_qubits,[0.5,-0.5j],['0'*i+'1'+'0'*(num_qubits-1-i),'0'*i+'2'+'0'*(num_qubits-1-i)]))
     return (gammas, L_terms)
 
-
-# def _blob(x, y, area, colour):
-#     """
-#     Draws a square-shaped blob with the given area (< 1) at
-#     the given coordinates.
-#     """
-#     hs = np.sqrt(area) / 2
-#     xcorners = np.array([x - hs, x + hs, x + hs, x - hs])
-#     ycorners = np.array([y - hs, y - hs, y + hs, y + hs])
-#     plt.fill(xcorners, ycorners, colour, edgecolor=colour)
-
-# def hinton(W, maxweight=None):
-#     """
-#     Draws a Hinton diagram for visualizing a weight matrix. 
-#     Temporarily disables matplotlib interactive mode if it is on, 
-#     otherwise this takes forever.
-#     """
-#     reenable = False
-#     if plt.isinteractive():
-#         plt.ioff()
-#     reenable = True
-#     plt.clf()
-#     height, width = W.shape
-#     if not maxweight:
-#         maxweight = 2**np.ceil(np.log(np.max(np.abs(W)))/np.log(2))
-        
-#     plt.fill(np.array([0, width, width, 0]), 
-#              np.array([0, 0, height, height]),
-#              'gray')
-    
-#     plt.axis('off')
-#     plt.axis('equal')
-#     for x in range(width):
-#         for y in range(height):
-#             _x = x+1
-#             _y = y+1
-#             w = W[y, x]
-#             if w > 0:
-#                 _blob(_x - 0.5,
-#                       height - _y + 0.5,
-#                       min(1, w/maxweight),
-#                       'white')
-#             elif w < 0:
-#                 _blob(_x - 0.5,
-#                       height - _y + 0.5, 
-#                       min(1, -w/maxweight), 
-#                       'black')
-#     if reenable:
-#         plt.ion()
-
 for g in g_vals:
     print(g)
+    ############### Get Qutip Density Matrix
     hamiltonian = generate_fuji_boy_hamiltonian(num_qubits, g)
     gammas, L_terms = generate_fuji_boy_gamma_and_Lterms(num_qubits)
     qtp_hamiltonian = qutip.Qobj(hamiltonian.to_matrixform())
@@ -95,35 +64,66 @@ for g in g_vals:
     qtp_C_ops = [np.sqrt(gammas[i]) * qtp_Lterms[i] for i in range(len(qtp_Lterms))]
     qtp_rho_ss = qutip.steadystate(qtp_hamiltonian, qtp_C_ops,method="iterative-gmres",maxiter=10000)
     # matrix = scp.sparse.csr_matrix(qtp_rho_ss.data)
-    matrix = qtp_rho_ss.full()
+    qtp_matrix = qtp_rho_ss.full()
     # print(type(matrix))
-    matrix_real = np.real(matrix)
-    matrix_imag = np.imag(matrix)
-    
-    fig, ax = plt.subplots()
-    img = ax.imshow(matrix_real,cmap='RdYlGn', interpolation='nearest')
-    clb = plt.colorbar(img)
-    # plt.show()
-    clb.ax.tick_params(labelsize=8) 
-    clb.ax.set_title('Real g=%s'%(g),fontsize=8)
-    plt.gca().set_aspect('equal', adjustable='box')
-    # plt.xlabel('h1')
-    # plt.xticks(np.linspace(0,matrix_real.shape[0]-1,11,endpoint=True),np.round(np.linspace(0,1.6,11,endpoint=True),3))
-    # plt.ylabel('%s'%(r'$\Omega$'))
-    # plt.ylabel('h2')
-    # plt.yticks(np.linspace(0,matrix_real.shape[0]-1,11,endpoint=True),np.round(np.linspace(-1.6,1.6,11,endpoint=True),3))
-    plt.savefig('reverse_engineer_ansatz_results/hintonreal_qubits%s_g%s.png'%(num_qubits,g))
+
+    #################### Get the CsK states
+    ansatz = acp.initial_ansatz(num_qubits)
+    if what_starting_state == 'Ground_state':
+        print('Using Ground state of TFI as initial state')
+        start_state = qi.Statevector(np.array(qtp_hamiltonian.groundstate()[1]))
+        # print(start_state)
+        initial_state = acp.Initialstate(num_qubits, "starting_statevector", rand_generator=None,startingstatevector = start_state)
+
+    elif what_starting_state == 'Random_statevector':
+        print('Using Random Haar-random statevector as initial state')
+        start_state = qi.random_statevector(2**num_qubits)
+        # print(start_state)
+        initial_state = acp.Initialstate(num_qubits, "starting_statevector", rand_generator=None,startingstatevector = start_state)
+
+    for k in range(1, uptowhatK + 1):
+        print('##########################################')
+        print('K = ' +str(k))
+        # max_k_val = k
+        #Generate Ansatz for this round
+        if random_selection_new:
+            ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits,method='random_selection_new',num_new_to_add=numberofnewstatestoadd)
+        else:
+            ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits)
+    # print('Qutip matrix size shape is')
+    # print(qtp_matrix.shape)
+    dms = acp.calculate_ansatz_state_dms(initial_state,ansatz)
+    result = []
+    for dm in dms:
+        result.append(np.trace(dm@qtp_matrix))
+    plt.plot(result)
+    plt.savefig('reverse_engineer_ansatz_results/supportoncsk_qubits%s_g%s.png'%(num_qubits,g))
     plt.close()
 
-    fig, ax = plt.subplots()
-    img = ax.imshow(matrix_imag,cmap='RdYlGn', interpolation='nearest')
-    clb = plt.colorbar(img)
-    # plt.show()
-    clb.ax.tick_params(labelsize=8) 
-    clb.ax.set_title('Imag g=%s'%(g),fontsize=8)
-    plt.gca().set_aspect('equal', adjustable='box')
-    plt.savefig('reverse_engineer_ansatz_results/hintonimag_qubits%s_g%s.png'%(num_qubits,g))
-    plt.close()
+    # fig, ax = plt.subplots()
+    # img = ax.imshow(matrix_real,cmap='RdYlGn', interpolation='nearest')
+    # clb = plt.colorbar(img)
+    # # plt.show()
+    # clb.ax.tick_params(labelsize=8) 
+    # clb.ax.set_title('Real g=%s'%(g),fontsize=8)
+    # plt.gca().set_aspect('equal', adjustable='box')
+    # # plt.xlabel('h1')
+    # # plt.xticks(np.linspace(0,matrix_real.shape[0]-1,11,endpoint=True),np.round(np.linspace(0,1.6,11,endpoint=True),3))
+    # # plt.ylabel('%s'%(r'$\Omega$'))
+    # # plt.ylabel('h2')
+    # # plt.yticks(np.linspace(0,matrix_real.shape[0]-1,11,endpoint=True),np.round(np.linspace(-1.6,1.6,11,endpoint=True),3))
+    # plt.savefig('reverse_engineer_ansatz_results/hintonreal_qubits%s_g%s.png'%(num_qubits,g))
+    # plt.close()
+
+    # fig, ax = plt.subplots()
+    # img = ax.imshow(matrix_imag,cmap='RdYlGn', interpolation='nearest')
+    # clb = plt.colorbar(img)
+    # # plt.show()
+    # clb.ax.tick_params(labelsize=8) 
+    # clb.ax.set_title('Imag g=%s'%(g),fontsize=8)
+    # plt.gca().set_aspect('equal', adjustable='box')
+    # plt.savefig('reverse_engineer_ansatz_results/hintonimag_qubits%s_g%s.png'%(num_qubits,g))
+    # plt.close()
 
 
 

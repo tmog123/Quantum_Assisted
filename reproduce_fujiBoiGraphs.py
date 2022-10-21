@@ -34,7 +34,7 @@ use_qiskit = False
 loadmatlabmatrix = False
 runSDPonpython = True
 
-num_qubits = 8
+num_qubits = 5
 uptowhatK = 5
 sdp_tolerance_bound = 0
 
@@ -241,7 +241,8 @@ def big_ass_loop(g, observable_obj_list):
         observable_expectation_results[k] = result_dictionary['observable_expectation']
         fidelity_results[k] = result_dictionary['fidelity']
     #print('JON: Got %s results'%len(fidelity_results))
-    return (observable_expectation_results, theoretical_expectation_values, fidelity_results)
+    density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
+    return (observable_expectation_results, theoretical_expectation_values, fidelity_results,O_matrices_evaluated,density_mat)
 
 #%% the main chunk
 
@@ -264,11 +265,12 @@ else:
 
     # observable_expectation_results, theoretical_expectation_values, fidelity_results = big_ass_loop(g, observables_list)
 
-    #g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
-    g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
+    g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+    # g_vals = [1.0, 1.5]
     results = {g:big_ass_loop(g, observables_list) for g in g_vals}
     theoretical_curves = plot_theoretical_expectation_curves(min(g_vals), max(g_vals), observables_list)
 
+    plotp.plot_observable_support(g_vals,results,num_qubits,['X_1','Y_1','Z_1'],'reverse_engineer_ansatz_results')
 
     if use_qiskit == True:
         fname_append = str(num_qubits) + "_qubits" + "_sim=" + str(sim) + "_"
@@ -300,6 +302,6 @@ plotp.plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states,
 
 expectation_plot_loc = 'graphsforpaper/inigroundstate_newgraph_%s_qubit_noiseless.pdf'%num_qubits
 # expectation_plot_loc = None
-plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1,2,3,4,5],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"],line_styles=['-','--','-.'])
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [4,5],random_selection_new,num_of_csk_states,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"],line_styles=['-','--','-.'])
 
 # %%

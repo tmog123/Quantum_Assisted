@@ -230,3 +230,21 @@ def set_initial_alphas(N,anz,method='start_with_initial_state'):
                 else:
                     mom.alphas.append(0)
         anz.initialalphassetyet = True
+
+def calculate_ansatz_state_dms(initial_state_object,ansatz):
+    initial_statevector = initial_state_object.get_statevector()
+    size = len(ansatz.get_moments())
+    moments = ansatz.get_moments()
+    paulistrings = []
+    dms = []
+    for i in range(size):
+        pmat = moments[i].get_paulistring().get_matrixform()
+        # print(initial_statevector.shape)
+        # print(pmat.shape)
+        state = pmat @ initial_statevector
+        state = np.kron(np.conjugate(state),state)
+        state = state.reshape((int(np.sqrt(len(state))),int(np.sqrt(len(state)))))
+        dms.append(state)
+    return dms
+
+

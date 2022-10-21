@@ -504,3 +504,18 @@ def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states=No
 #     ax4ins.tick_params(which='both', direction='in', labelsize=14)
 #     plt.savefig('figure1_c-f.pdf', transparent=True, bbox_inches='tight')
 #     plt.show()
+
+def plot_observable_support(gvals,results,qubits,observable_names,save_folder_name):
+    for g in gvals:
+        for i in range(len(observable_names)):
+            array = results[g][3][i]@results[g][4]
+        fig, ax = plt.subplots()
+        img = ax.imshow(np.abs(array),cmap='RdYlGn', interpolation='nearest')
+        clb = plt.colorbar(img)
+        # plt.show()
+        clb.ax.tick_params(labelsize=8) 
+        clb.ax.set_title('Imag g=%s'%(g),fontsize=8)
+        plt.gca().set_aspect('equal', adjustable='box')
+        plt.savefig('%s/Observablesupport_qubits%s_g%s_obs%s.png'%(save_folder_name,qubits,g,observable_names[i]))
+        plt.close()   
+
