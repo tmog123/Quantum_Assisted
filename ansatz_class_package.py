@@ -39,6 +39,12 @@ class Ansatz(object):#moments is a list
     def get_moments(self):
         return self.moments
     
+    def set_moments(self,moments):
+        self.moments = moments
+
+    def get_ansatz_size(self):
+        return len(self.moments)
+
     def get_K(self):
         return self.K
 
@@ -246,5 +252,15 @@ def calculate_ansatz_state_dms(initial_state_object,ansatz):
         state = state.reshape((int(np.sqrt(len(state))),int(np.sqrt(len(state)))))
         dms.append(state)
     return dms
+
+def remove_states_below_support(initial_state_object,ansatz,qtp_ss,supportlevel):
+    newmoments = []
+    dms = calculate_ansatz_state_dms(initial_state_object,ansatz)
+    for i in range(len(dms)):
+        # print(np.trace(dms[i]@qtp_ss))
+        if np.trace(dms[i]@qtp_ss)>supportlevel:
+            newmoments.append(ansatz.get_moments()[i])
+    return Ansatz(ansatz.N,1,newmoments)
+
 
 
