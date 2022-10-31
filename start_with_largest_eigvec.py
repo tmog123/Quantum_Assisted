@@ -11,9 +11,9 @@ import plotting_package as plotp
 import matplotlib.pyplot as plt
 import qiskit.quantum_info as qi
 
-g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
+g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0,2.5,3.0]
 supportlevel = 0.01
-num_qubits = 5
+num_qubits = 8
 # optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
@@ -21,8 +21,7 @@ degeneracy_tol = 5
 use_qiskit = False
 loadmatlabmatrix = False
 # runSDPonpython = True
-num_qubits = 5
-uptowhatK = 5
+uptowhatK = 2
 sdp_tolerance_bound = 0
 what_starting_state = 'largest_eigvec'# 'Random', 'Ground_state', 'Random_statevector', 'largest_eigvec'
 if what_starting_state == 'Random':
@@ -157,25 +156,25 @@ for g in g_vals:
         IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
         IQAE_instance.define_optimizer('feasibility_sdp', eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
         IQAE_instance.evaluate()
-        result_dictionary = pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,O_matrices_evaluated)
+        result_dictionary = pp.analyze_density_matrix(num_qubits,initial_state,IQAE_instance,E_mat_evaluated,ansatz,hamiltonian,gammas,L_terms,qtp_rho_ss,O_matrices_evaluated,verbose =False)
         observable_expectation_results[k] = result_dictionary['observable_expectation']
         fidelity_results[k] = result_dictionary['fidelity']
         # observable_expectation_results[1] = result_dictionary['observable_expectation']
         # fidelity_results[1] = result_dictionary['fidelity']
     density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
     results[g] = (observable_expectation_results, theoretical_expectation_values, fidelity_results,O_matrices_evaluated,density_mat)
-
+print('Stuck 1')
 theoretical_curves = plot_theoretical_expectation_curves(min(g_vals), max(g_vals), observables_list)
 observable_names = [r'$<X_1>$',r'$<Y_1>$',r'$<Z_1>$']
-
+print('Stuck 2')
 plt.rcParams["figure.figsize"] = (7,5)
 fidelity_plot_loc = 'reverse_engineer_ansatz_results/startlargesteigvec_newgraph_%s_qubit_noiseless_fidelity.pdf'%(num_qubits)
 # fidelity_plot_loc = None
 plotp.plot_fidelities(num_qubits,results,False,None,x_axis=r'$g$',y_axis='Log(fidelity)', location=fidelity_plot_loc, bboxtight="tight",plotlog=True,k_dot_styles=["o","+","x","D","*","H"])
-
+print('Stuck 3')
 expectation_plot_loc = 'reverse_engineer_ansatz_results/startlargesteigvec_newgraph_%s_qubit_noiseless.pdf'%(num_qubits)
 # expectation_plot_loc = None
-plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1,2,3,4,5],False,None,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"],line_styles=['-','--','-.'])
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1,2],False,None,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"],line_styles=['-','--','-.'])
 
 
 
