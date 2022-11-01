@@ -19,10 +19,10 @@ runSDPonpython = False
 num_qubits = 8
 sdp_tolerance_bound = 0
 
-uptowhatK = 6
+uptowhatK = 2
 random_selection_new = True
 if random_selection_new == True:
-    numberofnewstatestoadd = 20 #Only will be used if 'random_selection_new' is selected
+    numberofnewstatestoadd = 12 #Only will be used if 'random_selection_new' is selected
 
 what_starting_state = 'largest_eigvec'# 'efficient_SU2_Random', 'Ground_state', 'Random_statevector', 'largest_eigvec'
 if what_starting_state == 'efficient_SU2_Random':
@@ -107,48 +107,51 @@ for g in g_vals:
         # print(start_state)
         initial_state = acp.Initialstate(num_qubits, "starting_statevector", rand_generator=None,startingstatevector = start_state)
 
-    for k in range(1, uptowhatK + 1):
-        if random_selection_new:
-            ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits,method='random_selection_new',num_new_to_add=numberofnewstatestoadd)
-            print('Ansatz Size is %s'%(ansatz.get_ansatz_size()))
+    try:
+        for k in range(1, uptowhatK + 1):
+            if random_selection_new:
+                ansatz = acp.gen_next_ansatz(ansatz, hamiltonian, num_qubits,method='random_selection_new',num_new_to_add=numberofnewstatestoadd)
+                print('Ansatz Size is %s'%(ansatz.get_ansatz_size()))
 
-        E_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "E")
-        D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
-        R_mats_uneval = []
-        F_mats_uneval = []
-        for thisL in L_terms:
-            R_mats_uneval.append(mcp.unevaluatedmatrix(num_qubits,ansatz,thisL,"D"))
-            thisLdagL = hcp.multiply_hamiltonians(hcp.dagger_hamiltonian(thisL),thisL)
-            F_mats_uneval.append(mcp.unevaluatedmatrix(num_qubits,ansatz,thisLdagL,"D"))
-        E_mat_evaluated = E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-        D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
-        R_mats_evaluated = []
-        for r in R_mats_uneval:
-            R_mats_evaluated.append(r.evaluate_matrix_by_matrix_multiplicaton(initial_state))
-        F_mats_evaluated = []
-        for f in F_mats_uneval:
-            F_mats_evaluated.append(f.evaluate_matrix_by_matrix_multiplicaton(initial_state))
-        
-        IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
-        IQAE_instance.define_optimizer('feasibility_sdp', eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
-        IQAE_instance.evaluate()
-        density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
+            E_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "E")
+            D_mat_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, hamiltonian, "D")
+            R_mats_uneval = []
+            F_mats_uneval = []
+            for thisL in L_terms:
+                R_mats_uneval.append(mcp.unevaluatedmatrix(num_qubits,ansatz,thisL,"D"))
+                thisLdagL = hcp.multiply_hamiltonians(hcp.dagger_hamiltonian(thisL),thisL)
+                F_mats_uneval.append(mcp.unevaluatedmatrix(num_qubits,ansatz,thisLdagL,"D"))
+            E_mat_evaluated = E_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+            D_mat_evaluated = D_mat_uneval.evaluate_matrix_by_matrix_multiplicaton(initial_state)
+            R_mats_evaluated = []
+            for r in R_mats_uneval:
+                R_mats_evaluated.append(r.evaluate_matrix_by_matrix_multiplicaton(initial_state))
+            F_mats_evaluated = []
+            for f in F_mats_uneval:
+                F_mats_evaluated.append(f.evaluate_matrix_by_matrix_multiplicaton(initial_state))
+            
+            IQAE_instance = pp.IQAE_Lindblad(num_qubits, D_mat_evaluated, E_mat_evaluated,R_matrices = R_mats_evaluated,F_matrices = F_mats_evaluated,gammas = gammas)
+            IQAE_instance.define_optimizer('feasibility_sdp', eigh_invcond=eigh_inv_cond,eig_invcond=eig_inv_cond,degeneracy_tol=degeneracy_tol,sdp_tolerance_bound=sdp_tolerance_bound)
+            IQAE_instance.evaluate()
+            density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
 
 
-        p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
-        ini_statevec_vecform = initial_state.get_statevector()
-        csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
-        rho = np.zeros(shape=(2**num_qubits,2**num_qubits), dtype = np.complex128)
-        trace = 0
-        for i in range(len(density_mat)):
-            for j in range(len(density_mat)):
-                i_j_entry = density_mat[(i,j)]
-                i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
-                rho += i_j_entry * i_j_ketbra
-                trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
+            p_string_matrices = [i.get_paulistring().get_matrixform() for i in ansatz.get_moments()]
+            ini_statevec_vecform = initial_state.get_statevector()
+            csk_states = [i@ini_statevec_vecform for i in p_string_matrices]
+            rho = np.zeros(shape=(2**num_qubits,2**num_qubits), dtype = np.complex128)
+            trace = 0
+            for i in range(len(density_mat)):
+                for j in range(len(density_mat)):
+                    i_j_entry = density_mat[(i,j)]
+                    i_j_ketbra = np.outer(csk_states[i], csk_states[j].conj().T)
+                    rho += i_j_entry * i_j_ketbra
+                    trace += i_j_entry * csk_states[j].conj().T @ csk_states[i]
 
-        qtp_rho = qutip.Qobj(rho)
-        fidelity = qutip.metrics.fidelity(qtp_rho, qtp_rho_ss)
-        print(fidelity)
-        if round(fidelity,3)==1:
-            break
+            qtp_rho = qutip.Qobj(rho)
+            fidelity = qutip.metrics.fidelity(qtp_rho, qtp_rho_ss)
+            print(fidelity)
+            if round(fidelity,3)==1:
+                break
+    except:
+        continue
