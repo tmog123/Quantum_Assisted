@@ -22,7 +22,7 @@ sdp_tolerance_bound = 0
 uptowhatK = 2
 random_selection_new = True
 if random_selection_new == True:
-    numberofnewstatestoadd = 12 #Only will be used if 'random_selection_new' is selected
+    numberofnewstatestoadd = 20 #Only will be used if 'random_selection_new' is selected
 
 what_starting_state = 'largest_eigvec'# 'efficient_SU2_Random', 'Ground_state', 'Random_statevector', 'largest_eigvec'
 if what_starting_state == 'efficient_SU2_Random':
@@ -98,6 +98,9 @@ for g in g_vals:
         qtp_matrix = qtp_rho_ss.data
         bigeigval,bigeigvec = scp.sparse.linalg.eigsh(qtp_matrix,1,which='LM')
         bigeigvec = np.array(bigeigvec)
+        bigeigvec = bigeigvec/np.sqrt(np.vdot(bigeigvec, bigeigvec))
+        overlapWithNESS = np.vdot(bigeigvec, qtp_rho_ss.full() @ bigeigvec)
+        print("starting state overlap amplitude with ness is", overlapWithNESS)
         start_state = qi.Statevector(bigeigvec)
         initial_state = acp.Initialstate(num_qubits, "starting_statevector", rand_generator=None,startingstatevector = start_state)
 
