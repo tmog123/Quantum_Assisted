@@ -89,10 +89,10 @@ def calculate_overlap(state1,state2):
     a = np.conjugate(np.transpose(state1))@state2
     return a
 
-def produce_E_matrix(ansatz,hamiltonian):
+def produce_matrix(ansatz,qobj):
     size = ansatz.get_size()
     matrix = np.empty([size,size], dtype=np.complex128)
-    H = hamiltonian.full()
+    H = qobj.full()
     for i in range(size):
         for j in range(size):
             matrix[(i,j)] = calculate_overlap(ansatz.get_statevector(i),H@ansatz.get_statevector(j))
@@ -121,6 +121,7 @@ for g in g_vals:
 
     #Start of algorithm
     Observables = [thebasis['Xs'][0],thebasis['Ys'][0],thebasis['Zs'][0]]
+    # print(Observables[0])
     startingstatesansatz = Ansatz(bigeigstatevectors)
 
 
@@ -139,7 +140,7 @@ for g in g_vals:
         print('Size of ansatz for k = %s is %s'%(k,len(thisstates)))
         thiskansatz = Ansatz(thisstates)
 
-        E = produce_E_matrix(thiskansatz,qtp_hamiltonian)
+        E = produce_matrix(thiskansatz,qtp_hamiltonian)
         print(E.shape)
 
     # print(Csks['1'][1].full())
