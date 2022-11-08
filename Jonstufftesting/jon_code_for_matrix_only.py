@@ -2,6 +2,7 @@ import numpy as np
 # import pauli_class_package as pcp
 from qutip import *
 import scipy as scp
+import copy
 
 number_qubits = 5
 g_vals = [0.25]
@@ -23,7 +24,7 @@ def qutip_basis(L):
     return {'Xs':correctsigmaxs,'Ys':correctsigmays,'Zs':correctsigmazs}
 
 def generate_CsKs_for_fuji_boy_hamiltonian(num_qubits,uptowhatK,basis,howmanyrandomselection):
-    result = {}
+    result = {'0':[]}
     elements = []
     for i in range(num_qubits-1):
         elements.append(basis['Zs'][i]*basis['Zs'][i+1])
@@ -35,7 +36,6 @@ def generate_CsKs_for_fuji_boy_hamiltonian(num_qubits,uptowhatK,basis,howmanyran
             newelements = np.random.choice(len(elements),howmanyrandomselection,replace=False)
             for nw in newelements:
                 currentelements.append(elements[nw])
-            result[str(i)] = currentelements
         else:
             newelements = []
             for c in currentelements:
@@ -46,7 +46,7 @@ def generate_CsKs_for_fuji_boy_hamiltonian(num_qubits,uptowhatK,basis,howmanyran
             newelementstoadd = np.random.choice(len(newelements),howmanyrandomselection,replace=False)
             for nw in newelementstoadd:
                 currentelements.append(newelements[nw])  
-            result[str(i)] = currentelements         
+        result[str(i)] = copy.deepcopy(currentelements)
         print('Size of elements for %s is %s'%(i,len(currentelements)))
     return result
 
@@ -80,10 +80,25 @@ class Ansatz(object):#moments is a list
     def get_size(self):
         return len(self.statevectors)
     def get_statevector(self,i):
-        if i in range(self.get_size):
+        if i in range(self.get_size()):
             return self.statevectors[i]
         else:
             raise(RuntimeError("Not in range"))
+
+def calculate_overlap(state1,state2):
+    a = np.conjugate(np.transpose(state1))@state2
+    return a
+
+def produce_E_matrix(ansatz,hamiltonian):
+    size = ansatz.get_size()
+    matrix = np.empty([size,size], dtype=np.complex128)
+    H = hamiltonian.full()
+    for i in range(size):
+        for j in range(size):
+            matrix[(i,j)] = calculate_overlap(ansatz.get_statevector(i),H@ansatz.get_statevector(j))
+    return matrix
+
+
 
 thebasis = qutip_basis(number_qubits)
 
@@ -106,11 +121,30 @@ for g in g_vals:
 
     #Start of algorithm
     Observables = [thebasis['Xs'][0],thebasis['Ys'][0],thebasis['Zs'][0]]
-    startingansatz = Ansatz(bigeigstatevectors)
+    startingstatesansatz = Ansatz(bigeigstatevectors)
+
+
+    # a = calculate_overlap(startingansatz.statevectors[0],startingansatz.statevectors[0])
 
     Csks = generate_CsKs_for_fuji_boy_hamiltonian(number_qubits,uptowhatK,thebasis,randomselectionnumber)
 
+    # print(len(Csks['1']))
 
+    for k in range(uptowhatK+1):
+        thisstates = []
+        for i in range(len(startingstatesansatz.statevectors)):
+            thisstates.append(startingstatesansatz.get_statevector(i))
+            for j in range(len(Csks[str(k)])):
+                thisstates.append(Csks[str(k)][j].full()@startingstatesansatz.get_statevector(i))
+        print('Size of ansatz for k = %s is %s'%(k,len(thisstates)))
+        thiskansatz = Ansatz(thisstates)
+
+        E = produce_E_matrix(thiskansatz,qtp_hamiltonian)
+        print(E.shape)
+
+    # print(Csks['1'][1].full())
+
+    # print(qtp_hamiltonian.full())
 
 
 
