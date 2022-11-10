@@ -9,10 +9,10 @@ import matplotlib.pyplot as plt
 import plotting_package as plotp
 
 number_qubits = 8
-g_vals = [0,0.25, 0.5,0.75, 1.0, 1.5]
-howmanylargesteigenvectors = 3
+g_vals = [0,0.25, 0.5,0.75, 1.0, 1.5,2.0]
+howmanylargesteigenvectors = 8
 uptowhatK = 2
-randomselectionnumber = 5
+randomselectionnumber = 4
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
@@ -195,7 +195,7 @@ def plot_theoretical_expectation_curves(g_min,g_max,num_qubits,basis, obs):
         # qtp_hamiltonian = qutip.Qobj(hamiltonian.full())
         # qtp_Lterms = [qutip.Qobj(i.full()) for i in L_terms]
         qtp_C_ops = [np.sqrt(gammas[i]) * L_terms[i] for i in range(len(L_terms))]
-        qtp_rho_ss = qutip.steadystate(hamiltonian, qtp_C_ops)
+        qtp_rho_ss = qutip.steadystate(hamiltonian, qtp_C_ops,method="iterative-gmres",maxiter=10000)
         #compute the theoretical observable expectation values
         observable_matrixforms = [ob.full() for ob in obs]
         theoretical_expectation_values = [np.trace(qtp_rho_ss.full() @ observable_matform) for observable_matform in observable_matrixforms]
@@ -204,6 +204,11 @@ def plot_theoretical_expectation_curves(g_min,g_max,num_qubits,basis, obs):
     values = list(results.values())
     values_transposed = list(zip(*values)) 
     return (keys,values_transposed) #this is in a plottable form
+
+def numcskstatefunction(howmanyeigvec,randselect):
+    def thefunc(k):
+        return howmanyeigvec*(randselect*k) + howmanyeigvec
+    return thefunc
 
 thebasis = qutip_basis(number_qubits)
 results = {}
@@ -264,16 +269,19 @@ for g in g_vals:
         fidelity_results[k] = result_dictionary['fidelity']
     density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
     results[g] = (observable_expectation_results, theoretical_expectation_values, fidelity_results,O_mats,density_mat)
+
+numcskfunc = numcskstatefunction(howmanylargesteigenvectors,randomselectionnumber)
+
 print('Stuck 1')
 theoretical_curves = plot_theoretical_expectation_curves(min(g_vals), max(g_vals),number_qubits,thebasis, Observables)
 observable_names = [r'$<X_1>$',r'$<Y_1>$',r'$<Z_1>$']
 print('Stuck 2')
 plt.rcParams["figure.figsize"] = (7,5)
 fidelity_plot_loc = 'multiple_starting_state/startlargesteigvec_newgraph_%s_qubit_noiseless_fidelity.pdf'%(number_qubits)
-plotp.plot_fidelities(number_qubits,results,False,None,x_axis=r'$g$',y_axis='Log(fidelity)', location=fidelity_plot_loc, bboxtight="tight",plotlog=True,k_dot_styles=["o","+","x","D","*","H"])
+plotp.plot_fidelities(number_qubits,results,True,numcskfunc,x_axis=r'$g$',y_axis='Log(fidelity)', location=fidelity_plot_loc, bboxtight="tight",plotlog=True,k_dot_styles=["o","+","x","D","*","H"])
 print('Stuck 3')
 expectation_plot_loc = 'multiple_starting_state/startlargesteigvec_newgraph_%s_qubit_noiseless.pdf'%(number_qubits)
-plotp.qutip_comparison_with_k_plot_expectation_values(number_qubits,results, theoretical_curves, [0,1,2],False,None,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"],line_styles=['-','--','-.'])
+plotp.qutip_comparison_with_k_plot_expectation_values(number_qubits,results, theoretical_curves, [0,1,2],True,numcskfunc,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"],line_styles=['-','--','-.'])
 
 
 
