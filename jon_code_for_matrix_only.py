@@ -9,10 +9,10 @@ import matplotlib.pyplot as plt
 import plotting_package as plotp
 
 number_qubits = 8
-g_vals = [0,0.25, 0.5,0.75, 1.0, 1.5,2.0]
-howmanylargesteigenvectors = 8
-uptowhatK = 2
-randomselectionnumber = 4
+g_vals = [2.0,2.5,3.0]
+howmanylargesteigenvectors = 20
+uptowhatK = 1
+randomselectionnumber = 10
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
 degeneracy_tol = 5
@@ -195,7 +195,7 @@ def plot_theoretical_expectation_curves(g_min,g_max,num_qubits,basis, obs):
         # qtp_hamiltonian = qutip.Qobj(hamiltonian.full())
         # qtp_Lterms = [qutip.Qobj(i.full()) for i in L_terms]
         qtp_C_ops = [np.sqrt(gammas[i]) * L_terms[i] for i in range(len(L_terms))]
-        qtp_rho_ss = qutip.steadystate(hamiltonian, qtp_C_ops,method="iterative-gmres",maxiter=10000)
+        qtp_rho_ss = qutip.steadystate(hamiltonian, qtp_C_ops,method="iterative-bicgstab",maxiter=10000)
         #compute the theoretical observable expectation values
         observable_matrixforms = [ob.full() for ob in obs]
         theoretical_expectation_values = [np.trace(qtp_rho_ss.full() @ observable_matform) for observable_matform in observable_matrixforms]
@@ -214,6 +214,7 @@ thebasis = qutip_basis(number_qubits)
 results = {}
 Observables = [thebasis['Xs'][0],thebasis['Ys'][0],thebasis['Zs'][0]]
 for g in g_vals:
+    print('g is')
     print(g)
     #Produces the steady state
     fidelity_results = dict()
@@ -267,6 +268,10 @@ for g in g_vals:
         result_dictionary = analyze_density_matrix(number_qubits,IQAE_instance,E_mat,thiskansatz,qtp_hamiltonian,gammas,qtp_L_terms,qtp_rho_ss,O_mats,verbose =False)
         observable_expectation_results[k] = result_dictionary['observable_expectation']
         fidelity_results[k] = result_dictionary['fidelity']
+        print('Fidelity is ')
+        print(result_dictionary['fidelity'])
+        print('Observable Expectation is')
+        print(result_dictionary['observable_expectation'])
     density_mat,groundstateenergy = IQAE_instance.get_density_matrix_results()
     results[g] = (observable_expectation_results, theoretical_expectation_values, fidelity_results,O_mats,density_mat)
 
