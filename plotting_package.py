@@ -331,7 +331,7 @@ def qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoreti
                 #     continue
                 observable_result = observable_results[index]
                 if random_selection_new:
-                    plt.plot(x_vals, observable_result, k_dot_styles[k_dot_style_counter], label = str(num_of_csk_states(k)) + " csk states" + observable_names[index])
+                    plt.plot(x_vals, observable_result, k_dot_styles[k_dot_style_counter], label = str(num_of_csk_states[k]) + " csk states" + observable_names[index])
                 else:
                     plt.plot(x_vals, observable_result, k_dot_styles[k_dot_style_counter], label = "CsK=" + str(k)+',' + observable_names[index])
                 if k_dot_style_counter+1<len(k_dot_styles):

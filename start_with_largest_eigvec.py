@@ -13,7 +13,7 @@ import qiskit.quantum_info as qi
 
 g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0,2.5,3.0]
 supportlevel = 0.01
-num_qubits = 8
+num_qubits = 5
 # optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
@@ -21,7 +21,7 @@ degeneracy_tol = 5
 use_qiskit = False
 loadmatlabmatrix = False
 # runSDPonpython = True
-uptowhatK = 2
+uptowhatK = 3
 sdp_tolerance_bound = 0
 what_starting_state = 'largest_eigvec'# 'Random', 'Ground_state', 'Random_statevector', 'largest_eigvec'
 if what_starting_state == 'Random':
@@ -80,9 +80,10 @@ observables_list = [observable_one, observable_two, observable_three]
 # dataforplot = [[],[],[],[],[],[]]
 results = {}
 
-statesinansatz = []
+# statesinansatz = []
 
 for g in g_vals:
+    statesinansatz = {}
     fidelity_results = dict()
     observable_expectation_results = dict()
     print(g)
@@ -130,7 +131,7 @@ for g in g_vals:
             print('##########################################')
             print('K = ' +str(k))
             print('Ansatz Size is %s'%(ansatz.get_ansatz_size()))
-
+        statesinansatz[k] = ansatz.get_ansatz_size()+1
         O_matrices_uneval = []
         for observable in observables_list:
             O_matrix_uneval = mcp.unevaluatedmatrix(num_qubits, ansatz, observable, "O")
@@ -174,7 +175,7 @@ plotp.plot_fidelities(num_qubits,results,False,None,x_axis=r'$g$',y_axis='Log(fi
 print('Stuck 3')
 expectation_plot_loc = 'reverse_engineer_ansatz_results/startlargesteigvec_newgraph_%s_qubit_noiseless.pdf'%(num_qubits)
 # expectation_plot_loc = None
-plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1,2],False,None,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"],line_styles=['-','--','-.'])
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [2,3],random_selection_new,statesinansatz,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"],line_styles=['-','--','-.'])
 
 
 
