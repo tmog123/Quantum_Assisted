@@ -13,7 +13,7 @@ import qiskit.quantum_info as qi
 
 g_vals = [0,0.25, 0.5, 1.0, 1.5, 2.0,2.5,3.0]
 supportlevel = 0.01
-num_qubits = 2
+num_qubits = 5
 # optimizer = 'feasibility_sdp'#'eigh' , 'eig', 'sdp','feasibility_sdp'
 eigh_inv_cond = 10**(-6)
 eig_inv_cond = 10**(-6)
@@ -21,13 +21,13 @@ degeneracy_tol = 5
 use_qiskit = False
 loadmatlabmatrix = False
 # runSDPonpython = True
-uptowhatK = 1
+uptowhatK = 3
 sdp_tolerance_bound = 0
 what_starting_state = 'largest_eigvec'# 'Random', 'Ground_state', 'Random_statevector', 'largest_eigvec'
 if what_starting_state == 'Random':
     random_generator = np.random.default_rng(123)
     initial_state = acp.Initialstate(num_qubits, "efficient_SU2", random_generator, 1)
-random_selection_new = False
+random_selection_new = True
 if random_selection_new == True:
     numberofnewstatestoadd = 10 #Only will be used if 'random_selection_new' is selected
 
@@ -175,7 +175,7 @@ plotp.plot_fidelities(num_qubits,results,random_selection_new,statesinansatz,x_a
 print('Stuck 3')
 expectation_plot_loc = 'reverse_engineer_ansatz_results/startlargesteigvec_newgraph_%s_qubit_noiseless.pdf'%(num_qubits)
 # expectation_plot_loc = None
-plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [1],random_selection_new,statesinansatz,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"],line_styles=['-','--','-.'])
+plotp.qutip_comparison_with_k_plot_expectation_values(num_qubits,results, theoretical_curves, [2,3],random_selection_new,statesinansatz,specify_names=True,observable_names=observable_names,x_axis=r'$g$',y_axis='Expectation Values', location=expectation_plot_loc, bboxtight="tight",k_dot_styles=["o","+","x","D","*","H"],line_styles=['-','--','-.'])
 
 
 

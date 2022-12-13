@@ -372,7 +372,7 @@ def plot_fidelities(num_qubits,results,random_selection_new,num_of_csk_states=No
         if plotlog==True:
             fidelities = np.log(np.array(fidelities))
         if random_selection_new and num_of_csk_states!=None:
-            plt.plot(x_vals, fidelities, k_dot_styles[k_dot_style_counter], label=str(num_of_csk_states[k]) +r'$\mathbb{CS}_{K}$'+" states")
+            plt.plot(x_vals, fidelities, k_dot_styles[k_dot_style_counter], label=str(num_of_csk_states[k]) +" "+r'$\mathbb{CS}_{K}$'+" states")
         else:
             plt.plot(x_vals, fidelities, k_dot_styles[k_dot_style_counter], label="k=" + str(k))
         if k_dot_styles!=None:
